@@ -1,4 +1,4 @@
-package acceptance
+package unit
 
 import controller.Controller
 import mock.{MockRogue, MockView}
