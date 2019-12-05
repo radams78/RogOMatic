@@ -1,4 +1,4 @@
-package controller
+package rogomatic
 
 import rogue.IRogue
 import view.IView

@@ -1,9 +1,9 @@
 package acceptance
 
-import controller.Controller
 import mock.{MockRogue, MockView}
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
+import rogomatic.Controller
 
 /** Acceptance tests for playing Rogue in transparent mode */
 class TransparentSpec extends AnyFeatureSpec with GivenWhenThen {

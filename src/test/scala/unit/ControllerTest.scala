@@ -1,8 +1,8 @@
 package unit
 
-import controller.Controller
 import mock.{MockRogue, MockView}
 import org.scalatest.flatspec.AnyFlatSpec
+import rogomatic.Controller
 
 /** Unit tests for [[Controller]] class */
 class ControllerTest extends AnyFlatSpec {
