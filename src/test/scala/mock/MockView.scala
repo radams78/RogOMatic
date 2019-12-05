@@ -5,11 +5,11 @@ import view.IView
 
 /** A mock implementation of [[IView]] */
 object MockView extends IView {
-  var lastInventory: Option[Inventory] = None
+  private var lastInventory: Option[Inventory] = None
 
   def hasDisplayedInventory(inventory: Inventory): Boolean = lastInventory contains inventory
 
-  var lastScreen: Option[String] = None
+  private var lastScreen: Option[String] = None
 
   def hasDisplayed(screen: String): Boolean = lastScreen contains screen
 
