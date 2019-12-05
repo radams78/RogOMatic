@@ -1,2 +1,4 @@
 Rog-O-Matic displays inventory
 Can send command to Rogue
+Recognise inventory items
+Handle unrecognised item in inventory
