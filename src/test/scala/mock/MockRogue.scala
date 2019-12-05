@@ -2,6 +2,7 @@ package mock
 
 import rogue.IRogue
 
+/** Mock Rogue process */
 class MockRogue(firstScreen: String, firstInventoryScreen: String) extends IRogue {
   private var state: State = INITIAL
 
@@ -24,12 +25,12 @@ class MockRogue(firstScreen: String, firstInventoryScreen: String) extends IRogu
     case _ => throw new Error(s"Unexpected keypress: $keyPress in state $state")
   }
 
-  trait State
+  private trait State
 
-  case object INITIAL extends State
+  private case object INITIAL extends State
 
-  case object SCREEN extends State
+  private case object SCREEN extends State
 
-  case object INVENTORY extends State
+  private case object INVENTORY extends State
 
 }
