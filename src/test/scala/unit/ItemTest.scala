@@ -27,4 +27,10 @@ class ItemTest extends AnyFlatSpec {
       Item.parse("a +1,+0 long sword")
     }
   }
+
+  "31 arrows" should "be recognised as 31 arrows" in {
+    assertResult(Weapon(31, WeaponType.ARROW, +0, +0)) {
+      Item.parse("31 +0,+0 arrows")
+    }
+  }
 }

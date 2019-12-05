@@ -6,10 +6,10 @@ sealed trait WeaponType
 object WeaponType {
   def parse(description: String): WeaponType = description match {
     case "short bow" => SHORT_BOW
-    case "dart" => DART
-    case "arrow" => ARROW
-    case "dagger" => DAGGER
-    case "shuriken" => SHURIKEN
+    case "dart" | "darts" => DART
+    case "arrow" | "arrows" => ARROW
+    case "dagger" | "daggers" => DAGGER
+    case "shuriken" | "shurikens" => SHURIKEN
     case "mace" => MACE
     case "long sword" => LONG_SWORD
     case "two-handed sword" => TWO_HANDED_SWORD
