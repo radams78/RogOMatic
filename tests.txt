@@ -1,0 +1,2 @@
+Rog-O-Matic displays inventory
+Can send command to Rogue

@@ -1,6 +1,6 @@
 package acceptance
 
-import gamedata.Inventory
+import gamedata._
 import mock._
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec

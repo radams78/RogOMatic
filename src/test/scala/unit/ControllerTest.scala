@@ -1,6 +1,6 @@
 package unit
 
-import gamedata.Inventory
+import gamedata._
 import mock._
 import org.scalatest.flatspec.AnyFlatSpec
 import rogomatic.Controller

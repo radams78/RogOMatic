@@ -6,6 +6,5 @@ import gamedata.Inventory
 trait IView {
   def displayInventory(inventory: Inventory): Unit
 
-
   def displayScreen(screen: String): Unit
 }

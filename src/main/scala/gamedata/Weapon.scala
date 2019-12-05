@@ -1,6 +1,4 @@
-package mock
-
-import gamedata.Item
+package gamedata
 
 case class Weapon(quantity: Int, weaponType: WeaponType, plusToHit: Int, plusDamage: Int) extends Item
 
