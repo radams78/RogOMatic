@@ -1,19 +1,18 @@
 package gamedata
 
-trait Slot {
-
-}
+/** The set of slots in the PC's inventory */
+sealed trait Slot
 
 object Slot {
 
-  object A extends Slot
+  case object A extends Slot
 
-  object B extends Slot
+  case object B extends Slot
 
-  object C extends Slot
+  case object C extends Slot
 
-  object D extends Slot
+  case object D extends Slot
 
-  object E extends Slot
+  case object E extends Slot
 
 }
