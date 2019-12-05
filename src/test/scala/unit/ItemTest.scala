@@ -1,6 +1,6 @@
 package unit
 
-import gamedata.{Food, Item}
+import gamedata.{Armor, ArmorType, Food, Item}
 import org.scalatest.flatspec.AnyFlatSpec
 
 class ItemTest extends AnyFlatSpec {
@@ -13,6 +13,12 @@ class ItemTest extends AnyFlatSpec {
   "2 rations of food" should "be recognised as 2 rations of food" in {
     assertResult(Food(2)) {
       Item.parse("2 rations of food")
+    }
+  }
+
+  "a suit of ring mail" should "be recognised as a suit of ring mail" in {
+    assertResult(Armor(ArmorType.RING_MAIL, +1)) {
+      Item.parse("+1 ring mail [4]")
     }
   }
 }
