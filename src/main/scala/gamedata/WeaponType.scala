@@ -1,8 +1,7 @@
 package gamedata
 
-trait WeaponType {
-
-}
+/** The set of weapon types in the game of Rogue */
+sealed trait WeaponType
 
 object WeaponType {
   def parse(description: String): WeaponType = description match {
