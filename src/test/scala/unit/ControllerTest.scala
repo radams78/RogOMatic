@@ -1,5 +1,6 @@
 package unit
 
+import gamedata.Inventory
 import mock.{MockRogue, MockView}
 import org.scalatest.flatspec.AnyFlatSpec
 import rogomatic.Controller
@@ -16,5 +17,11 @@ class ControllerTest extends AnyFlatSpec {
     val controller: Controller = Controller(MockRogue, MockView)
     controller.startTransparent()
     assert(MockView.hasDisplayed(MockRogue.firstScreen))
+  }
+
+  "A controller" should "display the first inventory of the game" in {
+    val controller: Controller = Controller(MockRogue2, MockView)
+    controller.startTransparent()
+    assert(MockView.hasDisplayedInventory(Inventory()))
   }
 }

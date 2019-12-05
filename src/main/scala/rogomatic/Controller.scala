@@ -1,5 +1,6 @@
 package rogomatic
 
+import gamedata.Inventory
 import rogue.IRogue
 import view.IView
 
@@ -9,6 +10,7 @@ class Controller(rogue: IRogue, view: IView) {
   def startTransparent(): Unit = {
     rogue.start()
     view.displayScreen(rogue.getScreen)
+    view.displayInventory(Inventory())
   }
 
 }

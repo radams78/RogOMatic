@@ -20,6 +20,9 @@ class TransparentSpec extends AnyFeatureSpec with GivenWhenThen {
 
       And("the first screen should be displayed")
       assert(MockView.hasDisplayed(MockRogue.firstScreen))
+
+      And("the first inventory should be displayed")
+      assert(MockView.hasDisplayedInventory(MockRogue.firstInventory))
     }
   }
 }
