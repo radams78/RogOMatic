@@ -4,4 +4,6 @@ package rogue
 trait IRogue {
   /** Start the game of Rogue */
   def start(): Unit
+
+  def getScreen: String
 }

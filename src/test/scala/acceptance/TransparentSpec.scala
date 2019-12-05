@@ -17,6 +17,9 @@ class TransparentSpec extends AnyFeatureSpec with GivenWhenThen {
 
       Then("the game should be started")
       assert(MockRogue.isStarted)
+
+      And("the first screen should be displayed")
+      assert(MockView.hasDisplayed(MockRogue.firstScreen))
     }
   }
 }

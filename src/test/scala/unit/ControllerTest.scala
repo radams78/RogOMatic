@@ -11,4 +11,10 @@ class ControllerTest extends AnyFlatSpec {
     controller.startTransparent()
     assert(MockRogue.isStarted)
   }
+
+  "A controller" should "display the first screen of the game" in {
+    val controller: Controller = Controller(MockRogue, MockView)
+    controller.startTransparent()
+    assert(MockView.hasDisplayed(MockRogue.firstScreen))
+  }
 }
