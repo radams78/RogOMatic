@@ -16,6 +16,7 @@ import rogue.IRogue
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
+/** Class for low-level communication with the Rogue process. This class is part of the untested thin layer. */
 class Rogue extends IRogue {
 
   private val command: Array[String] = Rogue.DEFAULT_COMMAND
@@ -71,36 +72,35 @@ object Rogue {
 
 // A minimal implementation of TerminalDisplay
 private class MinimalTerminalDisplay(buffer: TerminalTextBuffer) extends TerminalDisplay {
-  var selection: TerminalSelection = _
+  private var selection: TerminalSelection = _
 
-  def beep(): Unit = ()
+  override def beep(): Unit = ()
 
-  def setBlinkingCursor(b: Boolean): Unit = ()
+  override def setBlinkingCursor(b: Boolean): Unit = ()
 
-  def scrollArea(i: Int, i1: Int, i2: Int): Unit = ()
+  override def scrollArea(i: Int, i1: Int, i2: Int): Unit = ()
 
-  def setScrollingEnabled(b: Boolean): Unit = ()
+  override def setScrollingEnabled(b: Boolean): Unit = ()
 
-  def setCursorVisible(b: Boolean): Unit = ()
+  override def setCursorVisible(b: Boolean): Unit = ()
 
-  def getRowCount: Int = buffer.getHeight
+  override def getRowCount: Int = buffer.getHeight
 
-  def getColumnCount: Int = buffer.getWidth
+  override def getColumnCount: Int = buffer.getWidth
 
-  def terminalMouseModeSet(mouseMode: MouseMode): Unit = ()
+  override def terminalMouseModeSet(mouseMode: MouseMode): Unit = ()
 
-  def ambiguousCharsAreDoubleWidth(): Boolean = false
+  override def ambiguousCharsAreDoubleWidth(): Boolean = false
 
-  def getSelection: TerminalSelection = selection
+  override def getSelection: TerminalSelection = selection
 
-  def setCurrentPath(s: String): Unit = ()
+  override def setCurrentPath(s: String): Unit = ()
 
-  def setCursor(i: Int, i1: Int): Unit = ()
+  override def setCursor(i: Int, i1: Int): Unit = ()
 
-  def setWindowTitle(s: String): Unit = ()
+  override def setWindowTitle(s: String): Unit = ()
 
-  // For some reason, adding "override" below produces an error when compiling
-  def requestResize(pendingResize: Dimension, origin: RequestOrigin, cursorY: Int, resizeHandler: ResizeHandler): Dimension =
+  override def requestResize(pendingResize: Dimension, origin: RequestOrigin, cursorY: Int, resizeHandler: ResizeHandler): Dimension =
     throw new Error("Called requestResize on fixed size terminal display")
 
   override def setCursorShape(cursorShape: CursorShape): Unit = ()
