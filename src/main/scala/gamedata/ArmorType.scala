@@ -1,5 +1,6 @@
 package gamedata
 
+/** The set of armor types in the game of Rogue */
 sealed trait ArmorType
 
 object ArmorType {
