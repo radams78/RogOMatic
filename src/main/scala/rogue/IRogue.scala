@@ -6,4 +6,6 @@ trait IRogue {
   def start(): Unit
 
   def getScreen: String
+
+  def sendKeypress(keyPress: Char): Unit
 }

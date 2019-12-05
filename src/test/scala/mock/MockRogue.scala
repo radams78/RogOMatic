@@ -1,80 +1,35 @@
 package mock
 
-import gamedata.Inventory
 import rogue.IRogue
 
-/** A mock Rogue process */
-object MockRogue extends IRogue {
-  val firstScreen: String =
-    """
-      |
-      |
-      |
-      |
-      |
-      |
-      |
-      |         ---------+--
-      |         |..........|
-      |         |.S........|
-      |         |.....@....|
-      |         |.K........|
-      |         |..........|
-      |         ------------
-      |
-      |
-      |
-      |
-      |
-      |
-      |
-      |
-      |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
-      |""".stripMargin
+class MockRogue(firstScreen: String, firstInventoryScreen: String) extends IRogue {
+  private var state: State = INITIAL
 
-  val firstInventoryScreen: String =
-    """                                                a) some food
-      |                                                b) +1 ring mail [4] being worn
-      |                                                c) a +1,+1 mace in hand
-      |                                                d) a +1,+0 short bow
-      |                                                e) 31 +0,+0 arrows
-      |                                                --press space to continue--
-      |
-      |
-      |         ---------+--
-      |         |..........|
-      |         |.S........|
-      |         |.....@....|
-      |         |.K........|
-      |         |..........|
-      |         ------------
-      |
-      |
-      |
-      |
-      |
-      |
-      |
-      |
-      |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
-      |""".stripMargin
+  def isStarted: Boolean = state != INITIAL
 
-  val firstInventory: Inventory = Inventory(
-    items = Map(
-      Slot.A -> Food(1),
-      Slot.B -> Armor(ArmorType.RING_MAIL, +1),
-      Slot.C -> Weapon(WeaponType.MACE, +1, +1),
-      Slot.D -> Weapon(WeaponType.SHORT_BOW, +1, +0),
-      Slot.E -> Weapon(31, WeaponType.ARROW, +0, +0)
-    ),
-    wearing = Some(Slot.B),
-    wielding = Some(Slot.C)
-  )
+  override def start(): Unit = state match {
+    case INITIAL => state = SCREEN
+    case _ => throw new Error("start() called after game started")
+  }
 
-  /** True if the method [[start()]] has been called */
-  var isStarted: Boolean = false
+  override def getScreen: String = state match {
+    case INITIAL => throw new Error("getScreen called before game started")
+    case SCREEN => firstScreen
+    case INVENTORY => firstInventoryScreen
+  }
 
-  override def start(): Unit = isStarted = true
+  override def sendKeypress(keyPress: Char): Unit = (state, keyPress) match {
+    case (SCREEN, 'i') => state = INVENTORY
+    case (INVENTORY, ' ') => state = SCREEN
+    case _ => throw new Error(s"Unexpected keypress: $keyPress in state $state")
+  }
 
-  override def getScreen: String = if (isStarted) firstScreen else throw new Error("getScreen() called before game started")
+  trait State
+
+  case object INITIAL extends State
+
+  case object SCREEN extends State
+
+  case object INVENTORY extends State
+
 }

@@ -49,8 +49,8 @@ class Rogue extends IRogue {
   override def getScreen: String = buffer.getScreenLines
 
   /** Send the given character to Rogue as input from the player, then pause until screen stops updating. */
-  def sendCharacter(character: Char): Unit = {
-    starter.sendBytes(Array(character.toByte))
+  override def sendKeypress(keyPress: Char): Unit = {
+    starter.sendBytes(Array(keyPress.toByte))
     //noinspection ZeroIndexToHead
     Iterator.continually({
       Thread.sleep(10)
