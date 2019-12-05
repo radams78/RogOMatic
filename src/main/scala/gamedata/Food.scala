@@ -1,5 +1,4 @@
 package gamedata
 
-case class Food(quantity: Int) extends Item {
-
-}
+/** A stack of rations of food */
+case class Food(quantity: Int) extends Item
