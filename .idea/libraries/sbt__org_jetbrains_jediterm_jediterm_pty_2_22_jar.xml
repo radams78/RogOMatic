@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="sbt: org.jetbrains.jediterm:jediterm-pty:2.22:jar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.cache/coursier/v1/https/jcenter.bintray.com/org/jetbrains/jediterm/jediterm-pty/2.22/jediterm-pty-2.22.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

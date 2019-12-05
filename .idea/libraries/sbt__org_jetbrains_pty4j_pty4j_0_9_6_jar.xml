@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="sbt: org.jetbrains.pty4j:pty4j:0.9.6:jar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.cache/coursier/v1/https/jcenter.bintray.com/org/jetbrains/pty4j/pty4j/0.9.6/pty4j-0.9.6.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

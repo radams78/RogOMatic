@@ -88,33 +88,6 @@ class ControllerTest extends AnyFlatSpec {
   }
 
   "A controller" should "display the first inventory of the game" in {
-    val screen: String =
-      """
-        |
-        |
-        |
-        |
-        |
-        |
-        |
-        |         ---------+--
-        |         |..........|
-        |         |.S........|
-        |         |.....@....|
-        |         |.K........|
-        |         |..........|
-        |         ------------
-        |
-        |
-        |
-        |
-        |
-        |
-        |
-        |
-        |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
-        |""".stripMargin
-
     val inventoryScreen: String =
       """                                                --press space to continue--
         |
@@ -141,7 +114,7 @@ class ControllerTest extends AnyFlatSpec {
         |
         |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
         |""".stripMargin
-    val rogue: MockRogue = new MockRogue(screen, inventoryScreen)
+    val rogue: MockRogue = new MockRogue(firstScreen, inventoryScreen)
     val controller: Controller = Controller(rogue, MockView)
     controller.startTransparent()
     assert(MockView.hasDisplayedInventory(Inventory()))
