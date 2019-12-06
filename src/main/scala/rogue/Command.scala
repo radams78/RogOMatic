@@ -18,4 +18,8 @@ object Command {
     override val keypress: Char = 'j'
   }
 
+  object REST extends Command {
+    override val keypress: Char = '.'
+  }
+
 }

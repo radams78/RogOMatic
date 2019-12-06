@@ -15,6 +15,7 @@ object RogOMatic extends App {
   cmd match {
     case 'j' => controller.sendCommand(Command.UP)
     case 'l' => controller.sendCommand(Command.RIGHT)
+    case '.' => controller.sendCommand(Command.REST)
   }
   rogue.close()
   System.exit(0)
