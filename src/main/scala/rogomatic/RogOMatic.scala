@@ -16,6 +16,7 @@ object RogOMatic extends App {
     case 'j' => controller.sendCommand(Command.UP)
     case 'k' => controller.sendCommand(Command.DOWN)
     case 'l' => controller.sendCommand(Command.RIGHT)
+    case 'n' => controller.sendCommand(Command.DOWNRIGHT)
     case '.' => controller.sendCommand(Command.REST)
   }
   rogue.close()

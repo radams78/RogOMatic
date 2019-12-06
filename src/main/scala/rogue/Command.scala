@@ -26,4 +26,8 @@ object Command {
     override val keypress: Char = 'k'
   }
 
+  object DOWNRIGHT extends Command {
+    override val keypress: Char = 'n'
+  }
+
 }
