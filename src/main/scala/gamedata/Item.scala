@@ -19,7 +19,7 @@ object Item {
     case weaponRegex(plusToHit, plusDamage, weaponType) =>
       Some(Weapon(WeaponType.parse(weaponType), plusToHit.toInt, plusDamage.toInt))
     case weaponsRegex(quantity, plusToHit, plusDamage, weaponType) => WeaponType.parse(weaponType) match {
-      case wt: MissileType => Some(Missile(quantity.toInt, wt, Bonus(plusToHit.toInt), Bonus(plusDamage.toInt))) // TODO Make factory methods consistent
+      case wt: MissileType => Some(Missile(quantity.toInt, wt, plusToHit.toInt, plusDamage.toInt))
       case _ => None // TODO Better error handling
     }
     case _ => None
