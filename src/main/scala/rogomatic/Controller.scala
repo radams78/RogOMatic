@@ -10,7 +10,9 @@ class Controller(rogue: IRogue, view: IView) {
   def startTransparent(): Unit = {
     rogue.start()
     view.displayScreen(rogue.getScreen)
-    view.displayInventory(Inventory())
+    rogue.sendKeypress('i')
+    view.displayInventory(Inventory.parseInventoryScreen(rogue.getScreen))
+    rogue.sendKeypress(' ')
   }
 
 }

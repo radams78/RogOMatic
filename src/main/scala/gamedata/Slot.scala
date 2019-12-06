@@ -4,6 +4,14 @@ package gamedata
 sealed trait Slot
 
 object Slot {
+  def parse(slot: String): Slot = slot match {
+    case "a" => A
+    case "b" => B
+    case "c" => C
+    case "d" => D
+    case "e" => E
+  }
+
 
   case object A extends Slot
 
