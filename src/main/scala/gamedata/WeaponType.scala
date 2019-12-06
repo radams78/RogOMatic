@@ -5,6 +5,8 @@ sealed trait WeaponType
 
 sealed trait WieldableType extends WeaponType {
   val name: String
+
+  override def toString: String = name
 }
 
 sealed trait MissileType extends WeaponType {
