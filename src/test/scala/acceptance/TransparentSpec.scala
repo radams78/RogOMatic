@@ -1,100 +1,35 @@
 package acceptance
 
-import gamedata._
 import mock._
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
 import rogomatic.Controller
+import rogue.Command
 
 /** Acceptance tests for playing Rogue in transparent mode */
 class TransparentSpec extends AnyFeatureSpec with GivenWhenThen {
-  val firstScreen: String =
-    """
-      |
-      |
-      |
-      |
-      |
-      |
-      |
-      |         ---------+--
-      |         |..........|
-      |         |.S........|
-      |         |.....@....|
-      |         |.K........|
-      |         |..........|
-      |         ------------
-      |
-      |
-      |
-      |
-      |
-      |
-      |
-      |
-      |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
-      |"""
-      .stripMargin
-      .split("\n")
-      .map(_.padTo(80, ' '))
-      .mkString("\n")
-
-  val firstInventoryScreen: String =
-    """                                                a) some food
-      |                                                b) +1 ring mail [4] being worn
-      |                                                c) a +1,+1 mace in hand
-      |                                                d) a +1,+0 short bow
-      |                                                e) 31 +0,+0 arrows
-      |                                                --press space to continue--
-      |
-      |
-      |         ---------+--
-      |         |..........|
-      |         |.S........|
-      |         |.....@....|
-      |         |.K........|
-      |         |..........|
-      |         ------------
-      |
-      |
-      |
-      |
-      |
-      |
-      |
-      |
-      |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
-      |""".stripMargin.split("\n")
-      .map(_.padTo(80, ' '))
-      .mkString("\n")
-
-  val firstInventory: Inventory = Inventory(
-    items = Map(
-      Slot.A -> Food(1),
-      Slot.B -> Armor(ArmorType.RING_MAIL, +1),
-      Slot.C -> Weapon(WeaponType.MACE, +1, +1),
-      Slot.D -> Weapon(WeaponType.SHORT_BOW, +1, +0),
-      Slot.E -> Missile(31, WeaponType.ARROW, +0, +0)
-    ),
-    wearing = Some(Slot.B),
-    wielding = Some(Slot.C)
-  )
-
   Feature("Play a game of Rogue in transparent mode") {
     Scenario("User starts a game of Rogue in transparent mode") {
       Given("an instance of Rog-O-Matic")
-      val rogue: MockRogue = new MockRogue(firstScreen, firstInventoryScreen)
-      val controller: Controller = Controller(rogue, MockView)
+      val controller: Controller = Controller(MockRogue2, MockView)
 
       When("the user starts the game in transparent mode")
       controller.startTransparent()
 
       Then("the first screen should be displayed")
-      assert(MockView.hasDisplayed(firstScreen))
+      MockView.assertDisplayed(MockRogue2.firstScreen)
 
       And("the first inventory should be displayed")
-      assert(MockView.hasDisplayedInventory(firstInventory))
+      MockView.assertDisplayedInventory(MockRogue2.firstInventory)
+
+      When("the user enters the command to go right")
+      controller.sendCommand(Command.RIGHT)
+
+      Then("the second screen should be displayed")
+      MockView.assertDisplayed(MockRogue2.secondScreen)
+
+      And("the inventory should be displayed")
+      MockView.assertDisplayedInventory(MockRogue2.firstInventory)
     }
   }
 }
-

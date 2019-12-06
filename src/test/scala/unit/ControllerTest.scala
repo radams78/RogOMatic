@@ -4,6 +4,7 @@ import gamedata._
 import mock._
 import org.scalatest.flatspec.AnyFlatSpec
 import rogomatic.Controller
+import rogue.Command
 
 /** Unit tests for [[Controller]] class */
 class ControllerTest extends AnyFlatSpec {
@@ -80,14 +81,14 @@ class ControllerTest extends AnyFlatSpec {
     assert(rogue.isStarted)
   }
 
-  "A controller" should "display the first screen of the game" in {
+  it should "display the first screen of the game" in {
     val rogue: MockRogue = new MockRogue(firstScreen, firstInventoryScreen)
     val controller: Controller = Controller(rogue, MockView)
     controller.startTransparent()
-    assert(MockView.hasDisplayed(firstScreen))
+    MockView.assertDisplayed(firstScreen)
   }
 
-  "A controller" should "display the first inventory of the game" in {
+  it should "display the first inventory of the game" in {
     val inventoryScreen: String =
       """                                                --press space to continue--
         |
@@ -117,6 +118,13 @@ class ControllerTest extends AnyFlatSpec {
     val rogue: MockRogue = new MockRogue(firstScreen, inventoryScreen)
     val controller: Controller = Controller(rogue, MockView)
     controller.startTransparent()
-    assert(MockView.hasDisplayedInventory(Inventory()))
+    MockView.assertDisplayedInventory(Inventory())
+  }
+
+  it should "be able to send a command to Rogue" in {
+    val controller: Controller = Controller(MockRogue2, MockView)
+    controller.startTransparent()
+    controller.sendCommand(Command.RIGHT)
+    MockRogue2.assertMovedRight
   }
 }
