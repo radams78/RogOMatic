@@ -4,7 +4,7 @@ import gamedata._
 import org.scalatest.{Assertion, Assertions}
 import rogue.IRogue
 
-object MockRogue2 extends IRogue with Assertions {
+class MockRogue2 extends IRogue with Assertions {
   val firstScreen: String =
     """
       |
@@ -34,6 +34,7 @@ object MockRogue2 extends IRogue with Assertions {
       .split("\n")
       .map(_.padTo(80, ' '))
       .mkString("\n")
+
   val firstInventoryScreen: String =
     """                                                a) some food
       |                                                b) +1 ring mail [4] being worn

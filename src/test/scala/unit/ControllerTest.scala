@@ -122,9 +122,18 @@ class ControllerTest extends AnyFlatSpec {
   }
 
   it should "be able to send a command to Rogue" in {
-    val controller: Controller = Controller(MockRogue2, MockView)
+    val rogue: MockRogue2 = new MockRogue2
+    val controller: Controller = Controller(rogue, MockView)
     controller.startTransparent()
     controller.sendCommand(Command.RIGHT)
-    MockRogue2.assertMovedRight
+    rogue.assertMovedRight
+  }
+
+  it should "display the new screen after sending the command" in {
+    val rogue: MockRogue2 = new MockRogue2
+    val controller: Controller = Controller(rogue, MockView)
+    controller.startTransparent()
+    controller.sendCommand(Command.RIGHT)
+    MockView.assertDisplayed(rogue.secondScreen)
   }
 }

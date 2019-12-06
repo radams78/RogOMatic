@@ -11,25 +11,26 @@ class TransparentSpec extends AnyFeatureSpec with GivenWhenThen {
   Feature("Play a game of Rogue in transparent mode") {
     Scenario("User starts a game of Rogue in transparent mode") {
       Given("an instance of Rog-O-Matic")
-      val controller: Controller = Controller(MockRogue2, MockView)
+      val rogue: MockRogue2 = new MockRogue2
+      val controller: Controller = Controller(rogue, MockView)
 
       When("the user starts the game in transparent mode")
       controller.startTransparent()
 
       Then("the first screen should be displayed")
-      MockView.assertDisplayed(MockRogue2.firstScreen)
+      MockView.assertDisplayed(rogue.firstScreen)
 
       And("the first inventory should be displayed")
-      MockView.assertDisplayedInventory(MockRogue2.firstInventory)
+      MockView.assertDisplayedInventory(rogue.firstInventory)
 
       When("the user enters the command to go right")
       controller.sendCommand(Command.RIGHT)
 
       Then("the second screen should be displayed")
-      MockView.assertDisplayed(MockRogue2.secondScreen)
+      MockView.assertDisplayed(rogue.secondScreen)
 
       And("the inventory should be displayed")
-      MockView.assertDisplayedInventory(MockRogue2.firstInventory)
+      MockView.assertDisplayedInventory(rogue.firstInventory)
     }
   }
 }

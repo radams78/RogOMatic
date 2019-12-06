@@ -9,7 +9,10 @@ class Controller(rogue: IRogue, view: IView) {
   // TODO What should happen if game not started?
   // TODO What should happen if command not valid?
   /** Execute a command when playing in transparent mode */
-  def sendCommand(command: Command): Unit = rogue.sendKeypress(command.keypress)
+  def sendCommand(command: Command): Unit = {
+    rogue.sendKeypress(command.keypress)
+    view.displayScreen(rogue.getScreen)
+  }
 
   /** Start a game of Rogue in transparent mode */
   def startTransparent(): Unit = {
