@@ -41,7 +41,10 @@ class InventoryTest extends AnyFlatSpec {
           |
           |
           |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
-          |""".stripMargin
+          |""".stripMargin.split("\n")
+          .map(_.padTo(80, ' '))
+          .mkString("\n")
+
       )
     }
   }

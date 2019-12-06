@@ -10,7 +10,7 @@ case class Inventory(items: Map[Slot, Item] = Map(),
 object Inventory {
   private val wearingRegex: UnanchoredRegex = """(\w)\) (.*) being worn""".r.unanchored
   private val wieldingRegex: UnanchoredRegex = """(\w)\) (.*) in hand""".r.unanchored
-  private val inventoryLineRegex: UnanchoredRegex = """(\w)\) (.*)""".r.unanchored
+  private val inventoryLineRegex: UnanchoredRegex = """(\w)\) (.*?)\s*$""".r.unanchored
 
   /** Given a screen retrieved from Rogue displaying the inventory, return the corresponding [[Inventory]] */
   def parseInventoryScreen(screen: String): Inventory = {
