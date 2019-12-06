@@ -3,6 +3,17 @@ package gamedata
 /** A weapon in the game of Rogue */
 trait Weapon extends Item
 
+/** Factory methods for [[Weapon]] */
+object Weapon {
+  def apply(weaponType: WeaponType, plusToHit: Int, plusDamage: Int): Weapon = weaponType match {
+    case wt: WieldableType => Wieldable(wt, Bonus(plusToHit), Bonus(plusDamage))
+    case wt: MissileType => Missile(1, wt, Bonus(plusToHit), Bonus(plusDamage))
+  }
+
+  def apply(quantity: Int, weaponType: MissileType, plusToHit: Int, plusDamage: Int): Missile =
+    Missile(quantity, weaponType, Bonus(plusToHit), Bonus(plusDamage))
+}
+
 /** A melee weapon or bow */
 case class Wieldable(weaponType: WieldableType, plusToHit: Bonus, plusDamage: Bonus) extends Weapon {
   override def toString: String =
@@ -18,19 +29,4 @@ case class Missile(quantity: Int, weaponType: MissileType, plusToHit: Bonus, plu
 object Missile {
   def apply(quantity: Int, weaponType: MissileType, plusToHit: Int, plusDamage: Int): Missile =
     Missile(quantity, weaponType, Bonus(plusToHit), Bonus(plusDamage))
-}
-
-/** Factory methods for [[Weapon]] */
-object Weapon {
-  def apply(weaponType: WeaponType, plusToHit: Int, plusDamage: Int): Weapon = weaponType match {
-    case wt: WieldableType => Wieldable(wt, Bonus(plusToHit), Bonus(plusDamage))
-    case wt: MissileType => Missile(1, wt, Bonus(plusToHit), Bonus(plusDamage))
-  }
-
-  def apply(quantity: Int, weaponType: MissileType, plusToHit: Int, plusDamage: Int): Missile =
-    Missile(quantity, weaponType, Bonus(plusToHit), Bonus(plusDamage))
-}
-
-case class Bonus(value: Int) {
-  override def toString: String = (if (value >= 0) "+" else "") + value
 }
