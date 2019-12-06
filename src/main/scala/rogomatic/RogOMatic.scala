@@ -13,6 +13,7 @@ object RogOMatic extends App {
   controller.startTransparent()
   var cmd = StdIn.readChar()
   cmd match {
+    case 'j' => controller.sendCommand(Command.UP)
     case 'l' => controller.sendCommand(Command.RIGHT)
   }
   rogue.close()
