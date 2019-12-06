@@ -18,7 +18,10 @@ object Item {
     case armorRegex(bonus, armorType) => for (at <- ArmorType.parse(armorType)) yield Armor(at, bonus.toInt)
     case weaponRegex(plusToHit, plusDamage, weaponType) =>
       Some(Weapon(WeaponType.parse(weaponType), plusToHit.toInt, plusDamage.toInt))
-    case weaponsRegex(quantity, plusToHit, plusDamage, weaponType) =>
-      Some(Weapon(quantity.toInt, WeaponType.parse(weaponType), plusToHit.toInt, plusDamage.toInt))
+    case weaponsRegex(quantity, plusToHit, plusDamage, weaponType) => WeaponType.parse(weaponType) match {
+      case wt: MissileType => Some(Missile(quantity.toInt, wt, plusToHit.toInt, plusDamage.toInt))
+      case _ => None // TODO Better error handling
+    }
+    case _ => None
   }
 }

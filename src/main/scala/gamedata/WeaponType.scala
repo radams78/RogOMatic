@@ -3,6 +3,16 @@ package gamedata
 /** The set of weapon types in the game of Rogue */
 sealed trait WeaponType
 
+sealed trait WieldableType extends WeaponType {
+  val name: String
+}
+
+sealed trait MissileType extends WeaponType {
+  val plural: String
+
+  val singular: String
+}
+
 object WeaponType {
   def parse(description: String): WeaponType = description match {
     case "short bow" => SHORT_BOW
@@ -15,20 +25,44 @@ object WeaponType {
     case "two-handed sword" => TWO_HANDED_SWORD
   }
 
-  case object SHORT_BOW extends WeaponType
+  case object SHORT_BOW extends WieldableType {
+    override val name: String = "short bow"
+  }
 
-  case object DART extends WeaponType
+  case object DART extends MissileType {
+    override val singular: String = "dart"
 
-  case object ARROW extends WeaponType
+    override val plural: String = "darts"
+  }
 
-  case object DAGGER extends WeaponType
+  case object ARROW extends MissileType {
+    override val singular: String = "arrow"
 
-  case object SHURIKEN extends WeaponType
+    override val plural: String = "arrows"
+  }
 
-  case object MACE extends WeaponType
+  case object DAGGER extends MissileType {
+    override val singular: String = "dagger"
 
-  case object LONG_SWORD extends WeaponType
+    override val plural: String = "daggers"
+  }
 
-  case object TWO_HANDED_SWORD extends WeaponType
+  case object SHURIKEN extends MissileType {
+    override val singular: String = "shuriken"
+
+    override val plural: String = "shurikens"
+  }
+
+  case object MACE extends WieldableType {
+    override val name: String = "mace"
+  }
+
+  case object LONG_SWORD extends WieldableType {
+    override val name: String = "long sword"
+  }
+
+  case object TWO_HANDED_SWORD extends WieldableType {
+    override val name: String = "two-handed sword"
+  }
 
 }

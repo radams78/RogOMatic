@@ -74,7 +74,7 @@ class TransparentSpec extends AnyFeatureSpec with GivenWhenThen {
       Slot.B -> Armor(ArmorType.RING_MAIL, +1),
       Slot.C -> Weapon(WeaponType.MACE, +1, +1),
       Slot.D -> Weapon(WeaponType.SHORT_BOW, +1, +0),
-      Slot.E -> Weapon(31, WeaponType.ARROW, +0, +0)
+      Slot.E -> Missile(31, WeaponType.ARROW, +0, +0)
     ),
     wearing = Some(Slot.B),
     wielding = Some(Slot.C)
