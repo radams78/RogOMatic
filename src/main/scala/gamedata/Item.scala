@@ -12,13 +12,13 @@ object Item {
   private val weaponsRegex: Regex = """(\d+) ([-+]\d+),([-+]\d+) ([-\w]+(?: \w+)?)""".r
 
   /** Given a description from a displayed inventory, return the corresponding [[Item]] */
-  def parse(description: String): Item = description match {
-    case "some food" => Food(1)
-    case rationRegex(quantity) => Food(quantity.toInt)
-    case armorRegex(bonus, armorType) => Armor(ArmorType.parse(armorType), bonus.toInt)
+  def parse(description: String): Option[Item] = description match {
+    case "some food" => Some(Food(1))
+    case rationRegex(quantity) => Some(Food(quantity.toInt))
+    case armorRegex(bonus, armorType) => for (at <- ArmorType.parse(armorType)) yield Armor(at, bonus.toInt)
     case weaponRegex(plusToHit, plusDamage, weaponType) =>
-      Weapon(WeaponType.parse(weaponType), plusToHit.toInt, plusDamage.toInt)
+      Some(Weapon(WeaponType.parse(weaponType), plusToHit.toInt, plusDamage.toInt))
     case weaponsRegex(quantity, plusToHit, plusDamage, weaponType) =>
-      Weapon(quantity.toInt, WeaponType.parse(weaponType), plusToHit.toInt, plusDamage.toInt)
+      Some(Weapon(quantity.toInt, WeaponType.parse(weaponType), plusToHit.toInt, plusDamage.toInt))
   }
 }

@@ -2,35 +2,26 @@ package unit
 
 import gamedata._
 import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class ItemTest extends AnyFlatSpec {
+class ItemTest extends AnyFlatSpec with Matchers {
   "Some food" should "be recognised as some food" in {
-    assertResult(Food(1)) {
-      Item.parse("some food")
-    }
+    Item.parse("some food") should contain(Food(1))
   }
 
   "2 rations of food" should "be recognised as 2 rations of food" in {
-    assertResult(Food(2)) {
-      Item.parse("2 rations of food")
-    }
+    Item.parse("2 rations of food") should contain(Food(2))
   }
 
   "a suit of ring mail" should "be recognised as a suit of ring mail" in {
-    assertResult(Armor(ArmorType.RING_MAIL, +1)) {
-      Item.parse("+1 ring mail [4]")
-    }
+    Item.parse("+1 ring mail [4]") should contain(Armor(ArmorType.RING_MAIL, +1))
   }
 
   "a long sword" should "be recognised as a long sword" in {
-    assertResult(Weapon(WeaponType.LONG_SWORD, +1, 0)) {
-      Item.parse("a +1,+0 long sword")
-    }
+    Item.parse("a +1,+0 long sword") should contain(Weapon(WeaponType.LONG_SWORD, +1, +0))
   }
 
   "31 arrows" should "be recognised as 31 arrows" in {
-    assertResult(Weapon(31, WeaponType.ARROW, +0, +0)) {
-      Item.parse("31 +0,+0 arrows")
-    }
+    Item.parse("31 +0,+0 arrows") should contain(Weapon(31, WeaponType.ARROW, +0, +0))
   }
 }

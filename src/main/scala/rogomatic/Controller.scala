@@ -11,8 +11,12 @@ class Controller(rogue: IRogue, view: IView) {
     rogue.start()
     view.displayScreen(rogue.getScreen)
     rogue.sendKeypress('i')
-    view.displayInventory(Inventory.parseInventoryScreen(rogue.getScreen))
+    val screen: String = rogue.getScreen
     rogue.sendKeypress(' ')
+    Inventory.parseInventoryScreen(screen) match {
+      case Some(i) => view.displayInventory(i)
+      case None => println(s"ERROR: Could not parse inventory screen:\n$screen")
+    }
   }
 
 }

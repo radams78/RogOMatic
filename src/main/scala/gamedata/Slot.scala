@@ -1,26 +1,18 @@
 package gamedata
 
 /** The set of slots in the PC's inventory */
-sealed trait Slot
+case class Slot(label: Char) extends Ordered[Slot] {
+  override def compare(that: Slot): Int = label.compareTo(that.label)
+
+  override def toString: String = label.toString
+}
 
 object Slot {
-  def parse(slot: String): Slot = slot match {
-    case "a" => A
-    case "b" => B
-    case "c" => C
-    case "d" => D
-    case "e" => E
-  }
+  val A: Slot = Slot('a')
+  val B: Slot = Slot('b')
+  val C: Slot = Slot('c')
+  val D: Slot = Slot('d')
+  val E: Slot = Slot('e')
 
-
-  case object A extends Slot
-
-  case object B extends Slot
-
-  case object C extends Slot
-
-  case object D extends Slot
-
-  case object E extends Slot
-
+  def parse(slot: String): Slot = Slot(slot.head)
 }
