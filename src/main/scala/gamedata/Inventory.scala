@@ -12,6 +12,7 @@ object Inventory {
   private val wieldingRegex: UnanchoredRegex = """(\w)\) (.*) in hand""".r.unanchored
   private val inventoryLineRegex: UnanchoredRegex = """(\w)\) (.*)""".r.unanchored
 
+  /** Given a screen retrieved from Rogue displaying the inventory, return the corresponding [[Inventory]] */
   def parseInventoryScreen(screen: String): Inventory = {
     val lines: Array[String] = screen
       .split("\n")
@@ -27,16 +28,4 @@ object Inventory {
       lines.collectFirst({ case wieldingRegex(slot, _) => Slot.parse(slot) })
     )
   }
-
-  Inventory(
-    items = Map(
-      Slot.A -> Food(1),
-      Slot.B -> Armor(ArmorType.RING_MAIL, +1),
-      Slot.C -> Weapon(WeaponType.MACE, +1, +1),
-      Slot.D -> Weapon(WeaponType.SHORT_BOW, +1, +0),
-      Slot.E -> Weapon(31, WeaponType.ARROW, +0, +0)
-    ),
-    wearing = Some(Slot.B),
-    wielding = Some(Slot.C)
-  )
 }
