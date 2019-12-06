@@ -30,4 +30,8 @@ object Command {
     override val keypress: Char = 'n'
   }
 
+  object UPLEFT extends Command {
+    override val keypress: Char = 'y'
+  }
+
 }
