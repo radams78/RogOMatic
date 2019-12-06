@@ -1,4 +1,4 @@
-package rogomatic
+package rogue
 
 import java.awt.Dimension
 import java.nio.charset.Charset
@@ -11,7 +11,6 @@ import com.jediterm.terminal.model.{JediTerminal, StyleState, TerminalSelection,
 import com.pty4j.PtyProcess
 import org.apache.log4j.BasicConfigurator
 import org.apache.log4j.varia.NullAppender
-import rogue.IRogue
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
