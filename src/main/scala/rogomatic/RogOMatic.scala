@@ -14,6 +14,7 @@ object RogOMatic extends App {
   var cmd = StdIn.readChar()
   cmd match {
     case 'j' => controller.sendCommand(Command.UP)
+    case 'k' => controller.sendCommand(Command.DOWN)
     case 'l' => controller.sendCommand(Command.RIGHT)
     case '.' => controller.sendCommand(Command.REST)
   }
