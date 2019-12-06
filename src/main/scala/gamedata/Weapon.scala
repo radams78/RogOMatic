@@ -4,25 +4,33 @@ package gamedata
 trait Weapon extends Item
 
 /** A melee weapon or bow */
-case class Wieldable(weaponType: WieldableType, plusToHit: Int, plusDamage: Int) extends Weapon {
+case class Wieldable(weaponType: WieldableType, plusToHit: Bonus, plusDamage: Bonus) extends Weapon {
   override def toString: String =
-    s"${if (plusToHit >= 0) "+" else ""}$plusToHit,${if (plusDamage >= 0) "+" else ""}$plusDamage $weaponType"
+    s"$plusToHit,$plusDamage $weaponType"
 }
 
 /** A stack of missiles */
-case class Missile(quantity: Int, weaponType: MissileType, plusToHit: Int, plusDamage: Int) extends Weapon {
+case class Missile(quantity: Int, weaponType: MissileType, plusToHit: Bonus, plusDamage: Bonus) extends Weapon {
   override def toString: String =
-    s"$quantity ${if (plusToHit >= 0) "+" else ""}$plusToHit,${if (plusDamage >= 0) "+" else ""}$plusDamage " + // TODO Extract method to print bonus
-      s"${if (quantity > 1) weaponType.plural else weaponType.singular}"
+    s"$quantity $plusToHit,$plusDamage ${if (quantity > 1) weaponType.plural else weaponType.singular}"
+}
+
+object Missile {
+  def apply(quantity: Int, weaponType: MissileType, plusToHit: Int, plusDamage: Int): Missile =
+    Missile(quantity, weaponType, Bonus(plusToHit), Bonus(plusDamage))
 }
 
 /** Factory methods for [[Weapon]] */
 object Weapon {
   def apply(weaponType: WeaponType, plusToHit: Int, plusDamage: Int): Weapon = weaponType match {
-    case wt: WieldableType => Wieldable(wt, plusToHit, plusDamage)
-    case wt: MissileType => Missile(1, wt, plusToHit, plusDamage)
+    case wt: WieldableType => Wieldable(wt, Bonus(plusToHit), Bonus(plusDamage))
+    case wt: MissileType => Missile(1, wt, Bonus(plusToHit), Bonus(plusDamage))
   }
 
   def apply(quantity: Int, weaponType: MissileType, plusToHit: Int, plusDamage: Int): Missile =
-    Missile(quantity, weaponType, plusToHit, plusDamage)
+    Missile(quantity, weaponType, Bonus(plusToHit), Bonus(plusDamage))
+}
+
+case class Bonus(value: Int) {
+  override def toString: String = (if (value >= 0) "+" else "") + value
 }
