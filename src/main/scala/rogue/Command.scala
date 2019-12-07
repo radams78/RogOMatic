@@ -14,31 +14,31 @@ object Command {
     override val keypress: Char = 'l'
   }
 
-  object UP extends Command {
+  case object UP extends Command {
     override val keypress: Char = 'j'
   }
 
-  object REST extends Command {
+  case object REST extends Command {
     override val keypress: Char = '.'
   }
 
-  object DOWN extends Command {
+  case object DOWN extends Command {
     override val keypress: Char = 'k'
   }
 
-  object DOWNRIGHT extends Command {
+  case object DOWNRIGHT extends Command {
     override val keypress: Char = 'n'
   }
 
-  object UPLEFT extends Command {
+  case object UPLEFT extends Command {
     override val keypress: Char = 'y'
   }
 
-  object UPRIGHT extends Command {
+  case object UPRIGHT extends Command {
     override val keypress: Char = 'u'
   }
 
-  object LEFT extends Command {
+  case object LEFT extends Command {
     override val keypress: Char = 'h'
   }
 
