@@ -3,11 +3,10 @@ package unit
 import gamedata._
 import mock._
 import org.scalatest.flatspec.AnyFlatSpec
-import rogomatic.Controller
-import rogue.Command
+import rogue.{Command, RoguePlayer}
 
-/** Unit tests for [[Controller]] class */
-class ControllerTest extends AnyFlatSpec {
+/** Unit tests for [[RoguePlayer]] class */
+class RoguePlayerTest extends AnyFlatSpec {
   val firstScreen: String =
     """
       |
@@ -76,16 +75,18 @@ class ControllerTest extends AnyFlatSpec {
 
   "A controller" should "be able to start a game of Rogue" in {
     val rogue: MockRogue = new MockRogue(firstScreen, firstInventoryScreen)
-    val controller: Controller = Controller(rogue, MockView)
-    controller.startTransparent()
+    val player: RoguePlayer = new RoguePlayer(rogue)
+    player.start()
     assert(rogue.isStarted)
   }
 
   it should "display the first screen of the game" in {
     val rogue: MockRogue = new MockRogue(firstScreen, firstInventoryScreen)
-    val controller: Controller = Controller(rogue, MockView)
-    controller.startTransparent()
-    MockView.assertDisplayed(firstScreen)
+    val player: RoguePlayer = new RoguePlayer(rogue)
+    player.start()
+    assertResult(firstScreen) {
+      player.getScreen
+    }
   }
 
   it should "display the first inventory of the game" in {
@@ -116,41 +117,45 @@ class ControllerTest extends AnyFlatSpec {
         |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
         |""".stripMargin
     val rogue: MockRogue = new MockRogue(firstScreen, inventoryScreen)
-    val controller: Controller = Controller(rogue, MockView)
-    controller.startTransparent()
-    MockView.assertDisplayedInventory(Inventory())
+    val player: RoguePlayer = new RoguePlayer(rogue)
+    player.start()
+    assertResult(Inventory()) {
+      player.getInventory
+    }
   }
 
   it should "be able to send a command to Rogue" in {
     val rogue: MockRogue2 = new MockRogue2
-    val controller: Controller = Controller(rogue, MockView)
-    controller.startTransparent()
-    controller.sendCommand(Command.RIGHT)
+    val player: RoguePlayer = new RoguePlayer(rogue)
+    player.start()
+    player.sendCommand(Command.RIGHT)
     rogue.assertMovedRight
   }
 
   it should "display the new screen after sending the command" in {
     val rogue: MockRogue2 = new MockRogue2
-    val controller: Controller = Controller(rogue, MockView)
-    controller.startTransparent()
-    MockView.resetDisplay()
-    controller.sendCommand(Command.RIGHT)
-    MockView.assertDisplayed(rogue.secondScreen)
+    val player: RoguePlayer = new RoguePlayer(rogue)
+    player.start()
+    player.sendCommand(Command.RIGHT)
+    assertResult(rogue.secondScreen) {
+      player.getScreen
+    }
   }
 
   it should "display the inventory after sending the command" in {
     val rogue: MockRogue2 = new MockRogue2
-    val controller: Controller = Controller(rogue, MockView)
-    controller.startTransparent()
-    MockView.resetDisplayedInventory()
-    controller.sendCommand(Command.RIGHT)
-    MockView.assertDisplayedInventory(rogue.firstInventory)
+    val player: RoguePlayer = new RoguePlayer(rogue)
+    player.start()
+    player.sendCommand(Command.RIGHT)
+    assertResult(rogue.firstInventory) {
+      player.getInventory
+    }
   }
 
   it should "know that the game is not over after being started" in {
     val rogue: MockRogue = new MockRogue(firstScreen, firstInventoryScreen)
-    val controller: Controller = Controller(rogue, MockView)
-    controller.startTransparent()
-    assert(!controller.gameOver)
+    val player: RoguePlayer = new RoguePlayer(rogue)
+    player.start()
+    assert(!player.gameOver)
   }
 }

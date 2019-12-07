@@ -3,39 +3,44 @@ package acceptance
 import mock._
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
-import rogomatic.Controller
-import rogue.Command
+import rogue.{Command, RoguePlayer}
 
 /** Acceptance tests for playing Rogue in transparent mode */
-class TransparentSpec extends AnyFeatureSpec with GivenWhenThen {
+class RoguePlayerSpec extends AnyFeatureSpec with GivenWhenThen {
   Feature("Play a game of Rogue in transparent mode") {
     Scenario("User starts a game of Rogue in transparent mode") {
       Given("an instance of Rog-O-Matic")
       val rogue: MockRogue2 = new MockRogue2
-      val controller: Controller = Controller(rogue, MockView)
+      val player: RoguePlayer = new RoguePlayer(rogue)
 
       When("the user starts the game in transparent mode")
-      controller.startTransparent()
+      player.start()
 
       Then("the first screen should be displayed")
-      MockView.assertDisplayed(rogue.firstScreen)
+      assertResult(player.getScreen) {
+        rogue.firstScreen
+      }
 
       And("the first inventory should be displayed")
-      MockView.assertDisplayedInventory(rogue.firstInventory)
+      assertResult(player.getInventory) {
+        rogue.firstInventory
+      }
 
       And("the game should not be over")
-      assert(!controller.gameOver)
+      assert(!player.gameOver)
 
       When("the user enters the command to go right")
-      MockView.resetDisplay()
-      MockView.resetDisplayedInventory()
-      controller.sendCommand(Command.RIGHT)
+      player.sendCommand(Command.RIGHT)
 
       Then("the second screen should be displayed")
-      MockView.assertDisplayed(rogue.secondScreen)
+      assertResult(player.getScreen) {
+        rogue.secondScreen
+      }
 
       And("the inventory should be displayed")
-      MockView.assertDisplayedInventory(rogue.firstInventory)
+      assertResult(player.getInventory) {
+        rogue.firstInventory
+      }
     }
   }
 }
