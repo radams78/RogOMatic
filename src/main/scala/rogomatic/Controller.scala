@@ -14,6 +14,13 @@ class Controller(rogue: IRogue, view: IView) {
   def sendCommand(command: Command): Unit = {
     rogue.sendKeypress(command.keypress)
     view.displayScreen(rogue.getScreen)
+    rogue.sendKeypress('i')
+    val screen: String = rogue.getScreen
+    rogue.sendKeypress(' ')
+    Inventory.parseInventoryScreen(screen) match {
+      case Some(i) => view.displayInventory(i)
+      case None => println(s"ERROR: Could not parse inventory screen:\n$screen")
+    } // TODO Duplication
   }
 
   /** Start a game of Rogue in transparent mode */

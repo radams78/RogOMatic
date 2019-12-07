@@ -25,8 +25,10 @@ class TransparentSpec extends AnyFeatureSpec with GivenWhenThen {
 
       And("the game should not be over")
       assert(!controller.gameOver)
-      
+
       When("the user enters the command to go right")
+      MockView.resetDisplay()
+      MockView.resetDisplayedInventory()
       controller.sendCommand(Command.RIGHT)
 
       Then("the second screen should be displayed")

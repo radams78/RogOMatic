@@ -133,8 +133,18 @@ class ControllerTest extends AnyFlatSpec {
     val rogue: MockRogue2 = new MockRogue2
     val controller: Controller = Controller(rogue, MockView)
     controller.startTransparent()
+    MockView.resetDisplay()
     controller.sendCommand(Command.RIGHT)
     MockView.assertDisplayed(rogue.secondScreen)
+  }
+
+  it should "display the inventory after sending the command" in {
+    val rogue: MockRogue2 = new MockRogue2
+    val controller: Controller = Controller(rogue, MockView)
+    controller.startTransparent()
+    MockView.resetDisplayedInventory()
+    controller.sendCommand(Command.RIGHT)
+    MockView.assertDisplayedInventory(rogue.firstInventory)
   }
 
   it should "know that the game is not over after being started" in {
