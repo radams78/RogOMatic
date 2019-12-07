@@ -6,6 +6,8 @@ import view.IView
 
 /** The controller class in the MVC architecture. Construct using the companion object. */
 class Controller(rogue: IRogue, view: IView) {
+  def gameOver: Boolean = false // TODO
+
   // TODO What should happen if game not started?
   // TODO What should happen if command not valid?
   /** Execute a command when playing in transparent mode */

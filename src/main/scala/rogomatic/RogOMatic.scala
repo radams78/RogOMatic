@@ -11,15 +11,17 @@ object RogOMatic extends App {
   val view = new TextView
   val controller = new Controller(rogue, view)
   controller.startTransparent()
-  var cmd = StdIn.readChar()
-  cmd match {
-    case 'j' => controller.sendCommand(Command.UP)
-    case 'k' => controller.sendCommand(Command.DOWN)
-    case 'l' => controller.sendCommand(Command.RIGHT)
-    case 'n' => controller.sendCommand(Command.DOWNRIGHT)
-    case 'u' => controller.sendCommand(Command.UPRIGHT)
-    case 'y' => controller.sendCommand(Command.UPLEFT)
-    case '.' => controller.sendCommand(Command.REST)
+  while (!controller.gameOver) {
+    var cmd: Char = StdIn.readChar()
+    cmd match {
+      case 'j' => controller.sendCommand(Command.UP)
+      case 'k' => controller.sendCommand(Command.DOWN)
+      case 'l' => controller.sendCommand(Command.RIGHT)
+      case 'n' => controller.sendCommand(Command.DOWNRIGHT)
+      case 'u' => controller.sendCommand(Command.UPRIGHT)
+      case 'y' => controller.sendCommand(Command.UPLEFT)
+      case '.' => controller.sendCommand(Command.REST)
+    }
   }
   rogue.close()
   System.exit(0)

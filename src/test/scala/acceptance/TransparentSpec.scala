@@ -23,6 +23,9 @@ class TransparentSpec extends AnyFeatureSpec with GivenWhenThen {
       And("the first inventory should be displayed")
       MockView.assertDisplayedInventory(rogue.firstInventory)
 
+      And("the game should not be over")
+      assert(!controller.gameOver)
+      
       When("the user enters the command to go right")
       controller.sendCommand(Command.RIGHT)
 

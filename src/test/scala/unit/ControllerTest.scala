@@ -136,4 +136,11 @@ class ControllerTest extends AnyFlatSpec {
     controller.sendCommand(Command.RIGHT)
     MockView.assertDisplayed(rogue.secondScreen)
   }
+
+  it should "know that the game is not over after being started" in {
+    val rogue: MockRogue = new MockRogue(firstScreen, firstInventoryScreen)
+    val controller: Controller = Controller(rogue, MockView)
+    controller.startTransparent()
+    assert(!controller.gameOver)
+  }
 }
