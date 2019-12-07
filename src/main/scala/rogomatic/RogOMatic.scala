@@ -16,6 +16,7 @@ object RogOMatic extends App {
     view.displayInventory(player.getInventory)
     var cmd: Char = StdIn.readChar()
     cmd match {
+      case 'h' => player.sendCommand(Command.LEFT)
       case 'j' => player.sendCommand(Command.UP)
       case 'k' => player.sendCommand(Command.DOWN)
       case 'l' => player.sendCommand(Command.RIGHT)

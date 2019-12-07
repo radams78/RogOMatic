@@ -38,4 +38,8 @@ object Command {
     override val keypress: Char = 'u'
   }
 
+  object LEFT extends Command {
+    override val keypress: Char = 'h'
+  }
+
 }
