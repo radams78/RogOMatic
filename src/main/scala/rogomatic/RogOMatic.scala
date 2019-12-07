@@ -9,7 +9,7 @@ object RogOMatic extends App {
   val rogue = new Rogue
   val view = new TextView
   val player = new RoguePlayer(rogue)
-  new Transparent(player, view)
+  new Transparent(player, view).playRogue()
   rogue.close()
   System.exit(0)
 }

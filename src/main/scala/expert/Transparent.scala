@@ -15,6 +15,7 @@ class Transparent(player: RoguePlayer, view: IView) {
       view.displayInventory(player.getInventory)
       var cmd: Char = StdIn.readChar()
       cmd match {
+        case 'b' => player.sendCommand(Command.DOWNLEFT)
         case 'h' => player.sendCommand(Command.LEFT)
         case 'j' => player.sendCommand(Command.UP)
         case 'k' => player.sendCommand(Command.DOWN)
