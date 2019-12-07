@@ -39,6 +39,11 @@ object Command {
     override val keypress: Char = 'u'
   }
 
+  /** Move down left */
+  object DOWNLEFT extends Command {
+    override val keypress: Char = 'b'
+  }
+
   /** Move down right */
   case object DOWNRIGHT extends Command {
     override val keypress: Char = 'n'
@@ -48,9 +53,4 @@ object Command {
   case object REST extends Command {
     override val keypress: Char = '.'
   }
-
-  object DOWNLEFT extends Command {
-    override val keypress: Char = 'b'
-  }
-
 }
