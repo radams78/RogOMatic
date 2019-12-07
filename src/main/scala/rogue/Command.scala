@@ -9,37 +9,44 @@ sealed trait Command {
 
 object Command {
 
+  /** Move up */
+  case object UP extends Command {
+    override val keypress: Char = 'j'
+  }
+
+  /** Move down */
+  case object DOWN extends Command {
+    override val keypress: Char = 'k'
+  }
+
+  /** Move left */
+  case object LEFT extends Command {
+    override val keypress: Char = 'h'
+  }
+
   /** Move right */
   case object RIGHT extends Command {
     override val keypress: Char = 'l'
   }
 
-  case object UP extends Command {
-    override val keypress: Char = 'j'
-  }
-
-  case object REST extends Command {
-    override val keypress: Char = '.'
-  }
-
-  case object DOWN extends Command {
-    override val keypress: Char = 'k'
-  }
-
-  case object DOWNRIGHT extends Command {
-    override val keypress: Char = 'n'
-  }
-
+  /** Move up left */
   case object UPLEFT extends Command {
     override val keypress: Char = 'y'
   }
 
+  /** Move up right */
   case object UPRIGHT extends Command {
     override val keypress: Char = 'u'
   }
 
-  case object LEFT extends Command {
-    override val keypress: Char = 'h'
+  /** Move down right */
+  case object DOWNRIGHT extends Command {
+    override val keypress: Char = 'n'
+  }
+
+  /** Rest */
+  case object REST extends Command {
+    override val keypress: Char = '.'
   }
 
 }
