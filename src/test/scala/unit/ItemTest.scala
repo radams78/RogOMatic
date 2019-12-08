@@ -29,4 +29,8 @@ class ItemTest extends AnyFlatSpec with Matchers with EitherValues {
   "a stibotantalite ring" should "be recognised as a stibotantalite ring" in {
     Item.parse("a stibotantalite ring") should be(Right(gamedata.Ring(Gem.STIBOTANTALITE)))
   }
+
+  "a yellow potion" should "be recognised as a yellow potion" in {
+    Item.parse("a yellow potion") should be(Right(gamedata.Potion(1, Colour.YELLOW)))
+  }
 }

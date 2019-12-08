@@ -11,6 +11,7 @@ object Item {
   private val weaponRegex: Regex = """a(?:n?) ([-+]\d+),([-+]\d+) ([-\w]+(?: \w+)?)""".r
   private val weaponsRegex: Regex = """(\d+) ([-+]\d+),([-+]\d+) ([-\w]+(?: \w+)?)""".r
   private val ringRegex: Regex = """a(?:n?) ([-\w]+) ring""".r
+  private val potionRegex: Regex = """a(?:n?) ([\w]+) potion""".r
 
   /** Given a description from a displayed inventory, return the corresponding [[Item]] */
   def parse(description: String): Either[String, Item] = description match {
@@ -25,6 +26,7 @@ object Item {
       case Left(err) => Left(err)
     }
     case ringRegex(gem) => for (g <- Gem.parse(gem)) yield Ring(g)
+    case potionRegex(colour) => Right(Potion(1, Colour.parse(colour)))
     case _ => Left(s"Unrecognised item: $description")
   }
 }
