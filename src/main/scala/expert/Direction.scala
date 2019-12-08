@@ -1,6 +1,8 @@
 package expert
 
+/** The eight directions */
 trait Direction {
+  /** Keypress to send this direction to Rogue as a command or part of a command */
   val keypress: Char
 
 }
