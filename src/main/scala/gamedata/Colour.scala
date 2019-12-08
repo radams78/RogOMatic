@@ -3,21 +3,22 @@ package gamedata
 sealed trait Colour
 
 object Colour {
-  def parse(colour: String): Colour = colour match {
-    case "blue" => BLUE
-    case "red" => RED
-    case "green" => GREEN
-    case "grey" => GREY
-    case "brown" => BROWN
-    case "clear" => CLEAR
-    case "pink" => PINK
-    case "white" => WHITE
-    case "purple" => PURPLE
-    case "black" => BLACK
-    case "yellow" => YELLOW
-    case "plaid" => PLAID
-    case "burgundy" => BURGUNDY
-    case "beige" => BEIGE
+  def parse(colour: String): Either[String, Colour] = colour match {
+    case "blue" => Right(BLUE)
+    case "red" => Right(RED)
+    case "green" => Right(GREEN)
+    case "grey" => Right(GREY)
+    case "brown" => Right(BROWN)
+    case "clear" => Right(CLEAR)
+    case "pink" => Right(PINK)
+    case "white" => Right(WHITE)
+    case "purple" => Right(PURPLE)
+    case "black" => Right(BLACK)
+    case "yellow" => Right(YELLOW)
+    case "plaid" => Right(PLAID)
+    case "burgundy" => Right(BURGUNDY)
+    case "beige" => Right(BEIGE)
+    case _ => Left(s"Unrecognised colour: $colour")
   }
 
   case object BLUE extends Colour

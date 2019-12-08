@@ -26,7 +26,7 @@ object Item {
       case Left(err) => Left(err)
     }
     case ringRegex(gem) => for (g <- Gem.parse(gem)) yield Ring(g)
-    case potionRegex(colour) => Right(Potion(1, Colour.parse(colour)))
+    case potionRegex(colour) => for (c <- Colour.parse(colour)) yield Potion(1, c)
     case _ => Left(s"Unrecognised item: $description")
   }
 }
