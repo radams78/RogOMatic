@@ -10,7 +10,12 @@ sealed trait ArmorType {
 object ArmorType {
   val ALL: Set[ArmorType] = Set(LEATHER_ARMOR, RING_MAIL, SCALE_MAIL, CHAIN_MAIL, BANDED_MAIL, SPLINT_MAIL, PLATE_MAIL)
 
-  def parse(armorType: String): Option[ArmorType] = ALL.find(_.name == armorType)
+  /** Given thu name of a suit of armor, return the appropriate [[ArmorType]], or an error message if the description
+   * could not be parsed. */
+  def parse(description: String): Either[String, ArmorType] = ALL.find(_.name == description) match {
+    case Some(at) => Right(at)
+    case None => Left(s"Unrecognised armor type: $description")
+  }
 
   case object LEATHER_ARMOR extends ArmorType {
     override val name: String = "leather armor"

@@ -16,17 +16,15 @@ object Item {
   def parse(description: String): Either[String, Item] = description match {
     case "some food" => Right(Food(1))
     case rationRegex(quantity) => Right(Food(quantity.toInt))
-    case armorRegex(bonus, armorType) => ArmorType.parse(armorType) match {
-      case Some(at) => Right(Armor(at, Bonus(bonus.toInt)))
-      case None => Left(s"Unrecognised armor type: $armorType in $description")
-    }
+    case armorRegex(bonus, armorType) => for (at <- ArmorType.parse(armorType)) yield Armor(at, Bonus(bonus.toInt))
     case weaponRegex(plusToHit, plusDamage, weaponType) =>
-      Right(Weapon(WeaponType.parse(weaponType), plusToHit.toInt, plusDamage.toInt))
+      for (wt <- WeaponType.parse(weaponType)) yield Weapon(wt, plusToHit.toInt, plusDamage.toInt)
     case weaponsRegex(quantity, plusToHit, plusDamage, weaponType) => WeaponType.parse(weaponType) match {
-      case wt: MissileType => Right(Missile(quantity.toInt, wt, plusToHit.toInt, plusDamage.toInt))
-      case _ => Left(s"Unrecognised missile type: $weaponType in $description")
+      case Right(wt: MissileType) => Right(Missile(quantity.toInt, wt, plusToHit.toInt, plusDamage.toInt))
+      case Right(wt) => Left(s"Expected missile type but received $wt in $description")
+      case Left(err) => Left(err)
     }
     case ringRegex(gem) => for (g <- Gem.parse(gem)) yield Ring(g)
-    case _ => Left(s"Unrecognised item: $description") // TODO Use Either for error handling everywhere
+    case _ => Left(s"Unrecognised item: $description")
   }
 }

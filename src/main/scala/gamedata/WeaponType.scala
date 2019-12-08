@@ -1,30 +1,37 @@
 package gamedata
 
-/** The set of weapon types in the game of Rogue */
+/** An enum for the set of weapon types in the game of Rogue */
 sealed trait WeaponType
 
+/** The melee weapons and bows. These weapons cannot be stacked. */
 sealed trait WieldableType extends WeaponType {
   val name: String
 
   override def toString: String = name
 }
 
+/** The types of missile */
 sealed trait MissileType extends WeaponType {
-  val plural: String
-
+  /** Name of the weapon in the singular */
   val singular: String
+
+  /** Name of the weapon in the plural */
+  val plural: String
 }
 
 object WeaponType {
-  def parse(description: String): WeaponType = description match {
-    case "short bow" => SHORT_BOW
-    case "dart" | "darts" => DART
-    case "arrow" | "arrows" => ARROW
-    case "dagger" | "daggers" => DAGGER
-    case "shuriken" | "shurikens" => SHURIKEN
-    case "mace" => MACE
-    case "long sword" => LONG_SWORD
-    case "two-handed sword" => TWO_HANDED_SWORD
+  /** Given the name of a weapon, return the appropriate [[WeaponType]], or an error message if weapon type could not
+   * be recognised */
+  def parse(description: String): Either[String, WeaponType] = description match {
+    case "short bow" => Right(SHORT_BOW)
+    case "dart" | "darts" => Right(DART)
+    case "arrow" | "arrows" => Right(ARROW)
+    case "dagger" | "daggers" => Right(DAGGER)
+    case "shuriken" | "shurikens" => Right(SHURIKEN)
+    case "mace" => Right(MACE)
+    case "long sword" => Right(LONG_SWORD)
+    case "two-handed sword" => Right(TWO_HANDED_SWORD)
+    case _ => Left(s"Unrecognised weapon type: $description")
   }
 
   case object SHORT_BOW extends WieldableType {
