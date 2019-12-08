@@ -33,6 +33,21 @@ class Transparent(player: RoguePlayer, view: IView) {
         case 'k' => Right(Command.DOWN)
         case 'l' => Right(Command.RIGHT)
         case 'n' => Right(Command.DOWNRIGHT)
+        case 't' =>
+          println("Select direction")
+          val dir: Direction = StdIn.readChar() match {
+            case 'b' => Direction.DOWNLEFT
+            case 'h' => Direction.LEFT
+            case 'j' => Direction.UP
+            case 'k' => Direction.DOWN
+            case 'l' => Direction.RIGHT
+            case 'n' => Direction.DOWNRIGHT
+            case 'u' => Direction.UPRIGHT
+            case 'y' => Direction.UPLEFT
+          }
+          println("Select object")
+          val slot: Slot = Slot.parse(StdIn.readChar().toString)
+          Right(Command.Throw(dir, slot))
         case 'u' => Right(Command.UPRIGHT)
         case 'w' =>
           println("Select weapon")
