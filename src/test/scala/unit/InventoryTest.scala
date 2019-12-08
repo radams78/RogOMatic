@@ -1,10 +1,11 @@
 package unit
 
 import gamedata._
+import org.scalatest.EitherValues
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
-class InventoryTest extends AnyFlatSpec with Matchers {
+class InventoryTest extends AnyFlatSpec with Matchers with EitherValues {
   "a displayed inventory" should "be correctly parsed" in {
     Inventory.parseInventoryScreen(
       """                                                a) some food
@@ -34,7 +35,7 @@ class InventoryTest extends AnyFlatSpec with Matchers {
         |""".stripMargin.split("\n")
         .map(_.padTo(80, ' '))
         .mkString("\n")
-    ) should contain(Inventory(
+    ) should be(Right(Inventory(
       items = Map(
         Slot.A -> Food(1),
         Slot.B -> Armor(ArmorType.RING_MAIL, +1),
@@ -44,6 +45,6 @@ class InventoryTest extends AnyFlatSpec with Matchers {
       ),
       wearing = Some(Slot.B),
       wielding = Some(Slot.C)
-    ))
+    )))
   }
 }

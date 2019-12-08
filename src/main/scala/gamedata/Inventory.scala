@@ -13,18 +13,15 @@ object Inventory {
   private val inventoryLineRegex: UnanchoredRegex = """(\w)\) (.*?)\s*$""".r.unanchored
 
   /** Given a screen retrieved from Rogue displaying the inventory, return the corresponding [[Inventory]] */
-  def parseInventoryScreen(screen: String): Option[Inventory] = {
+  def parseInventoryScreen(screen: String): Either[String, Inventory] = {
     val lines: Array[String] = screen
       .split("\n")
       .takeWhile((s: String) => !s.contains("--press space to continue--"))
-    val items: Option[Map[Slot, Item]] = lines.foldLeft[Option[Seq[(Slot, Item)]]](Some(Seq()))({
-      case (None, _) => None
-      case (Some(l), wearingRegex(slot, armor)) =>
-        for (i <- Item.parse(armor)) yield l :+ (Slot.parse(slot), i)
-      case (Some(l), wieldingRegex(slot, weapon)) =>
-        for (i <- Item.parse(weapon)) yield l :+ (Slot.parse(slot), i)
-      case (Some(l), inventoryLineRegex(slot, item)) =>
-        for (i <- Item.parse(item)) yield l :+ (Slot.parse(slot), i)
+    val items: Either[String, Map[Slot, Item]] = lines.foldLeft[Either[String, Seq[(Slot, Item)]]](Right(Seq()))({
+      case (Left(s), _) => Left(s)
+      case (Right(l), wearingRegex(slot, armor)) => for (i <- Item.parse(armor)) yield l :+ (Slot.parse(slot), i)
+      case (Right(l), wieldingRegex(slot, weapon)) => for (i <- Item.parse(weapon)) yield l :+ (Slot.parse(slot), i)
+      case (Right(l), inventoryLineRegex(slot, item)) => for (i <- Item.parse(item)) yield l :+ (Slot.parse(slot), i)
     }).map(_.toMap)
 
     for (ii <- items) yield
