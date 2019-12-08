@@ -22,6 +22,7 @@ class Transparent(player: RoguePlayer, view: IView) {
     }
   }
 
+  // TODO Better error handling
   @tailrec
   private def getCommand: Command = {
     def getCommand0: Either[String, Command] = {
