@@ -1,5 +1,6 @@
 package gamedata
 
+/** The colours that a potion can have */
 sealed trait Colour
 
 object Colour {
