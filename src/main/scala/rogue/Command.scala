@@ -4,6 +4,7 @@ import expert.Direction
 import gamedata.Slot
 
 /** A move that can be made by the player in Rogue. */
+// TODO Validation 
 sealed trait Command {
   /** Keypress to send to Rogue to execute command */
   val keypresses: Seq[Char]
@@ -62,6 +63,7 @@ object Command {
     override val keypresses: Seq[Char] = Seq('.')
   }
 
+  /** Throw an item */
   case class Throw(dir: Direction, slot: Slot) extends Command {
     override val keypresses: Seq[Char] = Seq('t', dir.keypress, slot.label)
   }
