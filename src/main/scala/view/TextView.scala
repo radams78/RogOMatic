@@ -11,4 +11,6 @@ class TextView extends IView {
     for (slot <- inventory.wielding) println(s"WEAPON: $slot) ${inventory.items(slot)}")
     for (slot <- inventory.wearing) println(s"ARMOR: $slot) ${inventory.items(slot)}")
   }
+
+  override def displayError(s: String): Unit = println(s"ERROR: $s")
 }
