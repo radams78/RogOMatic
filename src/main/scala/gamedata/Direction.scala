@@ -1,4 +1,4 @@
-package expert
+package gamedata
 
 /** The eight directions */
 trait Direction {

@@ -1,6 +1,6 @@
 package expert
 
-import gamedata.Slot
+import gamedata.{Direction, Slot}
 import rogue.{Command, RoguePlayer}
 import view.IView
 

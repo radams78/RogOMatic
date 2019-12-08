@@ -1,7 +1,6 @@
 package rogue
 
-import expert.Direction
-import gamedata.Slot
+import gamedata.{Direction, Slot}
 
 /** A move that can be made by the player in Rogue. */
 // TODO Validation 
