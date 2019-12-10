@@ -9,8 +9,7 @@ class RoguePlayer(rogue: IRogue) {
   /** Send a command to Rogue */
   def sendCommand(command: Command): Unit = {
     for (k <- command.keypresses) rogue.sendKeypress(k)
-    val screen: String = rogue.getScreen
-    if (!screen.split("\n").last.exists(_ != ' ')) {
+    if (!rogue.getScreen.split("\n").last.exists(_ != ' ')) {
       _gameOver = true
     }
   }
