@@ -19,16 +19,33 @@ object Inventory {
       .takeWhile((s: String) => !s.contains("--press space to continue--"))
     val items: Either[String, Map[Slot, Item]] = lines.foldLeft[Either[String, Seq[(Slot, Item)]]](Right(Seq()))({
       case (Left(s), _) => Left(s)
-      case (Right(l), wearingRegex(slot, armor)) => for (i <- Item.parse(armor)) yield l :+ (Slot.parse(slot), i)
-      case (Right(l), wieldingRegex(slot, weapon)) => for (i <- Item.parse(weapon)) yield l :+ (Slot.parse(slot), i)
-      case (Right(l), inventoryLineRegex(slot, item)) => for (i <- Item.parse(item)) yield l :+ (Slot.parse(slot), i)
+      case (Right(l), wearingRegex(slot, armor)) => for {
+        i <- Item.parse(armor)
+        s <- Slot.parse(slot)
+      } yield l :+ (s, i)
+      case (Right(l), wieldingRegex(slot, weapon)) => for {
+        s <- Slot.parse(slot)
+        i <- Item.parse(weapon)
+      } yield l :+ (s, i)
+      case (Right(l), inventoryLineRegex(slot, item)) => for {
+        s <- Slot.parse(slot)
+        i <- Item.parse(item)
+      } yield l :+ (s, i)
     }).map(_.toMap)
 
     for (ii <- items) yield
       Inventory(
         ii,
-        lines.collectFirst({ case wearingRegex(slot, _) => Slot.parse(slot) }),
-        lines.collectFirst({ case wieldingRegex(slot, _) => Slot.parse(slot) })
+        lines.collectFirst({ case wearingRegex(slot, _) => Slot.parse(slot) match {
+          case Left(err) => return Left(err)
+          case Right(s) => s
+        }
+        }),
+        lines.collectFirst({ case wieldingRegex(slot, _) => Slot.parse(slot) match {
+          case Left(err) => return Left(err)
+          case Right(s) => s
+        }
+        })
       )
   }
 }

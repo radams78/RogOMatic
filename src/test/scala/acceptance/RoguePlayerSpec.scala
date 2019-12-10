@@ -24,7 +24,7 @@ class RoguePlayerSpec extends AnyFeatureSpec with GivenWhenThen with Matchers {
       player.getInventory should be(Right(OneMoveGame.firstInventory))
 
       And("the game should not be over")
-      assert(!player.gameOver)
+      player.gameOver should be(false)
 
       When("the user enters the command to go right")
       player.sendCommand(Command.RIGHT)
@@ -34,6 +34,21 @@ class RoguePlayerSpec extends AnyFeatureSpec with GivenWhenThen with Matchers {
 
       And("the inventory should be displayed")
       player.getInventory should be(Right(OneMoveGame.firstInventory))
+    }
+
+    Scenario("User plays a game of Rogue in transparent mode and is killed") {
+      Given("an instance of Rog-O-Matic")
+      val rogue: MockRogue = DeathGame.deathGame
+      val player: RoguePlayer = new RoguePlayer(rogue)
+
+      When("the user starts the game in transparent mode")
+      player.start()
+
+      And("the PC is killed")
+      player.sendCommand(Command.REST)
+
+      Then("the game should be over")
+      player.gameOver should be(true)
     }
   }
 }

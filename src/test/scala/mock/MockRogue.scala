@@ -18,11 +18,14 @@ class MockRogue(initialState: MockRogueState) extends IRogue with Assertions {
 }
 
 object MockRogue {
+  /** Take a string and pad it out so that it has lines of length 80 */
+  def makeScreen(screen: String): String = screen.split("\n").map(_.padTo(80, ' ')).mkString("\n")
 
   /** Initial command in the DSL for building [[MockRogue]] objects */
   case object Start extends MockRogueBuilder {
     override def build(mockRogueState: MockRogueState): MockRogueState = MockRogueState.Initial(mockRogueState)
   }
+
 }
 
 /** The state of a [[MockRogue]] object */

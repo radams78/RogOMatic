@@ -3,7 +3,7 @@ package mock
 import gamedata._
 
 object OneMoveGame {
-  val firstScreen: String =
+  val firstScreen: String = MockRogue.makeScreen(
     """
       |
       |
@@ -28,12 +28,9 @@ object OneMoveGame {
       |                                                      --------------
       |
       |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
-      |""".stripMargin
-      .split("\n")
-      .map(_.padTo(80, ' '))
-      .mkString("\n")
+      |""".stripMargin)
 
-  val firstInventoryScreen: String =
+  val firstInventoryScreen: String = MockRogue.makeScreen(
     """                                                a) some food
       |                                                b) +1 ring mail [4] being worn
       |                                                c) a +1,+1 mace in hand
@@ -58,10 +55,8 @@ object OneMoveGame {
       |                                                      --------------
       |
       |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
-      |""".stripMargin
-      .split("\n")
-      .map(_.padTo(80, ' '))
-      .mkString("\n")
+      |""".stripMargin)
+
   val firstInventory: Inventory = Inventory(
     items = Map(
       Slot.A -> Food(1),
@@ -73,7 +68,8 @@ object OneMoveGame {
     wearing = Some(Slot.B),
     wielding = Some(Slot.C)
   )
-  val secondScreen: String =
+
+  val secondScreen: String = MockRogue.makeScreen(
     """
       |
       |
@@ -98,11 +94,9 @@ object OneMoveGame {
       |                                                      --------------
       |
       |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
-      |""".stripMargin
-      .split("\n")
-      .map(_.padTo(80, ' '))
-      .mkString("\n")
-  val secondInventoryScreen: String =
+      |""".stripMargin)
+
+  val secondInventoryScreen: String = MockRogue.makeScreen(
     """                                                a) some food
       |                                                b) +1 ring mail [4] being worn
       |                                                c) a +1,+1 mace in hand
@@ -127,10 +121,7 @@ object OneMoveGame {
       |                                                      --------------
       |
       |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
-      |""".stripMargin
-      .split("\n")
-      .map(_.padTo(80, ' '))
-      .mkString("\n")
+      |""".stripMargin)
 
   def oneMoveGame: MockRogue =
     MockRogue.Start

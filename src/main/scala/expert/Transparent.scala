@@ -22,7 +22,6 @@ class Transparent(player: RoguePlayer, view: IView) {
     }
   }
 
-  // TODO Better error handling
   @tailrec
   private def getCommand: Command = {
     def getCommand0: Either[String, Command] = {
@@ -45,15 +44,14 @@ class Transparent(player: RoguePlayer, view: IView) {
             case 'n' => Direction.DOWNRIGHT
             case 'u' => Direction.UPRIGHT
             case 'y' => Direction.UPLEFT
+            case c => return Left(s"Unrecognised direction: $c")
           }
           println("Select object")
-          val slot: Slot = Slot.parse(StdIn.readChar().toString)
-          Right(Command.Throw(dir, slot))
+          for (slot <- Slot.parse(StdIn.readChar().toString)) yield Command.Throw(dir, slot)
         case 'u' => Right(Command.UPRIGHT)
         case 'w' =>
           println("Select weapon")
-          val slot: Slot = Slot.parse(StdIn.readChar().toString)
-          Right(Command.Wield(slot))
+          for (slot <- Slot.parse(StdIn.readChar().toString)) yield Command.Wield(slot)
         case 'y' => Right(Command.UPLEFT)
         case '.' => Right(Command.REST)
         case _ => Left(s"Unrecognised command: $cmd")
