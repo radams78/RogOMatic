@@ -22,44 +22,55 @@ class Transparent(player: RoguePlayer, view: IView) {
     }
   }
 
+  /** Get a character from the user.
+   *
+   * Returns the first character in the next line that the user enters, or 'error' if the next input line is empty. */
+  private def getCharacter(error: String): Either[String, Char] = {
+    try {
+      Right(StdIn.readChar())
+    } catch {
+      case _: StringIndexOutOfBoundsException => Left(error)
+    }
+  }
+
+  private def getDirection: Either[String, Direction] = {
+    println("Select direction")
+    for (d <- getCharacter("No direction entered")) yield d match {
+      case 'b' => Direction.DOWNLEFT
+      case 'h' => Direction.LEFT
+      case 'j' => Direction.UP
+      case 'k' => Direction.DOWN
+      case 'l' => Direction.RIGHT
+      case 'n' => Direction.DOWNRIGHT
+      case 'u' => Direction.UPRIGHT
+      case 'y' => Direction.UPLEFT
+      case c => return Left(s"Unrecognised direction: $c")
+    }
+  }
+
   @tailrec
   private def getCommand: Command = {
     def getCommand0: Either[String, Command] = {
-      val cmd: Char = try {
-        StdIn.readChar()
-      } catch {
-        case _: StringIndexOutOfBoundsException => return Left("No command entered")
-      }
-      cmd match {
-        case 'b' => Right(Command.DOWNLEFT)
-        case 'h' => Right(Command.LEFT)
-        case 'j' => Right(Command.UP)
-        case 'k' => Right(Command.DOWN)
-        case 'l' => Right(Command.RIGHT)
-        case 'n' => Right(Command.DOWNRIGHT)
-        case 't' =>
-          println("Select direction")
-          val dir: Direction = StdIn.readChar() match {
-            case 'b' => Direction.DOWNLEFT
-            case 'h' => Direction.LEFT
-            case 'j' => Direction.UP
-            case 'k' => Direction.DOWN
-            case 'l' => Direction.RIGHT
-            case 'n' => Direction.DOWNRIGHT
-            case 'u' => Direction.UPRIGHT
-            case 'y' => Direction.UPLEFT
-            case c => return Left(s"Unrecognised direction: $c")
-          }
-          println("Select object")
-          for (slot <- Slot.parse(StdIn.readChar().toString)) yield Command.Throw(dir, slot)
-        case 'u' => Right(Command.UPRIGHT)
-        case 'w' =>
-          println("Select weapon")
-          for (slot <- Slot.parse(StdIn.readChar().toString)) yield Command.Wield(slot)
-        case 'y' => Right(Command.UPLEFT)
-        case '.' => Right(Command.REST)
-        case _ => Left(s"Unrecognised command: $cmd")
-      }
+      for {c <- getCharacter("No command entered")
+           cmd <- c match {
+             case 'b' => Right(Command.DOWNLEFT)
+             case 'h' => Right(Command.LEFT)
+             case 'j' => Right(Command.UP)
+             case 'k' => Right(Command.DOWN)
+             case 'l' => Right(Command.RIGHT)
+             case 'n' => Right(Command.DOWNRIGHT)
+             case 't' => for {
+               dir <- getDirection
+               slot <- Slot.parse(StdIn.readChar().toString)
+             } yield Command.Throw(dir, slot)
+             case 'u' => Right(Command.UPRIGHT)
+             case 'w' =>
+               println("Select weapon")
+               for (slot <- Slot.parse(StdIn.readChar().toString)) yield Command.Wield(slot)
+             case 'y' => Right(Command.UPLEFT)
+             case '.' => Right(Command.REST)
+             case _ => Left(s"Unrecognised command: $c")
+           }} yield cmd
     }
 
     getCommand0 match {
