@@ -4,11 +4,19 @@ import gamedata.Inventory
 
 /** High-level communication with the game of Rogue */
 class RoguePlayer(rogue: IRogue) {
+  private var _gameOver: Boolean = false
+
   /** Send a command to Rogue */
-  def sendCommand(command: Command): Unit = for (k <- command.keypresses) rogue.sendKeypress(k)
+  def sendCommand(command: Command): Unit = {
+    for (k <- command.keypresses) rogue.sendKeypress(k)
+    val screen: String = rogue.getScreen
+    if (!screen.split("\n").last.exists(_ != ' ')) {
+      _gameOver = true
+    }
+  }
 
   /** True if the game is over */
-  def gameOver: Boolean = false
+  def gameOver: Boolean = _gameOver
 
   /** Current inventory */
   def getInventory: Either[String, Inventory] = {

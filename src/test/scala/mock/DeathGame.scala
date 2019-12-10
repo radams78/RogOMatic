@@ -114,11 +114,15 @@ object DeathGame {
       |
       |""".stripMargin)
 
-  val deathGame: MockRogue = new MockRogue(MockRogue.Start
+  val deathGame: MockRogue = new MockRogue(MockRogue.Start // TODO Pyramid of doom
     .WaitForCommand(firstScreen, firstInventoryScreen, '.')
     .build(new Started {
+      override def getScreen: String = secondScreen
+
       override def transitions: PartialFunction[Char, MockRogueState] = {
         case ' ' => new Started {
+          override def getScreen: String = thirdScreen
+
           override def transitions: PartialFunction[Char, MockRogueState] = {
             case ' ' => new MockRogueState {
               override def isStarted: Boolean = false
@@ -130,11 +134,7 @@ object DeathGame {
               override def start(): MockRogueState = fail("start() called after Rogue process ends")
             }
           }
-
-          override def getScreen: String = thirdScreen
         }
       }
-
-      override def getScreen: String = secondScreen
     }))
 }

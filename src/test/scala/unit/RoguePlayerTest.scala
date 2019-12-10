@@ -117,6 +117,10 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
     val player: RoguePlayer = new RoguePlayer(OneMoveGame.oneMoveGame)
   }
 
+  trait DeathGame {
+    val player: RoguePlayer = new RoguePlayer(DeathGame.deathGame)
+  }
+
   "A controller" should "be able to start a game of Rogue" in new ZeroMoveGame {
     player.start()
     assert(rogue.isStarted)
@@ -149,5 +153,11 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
     player.start()
     player.sendCommand(Command.RIGHT)
     player.getInventory should be(Right(OneMoveGame.firstInventory))
+  }
+
+  it should "know when the game is over" in new DeathGame {
+    player.start()
+    player.sendCommand(Command.REST)
+    player.gameOver should be(true)
   }
 }
