@@ -25,7 +25,11 @@ class Transparent(player: RoguePlayer, view: IView) {
   @tailrec
   private def getCommand: Command = {
     def getCommand0: Either[String, Command] = {
-      val cmd: Char = StdIn.readChar()
+      val cmd: Char = try {
+        StdIn.readChar()
+      } catch {
+        case _: StringIndexOutOfBoundsException => return Left("No command entered")
+      }
       cmd match {
         case 'b' => Right(Command.DOWNLEFT)
         case 'h' => Right(Command.LEFT)
