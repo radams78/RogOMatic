@@ -117,6 +117,16 @@ object MockRogueState {
     override def isStarted: Boolean = false
   }
 
+  case object Ended extends MockRogueState {
+    override def isStarted: Boolean = false
+
+    override def sendKeypress(keypress: Char): MockRogueState = fail("sendKeypress called after Rogue process ends")
+
+    override def getScreen: String = fail("getScreen called after Rogue process ends")
+
+    override def start(): MockRogueState = fail("start() called after Rogue process ends")
+  }
+
 }
 
 /** A partial [[MockRogueState]] - a [[MockRogueState]] with a hole. */
