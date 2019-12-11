@@ -50,5 +50,18 @@ class RoguePlayerSpec extends AnyFeatureSpec with GivenWhenThen with Matchers {
       Then("the game should be over")
       player.gameOver should be(true)
     }
+
+    Scenario("Rogue displays a -more- message") {
+      Given("a game of Rogue in progress")
+      val rogue: MockRogue = MoreGame.moreGame
+      val player: RoguePlayer = new RoguePlayer(rogue)
+
+      When("the user enters a command to which Rogue responds with -more-")
+      player.sendCommand(Command.RIGHT)
+
+      Then("the final screen should be displayed")
+      player.getScreen should be(MoreGame.thirdScreen)
+    }
   }
 }
+

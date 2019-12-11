@@ -121,6 +121,10 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
     val player: RoguePlayer = new RoguePlayer(DeathGame.deathGame)
   }
 
+  trait MoreGame {
+    val player: RoguePlayer = new RoguePlayer(MoreGame.moreGame)
+  }
+
   "A controller" should "be able to start a game of Rogue" in new ZeroMoveGame {
     player.start()
     assert(rogue.isStarted)
@@ -159,5 +163,10 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
     player.start()
     player.sendCommand(Command.REST)
     player.gameOver should be(true)
+  }
+
+  it should "clear a more screen" in new MoreGame {
+    player.sendCommand(Command.RIGHT)
+    player.getScreen should be(MoreGame.thirdScreen)
   }
 }

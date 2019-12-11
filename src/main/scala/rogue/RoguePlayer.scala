@@ -2,13 +2,22 @@ package rogue
 
 import gamedata.Inventory
 
-/** High-level communication with the game of Rogue */
+/** High-level communication with the game of Rogue.
+ *
+ * This process always leaves Rogue in one of the following states:
+ *  - not started
+ *  - waiting for the next user input
+ *  - ended. */
 class RoguePlayer(rogue: IRogue) {
   private var _gameOver: Boolean = false
 
   /** Send a command to Rogue */
+  // TODO Error if game is over?
   def sendCommand(command: Command): Unit = {
     for (k <- command.keypresses) rogue.sendKeypress(k)
+    if (rogue.getScreen.split("\n").head.contains("-more-")) {
+      rogue.sendKeypress(' ')
+    }
     if (!rogue.getScreen.split("\n").last.exists(_ != ' ')) {
       _gameOver = true
     }
@@ -18,6 +27,7 @@ class RoguePlayer(rogue: IRogue) {
   def gameOver: Boolean = _gameOver
 
   /** Current inventory */
+  // TODO Error if game is over?
   def getInventory: Either[String, Inventory] = {
     // TODO Speed-ups possible here:
     // 1. Do not invoke inventory screen every time
