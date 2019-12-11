@@ -110,19 +110,19 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
 
   trait ZeroMoveGame extends FirstScreen with FullInventory {
     val rogue: MockRogue = MockRogue.Start.End(firstScreen, firstInventoryScreen)
-    val player: NotStarted = RoguePlayer(rogue)
+    val player: RoguePlayer.NotStarted = RoguePlayer(rogue)
   }
 
   trait OneMoveGame {
-    val player: NotStarted = RoguePlayer(OneMoveGame.oneMoveGame)
+    val player: RoguePlayer.NotStarted = RoguePlayer(OneMoveGame.oneMoveGame)
   }
 
   trait DeathGame {
-    val player: NotStarted = RoguePlayer(DeathGame.deathGame)
+    val player: RoguePlayer.NotStarted = RoguePlayer(DeathGame.deathGame)
   }
 
   trait MoreGame {
-    val player: GameOn = new GameOn(MoreGame.moreGame)
+    val player: RoguePlayer.GameOn = new RoguePlayer.GameOn(MoreGame.moreGame)
   }
 
   "A controller" should "be able to start a game of Rogue" in new ZeroMoveGame {
@@ -135,27 +135,27 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
   }
 
   it should "know that the game is not over after being started" in new ZeroMoveGame {
-    val p: GameOn = player.start()
+    val p: RoguePlayer.GameOn = player.start()
     assert(!p.gameOver)
   }
 
   it should "display the first inventory of the game" in new FirstScreen with EmptyInventory {
     val rogue: MockRogue = MockRogue.Start.End(firstScreen, inventoryScreen)
-    val player: NotStarted = RoguePlayer(rogue)
+    val player: RoguePlayer.NotStarted = RoguePlayer(rogue)
     player.start().getInventory should be(Right(Inventory()))
   }
 
   it should "display the new screen after sending the command" in new OneMoveGame {
     player.start().sendCommand(Command.RIGHT) match {
-      case p: GameOn => p.getScreen should be(OneMoveGame.secondScreen)
-      case _: GameOver => fail("Game ended prematurely")
+      case p: RoguePlayer.GameOn => p.getScreen should be(OneMoveGame.secondScreen)
+      case _: RoguePlayer.GameOver => fail("Game ended prematurely")
     }
   }
 
   it should "display the inventory after sending the command" in new OneMoveGame {
     player.start().sendCommand(Command.RIGHT) match {
-      case p: GameOn => p.getInventory should be(Right(OneMoveGame.firstInventory))
-      case _: GameOver => fail("Game ended prematurely")
+      case p: RoguePlayer.GameOn => p.getInventory should be(Right(OneMoveGame.firstInventory))
+      case _: RoguePlayer.GameOver => fail("Game ended prematurely")
 
     }
   }

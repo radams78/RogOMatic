@@ -1,6 +1,7 @@
 package expert
 
 import gamedata.{Direction, Slot}
+import rogue.RoguePlayer.GameOver
 import rogue._
 import view.IView
 
@@ -8,13 +9,13 @@ import scala.annotation.tailrec
 import scala.io.StdIn
 
 /** Expert for playing the game in transparent mode, i.e. interactively, getting moves from the user one by one */
-class Transparent(player: rogue.NotStarted, view: IView) {
+class Transparent(player: RoguePlayer.NotStarted, view: IView) {
   /** Play a game of rogue */
-  def playRogue(): GameOver = {
+  def playRogue(): RoguePlayer.GameOver = {
     @tailrec
     def playRogue0(player: RoguePlayer): GameOver = player match {
-      case p: NotStarted => playRogue0(p.start())
-      case p: GameOn =>
+      case p: RoguePlayer.NotStarted => playRogue0(p.start())
+      case p: RoguePlayer.GameOn =>
         view.displayScreen(p.getScreen)
         p.getInventory match {
           case Right(i) => view.displayInventory(i)
