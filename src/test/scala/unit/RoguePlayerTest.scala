@@ -4,7 +4,7 @@ import gamedata._
 import mock._
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import rogue.{Command, RoguePlayer}
+import rogue._
 
 /** Unit tests for [[RoguePlayer]] class */
 class RoguePlayerTest extends AnyFlatSpec with Matchers {
@@ -110,19 +110,19 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
 
   trait ZeroMoveGame extends FirstScreen with FullInventory {
     val rogue: MockRogue = MockRogue.Start.End(firstScreen, firstInventoryScreen)
-    val player: RoguePlayer = new RoguePlayer(rogue)
+    val player: NotStarted = RoguePlayer(rogue)
   }
 
   trait OneMoveGame {
-    val player: RoguePlayer = new RoguePlayer(OneMoveGame.oneMoveGame)
+    val player: NotStarted = RoguePlayer(OneMoveGame.oneMoveGame)
   }
 
   trait DeathGame {
-    val player: RoguePlayer = new RoguePlayer(DeathGame.deathGame)
+    val player: NotStarted = RoguePlayer(DeathGame.deathGame)
   }
 
   trait MoreGame {
-    val player: RoguePlayer = new RoguePlayer(MoreGame.moreGame)
+    val player: GameOn = new GameOn(MoreGame.moreGame)
   }
 
   "A controller" should "be able to start a game of Rogue" in new ZeroMoveGame {
@@ -131,38 +131,37 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
   }
 
   it should "display the first screen of the game" in new ZeroMoveGame {
-    player.start()
-    player.getScreen should be(firstScreen)
+    player.start().getScreen should be(firstScreen)
   }
 
   it should "know that the game is not over after being started" in new ZeroMoveGame {
-    player.start()
-    assert(!player.gameOver)
+    val p: GameOn = player.start()
+    assert(!p.gameOver)
   }
 
   it should "display the first inventory of the game" in new FirstScreen with EmptyInventory {
     val rogue: MockRogue = MockRogue.Start.End(firstScreen, inventoryScreen)
-    val player: RoguePlayer = new RoguePlayer(rogue)
-    player.start()
-    player.getInventory should be(Right(Inventory()))
+    val player: NotStarted = RoguePlayer(rogue)
+    player.start().getInventory should be(Right(Inventory()))
   }
 
   it should "display the new screen after sending the command" in new OneMoveGame {
-    player.start()
-    player.sendCommand(Command.RIGHT)
-    player.getScreen should be(OneMoveGame.secondScreen)
+    player.start().sendCommand(Command.RIGHT) match {
+      case p: GameOn => p.getScreen should be(OneMoveGame.secondScreen)
+      case _: GameOver => fail("Game ended prematurely")
+    }
   }
 
   it should "display the inventory after sending the command" in new OneMoveGame {
-    player.start()
-    player.sendCommand(Command.RIGHT)
-    player.getInventory should be(Right(OneMoveGame.firstInventory))
+    player.start().sendCommand(Command.RIGHT) match {
+      case p: GameOn => p.getInventory should be(Right(OneMoveGame.firstInventory))
+      case _: GameOver => fail("Game ended prematurely")
+
+    }
   }
 
   it should "know when the game is over" in new DeathGame {
-    player.start()
-    player.sendCommand(Command.REST)
-    player.gameOver should be(true)
+    player.start().sendCommand(Command.REST).gameOver should be(true)
   }
 
   it should "clear a more screen" in new MoreGame {
