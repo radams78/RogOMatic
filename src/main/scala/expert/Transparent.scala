@@ -38,6 +38,7 @@ class Transparent(player: rogue.NotStarted, view: IView) {
     }
   }
 
+  /** Get a direction from the user */
   private def getDirection: Either[String, Direction] = {
     println("Select direction")
     for (d <- getCharacter("No direction entered")) yield d match {
@@ -53,6 +54,7 @@ class Transparent(player: rogue.NotStarted, view: IView) {
     }
   }
 
+  /** Get a command from the user */
   @tailrec
   private def getCommand: Command = {
     def getCommand0: Either[String, Command] = {
