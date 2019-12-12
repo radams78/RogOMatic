@@ -132,7 +132,7 @@ object DeathGame {
       }
     }
 
-    new MockRogue(MockRogue.Start // TODO Pyramid of doom
+    new MockRogue(MockRogue.Start
       .WaitForCommand(firstScreen, firstInventoryScreen, '.')
       .build(penultimateState))
   }

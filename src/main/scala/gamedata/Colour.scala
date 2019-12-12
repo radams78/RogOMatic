@@ -4,50 +4,66 @@ package gamedata
 sealed trait Colour
 
 object Colour {
-  def parse(colour: String): Either[String, Colour] = colour match {
-    case "blue" => Right(BLUE)
-    case "red" => Right(RED)
-    case "green" => Right(GREEN)
-    case "grey" => Right(GREY)
-    case "brown" => Right(BROWN)
-    case "clear" => Right(CLEAR)
-    case "pink" => Right(PINK)
-    case "white" => Right(WHITE)
-    case "purple" => Right(PURPLE)
-    case "black" => Right(BLACK)
-    case "yellow" => Right(YELLOW)
-    case "plaid" => Right(PLAID)
-    case "burgundy" => Right(BURGUNDY)
-    case "beige" => Right(BEIGE)
-    case _ => Left(s"Unrecognised colour: $colour")
+  val ALL: Set[Colour] =
+    Set(BLUE, RED, GREEN, GREY, BROWN, CLEAR, PINK, WHITE, PURPLE, BLACK, YELLOW, PLAID, BURGUNDY, BEIGE)
+
+  def parse(colour: String): Either[String, Colour] =
+    ALL.find(_.toString == colour).map(Right(_)).getOrElse(Left(s"Unrecognised colour: $colour"))
+
+  case object BLUE extends Colour {
+    override def toString: String = "blue"
   }
 
-  case object BLUE extends Colour
+  case object RED extends Colour {
+    override def toString: String = "red"
+  }
 
-  case object RED extends Colour
+  case object GREEN extends Colour {
+    override def toString: String = "green"
+  }
 
-  case object GREEN extends Colour
+  case object GREY extends Colour {
+    override def toString: String = "grey"
+  }
 
-  case object GREY extends Colour
+  case object BROWN extends Colour {
+    override def toString: String = "brown"
+  }
 
-  case object BROWN extends Colour
+  case object CLEAR extends Colour {
+    override def toString: String = "clear"
+  }
 
-  case object CLEAR extends Colour
+  case object PINK extends Colour {
+    override def toString: String = "pink"
+  }
 
-  case object PINK extends Colour
+  case object WHITE extends Colour {
+    override def toString: String = "white"
+  }
 
-  case object WHITE extends Colour
+  case object PURPLE extends Colour {
+    override def toString: String = "purple"
+  }
 
-  case object PURPLE extends Colour
+  case object BLACK extends Colour {
+    override def toString: String = "black"
+  }
 
-  case object BLACK extends Colour
+  case object YELLOW extends Colour {
+    override def toString: String = "yellow"
+  }
 
-  case object YELLOW extends Colour
+  case object PLAID extends Colour {
+    override def toString: String = "plaid"
+  }
 
-  case object PLAID extends Colour
+  case object BURGUNDY extends Colour {
+    override def toString: String = "burgundy"
+  }
 
-  case object BURGUNDY extends Colour
-
-  case object BEIGE extends Colour
+  case object BEIGE extends Colour {
+    override def toString: String = "beige"
+  }
 
 }
