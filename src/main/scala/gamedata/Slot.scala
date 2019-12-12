@@ -13,7 +13,8 @@ object Slot {
   val C: Slot = Slot('c')
   val D: Slot = Slot('d')
   val E: Slot = Slot('e')
-
+  val F: Slot = Slot('f')
+  
   def parse(slot: String): Either[String, Slot] =
     if (slot.length == 1 && slot.head.isLower) Right(Slot(slot.head)) else Left(s"Unrecognised inventory slot: $slot")
 }
