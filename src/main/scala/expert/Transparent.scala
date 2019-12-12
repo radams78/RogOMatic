@@ -55,6 +55,15 @@ class Transparent(player: RoguePlayer.NotStarted, view: IView) {
     }
   }
 
+  /** Get an item in the PC's inventory */
+  private def getItem: Either[String, Slot] = {
+    println("Select object")
+    for {
+      c <- getCharacter("No slot entered")
+      s <- Slot.parse(c.toString)
+    } yield s
+  }
+
   /** Get a command from the user */
   @tailrec
   private def getCommand: Command = {
@@ -69,15 +78,10 @@ class Transparent(player: RoguePlayer.NotStarted, view: IView) {
              case 'n' => Right(Command.DOWNRIGHT)
              case 't' => for {
                dir <- getDirection
-               slot <- {
-                 println("Select object")
-                 Slot.parse(StdIn.readChar().toString)
-               }
+               slot <- getItem
              } yield Command.Throw(dir, slot)
              case 'u' => Right(Command.UPRIGHT)
-             case 'w' =>
-               println("Select weapon")
-               for (slot <- Slot.parse(StdIn.readChar().toString)) yield Command.Wield(slot)
+             case 'w' => for (slot <- getItem) yield Command.Wield(slot)
              case 'y' => Right(Command.UPLEFT)
              case '.' => Right(Command.REST)
              case _ => Left(s"Unrecognised command: $c")
