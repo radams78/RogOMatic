@@ -69,7 +69,10 @@ class Transparent(player: RoguePlayer.NotStarted, view: IView) {
              case 'n' => Right(Command.DOWNRIGHT)
              case 't' => for {
                dir <- getDirection
-               slot <- Slot.parse(StdIn.readChar().toString)
+               slot <- {
+                 println("Select object")
+                 Slot.parse(StdIn.readChar().toString)
+               }
              } yield Command.Throw(dir, slot)
              case 'u' => Right(Command.UPRIGHT)
              case 'w' =>
