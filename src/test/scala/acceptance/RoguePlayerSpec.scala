@@ -52,7 +52,11 @@ class RoguePlayerSpec extends AnyFeatureSpec with GivenWhenThen with Matchers {
       val p3: RoguePlayer = p2.sendCommand(Command.REST)
 
       Then("the game should be over")
-      p3.gameOver should be(true)
+      And("the final score should be shown")
+      p3 match {
+        case p: RoguePlayer.GameOver => p.getScore should be(7)
+        case _ => fail("Game not ended when it should have")
+      }
     }
 
     Scenario("Rogue displays a -more- message") {
@@ -71,4 +75,3 @@ class RoguePlayerSpec extends AnyFeatureSpec with GivenWhenThen with Matchers {
     }
   }
 }
-

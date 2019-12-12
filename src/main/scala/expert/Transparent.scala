@@ -22,7 +22,9 @@ class Transparent(player: RoguePlayer.NotStarted, view: IView) {
           case Left(s) => view.displayError(s)
         }
         playRogue0(p.sendCommand(getCommand))
-      case p: GameOver => p
+      case p: GameOver =>
+        view.displayGameOver(p.getScore)
+        p
     }
 
     playRogue0(player)

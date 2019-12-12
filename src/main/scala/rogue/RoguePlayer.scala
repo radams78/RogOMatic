@@ -2,6 +2,8 @@ package rogue
 
 import gamedata.Inventory
 
+import scala.util.matching.Regex
+
 /** High-level communication with the game of Rogue. */
 trait RoguePlayer {
   val gameOver: Boolean
@@ -42,17 +44,26 @@ object RoguePlayer {
     /** Send a command to Rogue */
     def sendCommand(command: Command): RoguePlayer = {
       for (k <- command.keypresses) rogue.sendKeypress(k)
+      if (!rogue.getScreen.split("\n").last.exists(_ != ' ')) {
+        return new GameOver(rogue)
+      }
       if (rogue.getScreen.split("\n").head.contains("-more-")) {
         rogue.sendKeypress(' ')
       }
-      if (!rogue.getScreen.split("\n").last.exists(_ != ' ')) {
-        new GameOver(rogue)
-      } else this
+      this
     }
   }
 
   /** Game of Rogue has ended */
   class GameOver(rogue: IRogue) extends RoguePlayer {
+    private val scoreRegex: Regex = """(\d+) gold""".r.unanchored
+
+    def getScore: Int = {
+      rogue.getScreen match {
+        case scoreRegex(score) => score.toInt
+      }
+    }
+
     override val gameOver: Boolean = true
   }
 

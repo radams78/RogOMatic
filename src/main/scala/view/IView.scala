@@ -4,6 +4,8 @@ import gamedata.Inventory
 
 /** Interface for the View component of the MVC architecture. Handles user IO. */
 trait IView {
+  def displayGameOver(score: Int): Unit
+
   /** Display an error message */
   def displayError(s: String): Unit
 

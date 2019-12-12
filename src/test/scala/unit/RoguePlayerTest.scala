@@ -161,7 +161,10 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
   }
 
   it should "know when the game is over" in new DeathGame {
-    player.start().sendCommand(Command.REST).gameOver should be(true)
+    player.start().sendCommand(Command.REST) match {
+      case p: RoguePlayer.GameOver => p.getScore should be(7)
+      case _ => fail("Game not ended when it should have")
+    }
   }
 
   it should "clear a more screen" in new MoreGame {

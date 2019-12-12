@@ -27,7 +27,7 @@ object DeathGame {
       |
       |
       |
-      |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
+      |Level: 1  Gold: 7      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
       |""".stripMargin
       .split("\n")
       .map(_.padTo(80, ' '))
@@ -57,7 +57,7 @@ object DeathGame {
       |
       |
       |
-      |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
+      |Level: 1  Gold: 7      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
       |""".stripMargin)
 
   val secondScreen: String = MockRogue.makeScreen(
@@ -83,7 +83,7 @@ object DeathGame {
       |                                 ~---------~
       |
       |                                     robin
-      |                         Killed by a snake with 0 gold
+      |                         Killed by a snake with 7 gold
       |
       |""".stripMargin)
 

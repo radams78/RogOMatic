@@ -13,4 +13,9 @@ class TextView extends IView {
   }
 
   override def displayError(s: String): Unit = println(s"ERROR: $s")
+
+  override def displayGameOver(score: Int): Unit = {
+    println("===== GAME OVER =====")
+    println(s"Score: $score")
+  }
 }
