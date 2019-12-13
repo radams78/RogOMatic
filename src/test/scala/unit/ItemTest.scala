@@ -35,6 +35,6 @@ class ItemTest extends AnyFlatSpec with Matchers with EitherValues {
   }
 
   "a scroll" should "be recognised as a scroll" in {
-    Item.parse("a scroll entitled: 'coph rech'") should be(Right(Scroll(1, "coph rech")))
+    Item.parse("a scroll entitled: 'coph rech ack'") should be(Right(Scroll(1, "coph rech ack")))
   }
 }
