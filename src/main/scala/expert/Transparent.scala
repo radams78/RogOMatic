@@ -78,6 +78,9 @@ class Transparent(player: RoguePlayer.NotStarted, view: IView) {
              case 'k' => Right(Command.DOWN)
              case 'l' => Right(Command.RIGHT)
              case 'n' => Right(Command.DOWNRIGHT)
+             case 'r' => for {
+               slot <- getItem
+             } yield Command.Read(slot)
              case 't' => for {
                dir <- getDirection
                slot <- getItem

@@ -67,4 +67,8 @@ object Command {
     override val keypresses: Seq[Char] = Seq('t', dir.keypress, slot.label)
   }
 
+  case class Read(slot: Slot) extends Command {
+    override val keypresses: Seq[Char] = Seq('r', slot.label)
+  }
+
 }
