@@ -37,8 +37,8 @@ object OneMoveGame {
       |                                                d) a +1,+0 short bow
       |                                                e) 35 +0,+0 arrows
       |                                                f) a scroll entitled: 'coph rech'
+      |                                                g) scale mail
       |                                                --press space to continue--
-      |
       |
       |
       |
@@ -64,7 +64,8 @@ object OneMoveGame {
       Slot.C -> Weapon(WeaponType.MACE, +1, +1),
       Slot.D -> Weapon(WeaponType.SHORT_BOW, +1, +0),
       Slot.E -> Missile(35, WeaponType.ARROW, +0, +0),
-      Slot.F -> Scroll(1, "coph rech")
+      Slot.F -> Scroll(1, "coph rech"),
+      Slot.G -> Armor(ArmorType.SCALE_MAIL)
     ),
     wearing = Some(Slot.B),
     wielding = Some(Slot.C)
@@ -104,9 +105,9 @@ object OneMoveGame {
       |                                                d) a +1,+0 short bow
       |                                                e) 35 +0,+0 arrows
       |                                                f) a scroll entitled: 'coph rech'
+      |                                                g) scale mail
       |                                                --press space to continue--
       |      |
-      |
       |
       |
       |
