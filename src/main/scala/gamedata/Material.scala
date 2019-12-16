@@ -1,5 +1,6 @@
 package gamedata
 
+/** The set of materials that a wand or staff can be made of */
 object Material extends ParsableEnum {
   type Material = Value
   override val setName: String = "material"
