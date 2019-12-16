@@ -38,9 +38,9 @@ object OneMoveGame {
       |                                                e) 35 +0,+0 arrows
       |                                                f) a scroll entitled: 'coph rech'
       |                                                g) scale mail
+      |                                                h) a redwood staff
       |                                                --press space to continue--
-      |
-      |
+      |      |
       |
       |
       |
@@ -65,7 +65,8 @@ object OneMoveGame {
       Slot.D -> Weapon(WeaponType.SHORT_BOW, +1, +0),
       Slot.E -> Missile(35, WeaponType.ARROW, +0, +0),
       Slot.F -> Scroll(1, "coph rech"),
-      Slot.G -> Armor(ArmorType.SCALE_MAIL)
+      Slot.G -> Armor(ArmorType.SCALE_MAIL),
+      Slot.H -> gamedata.Wand(WandType.STAFF, Material.REDWOOD)
     ),
     wearing = Some(Slot.B),
     wielding = Some(Slot.C)
@@ -106,8 +107,8 @@ object OneMoveGame {
       |                                                e) 35 +0,+0 arrows
       |                                                f) a scroll entitled: 'coph rech'
       |                                                g) scale mail
+      |                                                h) a redwood staff
       |                                                --press space to continue--
-      |      |
       |
       |
       |

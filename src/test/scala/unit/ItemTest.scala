@@ -1,6 +1,6 @@
 package unit
 
-import gamedata.{Scroll, _}
+import gamedata.{Material, Scroll, _}
 import org.scalatest.EitherValues
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
@@ -36,5 +36,9 @@ class ItemTest extends AnyFlatSpec with Matchers with EitherValues {
 
   "a scroll" should "be recognised as a scroll" in {
     Item.parse("a scroll entitled: 'coph rech ack'") should be(Right(Scroll(1, "coph rech ack")))
+  }
+
+  "a redwood staff" should "be recognised as a redwood staff" in {
+    Item.parse("a redwood staff") should be(Right(gamedata.Wand(WandType.STAFF, Material.REDWOOD)))
   }
 }

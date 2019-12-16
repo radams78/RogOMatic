@@ -11,8 +11,9 @@ object Item {
   private val weaponRegex: Regex = """a(?:n?) ([-+]\d+),([-+]\d+) ([-\w]+(?: \w+)?)""".r
   private val weaponsRegex: Regex = """(\d+) ([-+]\d+),([-+]\d+) ([-\w]+(?: \w+)?)""".r
   private val ringRegex: Regex = """a(?:n?) ([-\w]+) ring""".r
-  private val potionRegex: Regex = """a(?:n?) ([\w]+) potion""".r
+  private val potionRegex: Regex = """a(?:n?) ([-\w]+) potion""".r
   private val scrollRegex: Regex = """a scroll entitled: '(\w+(?: \w+)*)'""".r
+  private val wandRegex: Regex = """a(?:n?) (\w+) (wand|staff)""".r
 
   /** Given a description from a displayed inventory, return the corresponding [[Item]] */
   def parse(description: String): Either[String, Item] = description match {
@@ -29,6 +30,10 @@ object Item {
     case ringRegex(gem) => for (g <- Gem.parse(gem)) yield Ring(g)
     case potionRegex(colour) => for (c <- Colour.parse(colour)) yield Potion(1, c)
     case scrollRegex(title) => Right(Scroll(1, title))
+    case wandRegex(material, wandType) => for {
+      wt <- WandType.parse(wandType)
+      m <- Material.parse(material)
+    } yield Wand(wt, m)
     case description => ArmorType.parse(description) match {
       case Left(_) => Left(s"Unrecognised item: $description")
       case Right(at) => Right(Armor(at))

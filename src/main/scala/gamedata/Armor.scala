@@ -1,5 +1,7 @@
 package gamedata
 
+import gamedata.ArmorType.ArmorType
+
 /** A suit of armor */
 trait Armor extends Item
 
