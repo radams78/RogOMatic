@@ -122,20 +122,18 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
   }
 
   trait MoreGame {
-    val player: RoguePlayer.GameOn = new RoguePlayer.GameOn(MoreGame.moreGame)
+    val player: RoguePlayer.GameOn = new RoguePlayer.GameOn(MoreGame.moreGame, Map()) // TODO Duplication
   }
 
   trait ReadScroll {
-    val player: RoguePlayer.GameOn = new RoguePlayer.GameOn(
-      new MockRogue(
-        MockRogueState.WaitForCommand(TestGame.secondScreen, TestGame.secondInventoryScreen, 'r',
-          MockRogueState.Wait(TestGame.thirdScreen, 'f',
-            MockRogueState.Terminal(TestGame.fourthScreen, TestGame.fourthInventoryScreen).Screen)).Screen
-      )
-    )
+    val player: RoguePlayer.GameOn = new RoguePlayer.GameOn(MockRogue.Build
+      .WaitForCommand(TestGame.secondScreen, TestGame.secondInventoryScreen, 'r')
+      .Wait(TestGame.thirdScreen, 'f')
+      .End(TestGame.fourthScreen, TestGame.fourthInventoryScreen), Map()
+    ) // TODO Duplication
   }
 
-  "A controller" should "be able to start a game of Rogue" in new ZeroMoveGame {
+  "A player" should "be able to start a game of Rogue" in new ZeroMoveGame {
     player.start()
     assert(rogue.isStarted)
   }
@@ -157,33 +155,42 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
 
   it should "display the new screen after sending the command" in new OneMoveGame {
     player.start().sendCommand(Command.RIGHT) match {
-      case p: RoguePlayer.GameOn => p.getScreen should be(TestGame.secondScreen)
-      case _: RoguePlayer.GameOver => fail("Game ended prematurely")
+      case Right(p: RoguePlayer.GameOn) => p.getScreen should be(TestGame.secondScreen)
+      case Right(_: RoguePlayer.GameOver) => fail("Game ended prematurely")
+      case Left(s) => fail(s)
     }
   }
 
   it should "display the inventory after sending the command" in new OneMoveGame {
     player.start().sendCommand(Command.RIGHT) match {
-      case p: RoguePlayer.GameOn => p.getInventory should be(Right(TestGame.firstInventory))
-      case _: RoguePlayer.GameOver => fail("Game ended prematurely")
+      case Right(p: RoguePlayer.GameOn) => p.getInventory should be(Right(TestGame.firstInventory))
+      case Right(_: RoguePlayer.GameOver) => fail("Game ended prematurely")
+      case Left(s) => fail(s)
 
     }
   }
 
   it should "know when the game is over" in new DeathGame {
     player.start().sendCommand(Command.REST) match {
-      case p: RoguePlayer.GameOver => p.getScore should be(7)
-      case _ => fail("Game not ended when it should have")
+      case Right(p: RoguePlayer.GameOver) => p.getScore should be(7)
+      case Right(_) => fail("Game not ended when it should have")
+      case Left(s) => fail(s)
     }
   }
 
   it should "clear a more screen" in new MoreGame {
-    player.sendCommand(Command.RIGHT)
-    player.getScreen should be(MoreGame.thirdScreen)
+    player.sendCommand(Command.RIGHT) match {
+      case Right(p: RoguePlayer.GameOn) => p.getScreen should be(MoreGame.thirdScreen)
+      case Right(_) => fail("Game ended prematurely")
+      case Left(s) => fail(s)
+    }
   }
 
   it should "remember scroll powers" in new ReadScroll {
-    player.sendCommand(Command.Read(Slot.F))
-    player.getPowers should be(Map("coph rech" -> ScrollPower.REMOVE_CURSE))
+    player.sendCommand(Command.Read(Slot.F)) match {
+      case Right(p: RoguePlayer.GameOn) => p.getPowers should be(Map("coph rech" -> ScrollPower.REMOVE_CURSE))
+      case Right(_) => fail("Game ended prematurely")
+      case Left(s) => fail(s)
+    }
   }
 }

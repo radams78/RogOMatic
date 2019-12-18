@@ -1,6 +1,6 @@
 package rogue
 
-import gamedata.{Inventory, ScrollPower}
+import gamedata.{Inventory, Scroll, ScrollPower}
 
 import scala.util.matching.Regex
 
@@ -19,13 +19,13 @@ object RoguePlayer {
     /** Start the game */
     def start(): GameOn = {
       rogue.start()
-      new GameOn(rogue)
+      new GameOn(rogue, Map())
     }
   }
 
   /** Game of Rogue is in progress */
-  class GameOn(rogue: IRogue) extends RoguePlayer {
-    def getPowers: Map[String, ScrollPower] = Map("coph rech" -> ScrollPower.REMOVE_CURSE)
+  class GameOn(rogue: IRogue, powers: Map[String, ScrollPower]) extends RoguePlayer {
+    def getPowers: Map[String, ScrollPower] = powers
 
     override val gameOver: Boolean = false
 
@@ -44,15 +44,26 @@ object RoguePlayer {
     def getScreen: String = rogue.getScreen
 
     /** Send a command to Rogue */
-    def sendCommand(command: Command): RoguePlayer = {
-      for (k <- command.keypresses) rogue.sendKeypress(k)
-      if (!rogue.getScreen.split("\n").last.exists(_ != ' ')) {
-        return new GameOver(rogue)
+    def sendCommand(command: Command): Either[String, RoguePlayer] = {
+      for (lastInventory <- getInventory) yield {
+        for (k <- command.keypresses) rogue.sendKeypress(k)
+        if (!rogue.getScreen.split("\n").last.exists(_ != ' ')) {
+          return Right(new GameOver(rogue))
+        }
+        if (rogue.getScreen.split("\n").head.contains("-more-")) {
+          rogue.sendKeypress(' ')
+        }
+        if (rogue.getScreen.split("\n").head.contains("you feel as though someone is watching over you")) {
+          command match {
+            case Command.Read(slot) =>
+              lastInventory.items.get(slot) match {
+                case Some(s: Scroll) => new GameOn(rogue, powers.updated(s.title, ScrollPower.REMOVE_CURSE))
+                case Some(i) => return Left(s"Last command was to read a non-scroll: $i")
+                case None => return Left(s"Last command was to read an object that does not exist, slot $slot")
+              }
+          }
+        } else this
       }
-      if (rogue.getScreen.split("\n").head.contains("-more-")) {
-        rogue.sendKeypress(' ')
-      }
-      this
     }
   }
 

@@ -29,10 +29,10 @@ class RoguePlayerSpec extends AnyFeatureSpec with GivenWhenThen with Matchers {
       p2.gameOver should be(false)
 
       When("the user enters the command to go right")
-      val p3: RoguePlayer = p2.sendCommand(Command.RIGHT)
+      val p3: Either[String, RoguePlayer] = p2.sendCommand(Command.RIGHT)
 
       p3 match {
-        case p: RoguePlayer.GameOn =>
+        case Right(p: RoguePlayer.GameOn) =>
           Then("the second screen should be displayed")
           p.getScreen should be(TestGame.secondScreen)
 
@@ -40,10 +40,10 @@ class RoguePlayerSpec extends AnyFeatureSpec with GivenWhenThen with Matchers {
           p.getInventory should be(Right(TestGame.firstInventory))
 
           When("the user enters the command te read a scroll")
-          val p4: RoguePlayer = p.sendCommand(Command.Read(Slot.F))
+          val p4: Either[String, RoguePlayer] = p.sendCommand(Command.Read(Slot.F))
 
           p4 match {
-            case p: GameOn =>
+            case Right(p: GameOn) =>
               Then("the final screen should be displayed")
               p.getScreen should be(TestGame.fourthScreen)
 
@@ -52,9 +52,11 @@ class RoguePlayerSpec extends AnyFeatureSpec with GivenWhenThen with Matchers {
 
               And("the scroll power should be remembered")
               p.getPowers should be(Map("coph rech" -> ScrollPower.REMOVE_CURSE))
-            case p: RoguePlayer.GameOver => fail("Game ended prematurely")
+            case Right(p: RoguePlayer.GameOver) => fail("Game ended prematurely")
+            case Left(s) => fail(s)
           }
-        case p: RoguePlayer.GameOver => fail("Game ended prematurely")
+        case Right(p: RoguePlayer.GameOver) => fail("Game ended prematurely")
+        case Left(s) => fail(s)
       }
     }
 
@@ -67,28 +69,30 @@ class RoguePlayerSpec extends AnyFeatureSpec with GivenWhenThen with Matchers {
       val p2: RoguePlayer.GameOn = player.start()
 
       And("the PC is killed")
-      val p3: RoguePlayer = p2.sendCommand(Command.REST)
+      val p3: Either[String, RoguePlayer] = p2.sendCommand(Command.REST)
 
       Then("the game should be over")
       And("the final score should be shown")
       p3 match {
-        case p: RoguePlayer.GameOver => p.getScore should be(7)
-        case _ => fail("Game not ended when it should have")
+        case Right(p: RoguePlayer.GameOver) => p.getScore should be(7)
+        case Right(_) => fail("Game not ended when it should have")
+        case Left(s) => fail(s)
       }
     }
 
     Scenario("Rogue displays a -more- message") {
       Given("a game of Rogue in progress")
       val rogue: MockRogue = MoreGame.moreGame
-      val player: RoguePlayer.GameOn = new RoguePlayer.GameOn(rogue)
+      val player: RoguePlayer.GameOn = new RoguePlayer.GameOn(rogue, Map()) // TODO Duplication
 
       When("the user enters a command to which Rogue responds with -more-")
-      val p2: RoguePlayer = player.sendCommand(Command.RIGHT)
+      val p2: Either[String, RoguePlayer] = player.sendCommand(Command.RIGHT)
 
       Then("the final screen should be displayed")
       p2 match {
-        case p: RoguePlayer.GameOn => p.getScreen should be(MoreGame.thirdScreen)
-        case _: RoguePlayer.GameOver => fail("Game ended prematurely")
+        case Right(p: RoguePlayer.GameOn) => p.getScreen should be(MoreGame.thirdScreen)
+        case Right(_: RoguePlayer.GameOver) => fail("Game ended prematurely")
+        case Left(s) => fail(s)
       }
     }
   }
