@@ -113,8 +113,8 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
     val player: RoguePlayer.NotStarted = RoguePlayer(rogue)
   }
 
-  trait OneMoveGame {
-    val player: RoguePlayer.NotStarted = RoguePlayer(TestGame.oneMoveGame)
+  trait TestGame {
+    val player: RoguePlayer.NotStarted = RoguePlayer(TestGame.testGame)
   }
 
   trait DeathGame {
@@ -142,18 +142,13 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
     player.start().getScreen should be(firstScreen)
   }
 
-  it should "know that the game is not over after being started" in new ZeroMoveGame {
-    val p: RoguePlayer.GameOn = player.start()
-    assert(!p.gameOver)
-  }
-
   it should "display the first inventory of the game" in new FirstScreen with EmptyInventory {
     val rogue: MockRogue = MockRogue.Start.End(firstScreen, inventoryScreen)
     val player: RoguePlayer.NotStarted = RoguePlayer(rogue)
     player.start().getInventory should be(Right(Inventory()))
   }
 
-  it should "display the new screen after sending the command" in new OneMoveGame {
+  it should "display the new screen after sending the command" in new TestGame {
     player.start().sendCommand(Command.RIGHT) match {
       case Right(p: RoguePlayer.GameOn) => p.getScreen should be(TestGame.secondScreen)
       case Right(_: RoguePlayer.GameOver) => fail("Game ended prematurely")
@@ -161,7 +156,7 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
     }
   }
 
-  it should "display the inventory after sending the command" in new OneMoveGame {
+  it should "display the inventory after sending the command" in new TestGame {
     player.start().sendCommand(Command.RIGHT) match {
       case Right(p: RoguePlayer.GameOn) => p.getInventory should be(Right(TestGame.firstInventory))
       case Right(_: RoguePlayer.GameOver) => fail("Game ended prematurely")

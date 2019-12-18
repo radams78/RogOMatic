@@ -5,17 +5,13 @@ import gamedata.{Inventory, Scroll, ScrollPower}
 import scala.util.matching.Regex
 
 /** High-level communication with the game of Rogue. */
-trait RoguePlayer {
-  val gameOver: Boolean
-}
+trait RoguePlayer
 
 object RoguePlayer {
   def apply(rogue: IRogue): NotStarted = new NotStarted(rogue)
 
   /** Game of Rogue is not yet started */
   class NotStarted(rogue: IRogue) extends RoguePlayer {
-    override val gameOver: Boolean = false
-
     /** Start the game */
     def start(): GameOn = {
       rogue.start()
@@ -26,8 +22,6 @@ object RoguePlayer {
   /** Game of Rogue is in progress */
   class GameOn(rogue: IRogue, powers: Map[String, ScrollPower]) extends RoguePlayer {
     def getPowers: Map[String, ScrollPower] = powers
-
-    override val gameOver: Boolean = false
 
     /** Current inventory */
     def getInventory: Either[String, Inventory] = {
@@ -76,8 +70,6 @@ object RoguePlayer {
         case scoreRegex(score) => score.toInt
       }
     }
-
-    override val gameOver: Boolean = true
   }
 
 }

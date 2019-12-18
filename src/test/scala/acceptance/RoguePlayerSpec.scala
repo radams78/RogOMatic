@@ -13,7 +13,7 @@ class RoguePlayerSpec extends AnyFeatureSpec with GivenWhenThen with Matchers {
   Feature("Play a game of Rogue in transparent mode") {
     Scenario("User starts a game of Rogue in transparent mode") {
       Given("an instance of Rog-O-Matic")
-      val rogue: MockRogue = TestGame.oneMoveGame
+      val rogue: MockRogue = TestGame.testGame
       val player: RoguePlayer.NotStarted = RoguePlayer(rogue)
 
       When("the user starts the game in transparent mode")
@@ -24,9 +24,6 @@ class RoguePlayerSpec extends AnyFeatureSpec with GivenWhenThen with Matchers {
 
       And("the first inventory should be displayed")
       p2.getInventory should be(Right(TestGame.firstInventory))
-
-      And("the game should not be over")
-      p2.gameOver should be(false)
 
       When("the user enters the command to go right")
       val p3: Either[String, RoguePlayer] = p2.sendCommand(Command.RIGHT)

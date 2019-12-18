@@ -221,7 +221,7 @@ object TestGame {
     wielding = Some(Slot.C)
   )
 
-  def oneMoveGame: MockRogue =
+  def testGame: MockRogue =
     MockRogue.Start
       .WaitForCommand(firstScreen, firstInventoryScreen, 'l')
       .WaitForCommand(secondScreen, secondInventoryScreen, 'r')
