@@ -8,6 +8,8 @@ import scala.util.matching.Regex
 trait RoguePlayer
 
 object RoguePlayer {
+  /** Create a new [[RoguePlayer]] with the given game of Rogue. We assume that the [[IRogue]] object is in its
+   * initial state, i.e. the Rogue process has not yet been started. */
   def apply(rogue: IRogue): NotStarted = new NotStarted(rogue)
 
   /** Game of Rogue is not yet started */
@@ -21,6 +23,7 @@ object RoguePlayer {
 
   /** Game of Rogue is in progress */
   class GameOn(rogue: IRogue, powers: Map[String, ScrollPower]) extends RoguePlayer {
+    /** Known powers of scrolls */
     def getPowers: Map[String, ScrollPower] = powers
 
     /** Current inventory */
@@ -65,6 +68,7 @@ object RoguePlayer {
   class GameOver(rogue: IRogue) extends RoguePlayer {
     private val scoreRegex: Regex = """(\d+) gold""".r.unanchored
 
+    /** Final score */
     def getScore: Int = {
       rogue.getScreen match {
         case scoreRegex(score) => score.toInt
