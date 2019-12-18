@@ -1,6 +1,6 @@
 package rogue
 
-import gamedata.Inventory
+import gamedata.{Inventory, ScrollPower}
 
 import scala.util.matching.Regex
 
@@ -25,6 +25,8 @@ object RoguePlayer {
 
   /** Game of Rogue is in progress */
   class GameOn(rogue: IRogue) extends RoguePlayer {
+    def getPowers: Map[String, ScrollPower] = Map("coph rech" -> ScrollPower.REMOVE_CURSE)
+
     override val gameOver: Boolean = false
 
     /** Current inventory */

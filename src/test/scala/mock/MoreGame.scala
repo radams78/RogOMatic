@@ -1,7 +1,5 @@
 package mock
 
-import mock.MockRogueState.Started
-
 object MoreGame {
   val firstScreen: String = MockRogue.makeScreen(
     """
@@ -139,15 +137,9 @@ object MoreGame {
       |""".stripMargin
   )
 
-  val moreGame: MockRogue = new MockRogue(
-    MockRogueState.WaitForCommand(firstScreen, firstInventoryScreen, 'l',
-      new Started {
-        override def getScreen: String = secondScreen
-
-        override def transitions: PartialFunction[Char, MockRogueState] = {
-          case ' ' => MockRogueState.Terminal(thirdScreen, thirdInventoryScreen).Screen
-        }
-      }
-    ).Screen
-  )
+  val moreGame: MockRogue =
+    MockRogue.Build
+      .WaitForCommand(firstScreen, firstInventoryScreen, 'l')
+      .Wait(secondScreen, ' ')
+      .End(thirdScreen, thirdInventoryScreen)
 }

@@ -26,6 +26,10 @@ object MockRogue {
     override def build(mockRogueState: MockRogueState): MockRogueState = MockRogueState.Initial(mockRogueState)
   }
 
+  case object Build extends MockRogueBuilder {
+    override def build(mockRogueState: MockRogueState): MockRogueState = mockRogueState
+  }
+
 }
 
 /** The state of a [[MockRogue]] object */
@@ -105,6 +109,14 @@ object MockRogueState {
     }
   }
 
+  case class Wait(screen: String, command: Char, next: MockRogueState) extends Started {
+    override def transitions: PartialFunction[Char, MockRogueState] = {
+      case command => next
+    }
+
+    override def getScreen: String = screen
+  }
+
   /** A state representing a Rogue process waiting for start() to be called, after which it switches to 'next' */
   case class Initial(next: MockRogueState) extends MockRogueState {
     override def sendKeypress(keypress: Char): MockRogueState =
@@ -139,6 +151,11 @@ trait MockRogueBuilder {
   final case class WaitForCommand(screen: String, inventoryScreen: String, command: Char) extends MockRogueBuilder {
     override def build(mockRogueState: MockRogueState): MockRogueState =
       outer.build(MockRogueState.WaitForCommand(screen, inventoryScreen, command, mockRogueState).Screen)
+  }
+
+  final case class Wait(screen: String, command: Char) extends MockRogueBuilder {
+    override def build(mockRogueState: MockRogueState): MockRogueState =
+      outer.build(MockRogueState.Wait(screen, command, mockRogueState))
   }
 
   /** Fill in the hole with a state that displays screen and inventoryScreen */

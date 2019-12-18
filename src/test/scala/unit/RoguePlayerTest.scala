@@ -1,6 +1,6 @@
 package unit
 
-import gamedata._
+import gamedata.{ScrollPower, _}
 import mock._
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
@@ -114,7 +114,7 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
   }
 
   trait OneMoveGame {
-    val player: RoguePlayer.NotStarted = RoguePlayer(OneMoveGame.oneMoveGame)
+    val player: RoguePlayer.NotStarted = RoguePlayer(TestGame.oneMoveGame)
   }
 
   trait DeathGame {
@@ -123,6 +123,16 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
 
   trait MoreGame {
     val player: RoguePlayer.GameOn = new RoguePlayer.GameOn(MoreGame.moreGame)
+  }
+
+  trait ReadScroll {
+    val player: RoguePlayer.GameOn = new RoguePlayer.GameOn(
+      new MockRogue(
+        MockRogueState.WaitForCommand(TestGame.secondScreen, TestGame.secondInventoryScreen, 'r',
+          MockRogueState.Wait(TestGame.thirdScreen, 'f',
+            MockRogueState.Terminal(TestGame.fourthScreen, TestGame.fourthInventoryScreen).Screen)).Screen
+      )
+    )
   }
 
   "A controller" should "be able to start a game of Rogue" in new ZeroMoveGame {
@@ -147,14 +157,14 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
 
   it should "display the new screen after sending the command" in new OneMoveGame {
     player.start().sendCommand(Command.RIGHT) match {
-      case p: RoguePlayer.GameOn => p.getScreen should be(OneMoveGame.secondScreen)
+      case p: RoguePlayer.GameOn => p.getScreen should be(TestGame.secondScreen)
       case _: RoguePlayer.GameOver => fail("Game ended prematurely")
     }
   }
 
   it should "display the inventory after sending the command" in new OneMoveGame {
     player.start().sendCommand(Command.RIGHT) match {
-      case p: RoguePlayer.GameOn => p.getInventory should be(Right(OneMoveGame.firstInventory))
+      case p: RoguePlayer.GameOn => p.getInventory should be(Right(TestGame.firstInventory))
       case _: RoguePlayer.GameOver => fail("Game ended prematurely")
 
     }
@@ -170,5 +180,10 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
   it should "clear a more screen" in new MoreGame {
     player.sendCommand(Command.RIGHT)
     player.getScreen should be(MoreGame.thirdScreen)
+  }
+
+  it should "remember scroll powers" in new ReadScroll {
+    player.sendCommand(Command.Read(Slot.F))
+    player.getPowers should be(Map("coph rech" -> ScrollPower.REMOVE_CURSE))
   }
 }
