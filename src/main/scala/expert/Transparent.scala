@@ -89,6 +89,7 @@ class Transparent(player: RoguePlayer.NotStarted, view: IView) {
              case 'w' => for (slot <- getItem) yield Command.Wield(slot)
              case 'y' => Right(Command.UPLEFT)
              case '.' => Right(Command.REST)
+             case '>' => Right(Command.DOWNSTAIRS)
              case _ => Left(s"Unrecognised command: $c")
            }} yield cmd
     }

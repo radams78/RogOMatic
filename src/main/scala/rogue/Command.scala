@@ -72,4 +72,8 @@ object Command {
     override val keypresses: Seq[Char] = Seq('r', slot.label)
   }
 
+  object DOWNSTAIRS extends Command {
+    override val keypresses: Seq[Char] = Seq('>')
+  }
+
 }
