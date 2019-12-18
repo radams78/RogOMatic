@@ -1,9 +1,10 @@
 package gamedata
 
-trait ScrollPower
+/** A power that a scroll can have */
+sealed trait ScrollPower
 
 object ScrollPower {
 
-  object REMOVE_CURSE extends ScrollPower
+  case object REMOVE_CURSE extends ScrollPower
 
 }
