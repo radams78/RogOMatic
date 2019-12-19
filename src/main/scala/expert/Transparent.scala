@@ -22,9 +22,13 @@ class Transparent(player: RoguePlayer.NotStarted, view: IView) {
             view.displayInventory(i)
             p.sendCommand(getCommand(i)) match {
               case Right(pl) => playRogue0(pl)
-              case Left(s) => throw new Error(s) // TODO Better error handling
+              case Left(s) =>
+                view.displayError(s)
+                playRogue0(p)
             }
-          case Left(s) => throw new Error(s)
+          case Left(s) =>
+            view.displayError(s)
+            playRogue0(p)
         }
       case p: GameOver =>
         view.displayGameOver(p.getScore)
