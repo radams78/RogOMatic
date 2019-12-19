@@ -1,6 +1,6 @@
 package rogue
 
-import gamedata.{Inventory, Scroll, ScrollPower}
+import gamedata.{Inventory, ScrollPower}
 
 import scala.util.matching.Regex
 
@@ -52,12 +52,10 @@ object RoguePlayer {
         }
         if (rogue.getScreen.split("\n").head.contains("you feel as though someone is watching over you")) {
           command match {
-            case Command.Read(slot) =>
-              lastInventory.items.get(slot) match {
-                case Some(s: Scroll) => new GameOn(rogue, powers.updated(s.title, ScrollPower.REMOVE_CURSE))
-                case Some(i) => return Left(s"Last command was to read a non-scroll: $i")
-                case None => return Left(s"Last command was to read an object that does not exist, slot $slot")
-              }
+            case Command.Read(slot, scroll) => new GameOn(rogue, powers.updated(scroll.title, ScrollPower.REMOVE_CURSE))
+            case cmd => return Left {
+              "Received remove curse message but did not read scroll"
+            }
           }
         } else this
       }

@@ -182,7 +182,7 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
   }
 
   it should "remember scroll powers" in new ReadScroll {
-    player.sendCommand(Command.Read(Slot.F)) match {
+    player.sendCommand(Command.Read(Slot.F, Scroll(1, "coph rech"))) match {
       case Right(p: RoguePlayer.GameOn) => p.getPowers should be(Map("coph rech" -> ScrollPower.REMOVE_CURSE))
       case Right(_) => fail("Game ended prematurely")
       case Left(s) => fail(s)

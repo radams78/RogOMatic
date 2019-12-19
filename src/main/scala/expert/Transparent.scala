@@ -1,6 +1,6 @@
 package expert
 
-import gamedata.{Direction, Slot}
+import gamedata.{Direction, Inventory, Scroll, Slot}
 import rogue.RoguePlayer.GameOver
 import rogue._
 import view.IView
@@ -18,12 +18,13 @@ class Transparent(player: RoguePlayer.NotStarted, view: IView) {
       case p: RoguePlayer.GameOn =>
         view.displayScreen(p.getScreen)
         p.getInventory match {
-          case Right(i) => view.displayInventory(i)
-          case Left(s) => view.displayError(s)
-        }
-        p.sendCommand(getCommand) match {
-          case Right(pl) => playRogue0(pl)
-          case Left(s) => throw new Error(s) // TODO Better error handling
+          case Right(i) =>
+            view.displayInventory(i)
+            p.sendCommand(getCommand(i)) match {
+              case Right(pl) => playRogue0(pl)
+              case Left(s) => throw new Error(s) // TODO Better error handling
+            }
+          case Left(s) => throw new Error(s)
         }
       case p: GameOver =>
         view.displayGameOver(p.getScore)
@@ -71,7 +72,7 @@ class Transparent(player: RoguePlayer.NotStarted, view: IView) {
 
   /** Get a command from the user */
   @tailrec
-  private def getCommand: Command = {
+  private def getCommand(inventory: Inventory): Command = {
     def getCommand0: Either[String, Command] = {
       for {c <- getCharacter("No command entered")
            cmd <- c match {
@@ -83,7 +84,7 @@ class Transparent(player: RoguePlayer.NotStarted, view: IView) {
              case 'n' => Right(Command.DOWNRIGHT)
              case 'r' => for {
                slot <- getItem
-             } yield Command.Read(slot)
+             } yield Command.Read(slot, inventory.items(slot).asInstanceOf[Scroll]) // TODO
              case 't' => for {
                dir <- getDirection
                slot <- getItem
@@ -101,7 +102,7 @@ class Transparent(player: RoguePlayer.NotStarted, view: IView) {
       case Right(c) => c
       case Left(s) =>
         println(s)
-        getCommand
+        getCommand(inventory)
     }
   }
 }

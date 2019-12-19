@@ -1,6 +1,6 @@
 package rogue
 
-import gamedata.{Direction, Slot}
+import gamedata.{Direction, Scroll, Slot}
 
 /** A move that can be made by the player in Rogue. */
 // TODO Validation 
@@ -68,7 +68,7 @@ object Command {
   }
 
   /** Read a scroll */
-  case class Read(slot: Slot) extends Command {
+  case class Read(slot: Slot, scroll: Scroll) extends Command {
     override val keypresses: Seq[Char] = Seq('r', slot.label)
   }
 

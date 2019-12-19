@@ -1,6 +1,6 @@
 package acceptance
 
-import gamedata.{ScrollPower, Slot}
+import gamedata.{Scroll, ScrollPower, Slot}
 import mock._
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
@@ -37,7 +37,7 @@ class RoguePlayerSpec extends AnyFeatureSpec with GivenWhenThen with Matchers {
           p.getInventory should be(Right(TestGame.firstInventory))
 
           When("the user enters the command te read a scroll")
-          val p4: Either[String, RoguePlayer] = p.sendCommand(Command.Read(Slot.F))
+          val p4: Either[String, RoguePlayer] = p.sendCommand(Command.Read(Slot.F, Scroll(1, "coph rech")))
 
           p4 match {
             case Right(p: GameOn) =>
