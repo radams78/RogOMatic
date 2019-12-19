@@ -13,26 +13,30 @@ class Transparent(player: RoguePlayer.NotStarted, view: IView) {
   /** Play a game of rogue */
   def playRogue(): RoguePlayer.GameOver = {
     @tailrec
-    def playRogue0(player: RoguePlayer): GameOver = player match {
-      case p: RoguePlayer.NotStarted => playRogue0(p.start())
+    def playRogue0(player: RoguePlayer): GameOver = playRogue1(player) match {
+      case Right(p: GameOver) =>
+        view.displayGameOver(p.getScore)
+        p
+      case Right(p) => playRogue0(p)
+      case Left(s) =>
+        view.displayError(s)
+        playRogue0(player)
+    }
+
+    def playRogue1(player: RoguePlayer): Either[String, RoguePlayer] = player match {
+      case p: RoguePlayer.NotStarted => Right(p.start())
       case p: RoguePlayer.GameOn =>
         view.displayScreen(p.getScreen)
         p.getInventory match {
           case Right(i) =>
             view.displayInventory(i)
             p.sendCommand(getCommand(i)) match {
-              case Right(pl) => playRogue0(pl)
-              case Left(s) =>
-                view.displayError(s)
-                playRogue0(p)
+              case Right(pl) => Right(pl)
+              case Left(s) => Left(s)
             }
-          case Left(s) =>
-            view.displayError(s)
-            playRogue0(p)
+          case Left(s) => Left(s)
         }
-      case p: GameOver =>
-        view.displayGameOver(p.getScore)
-        p
+      case p: GameOver => Right(p)
     }
 
     playRogue0(player)
