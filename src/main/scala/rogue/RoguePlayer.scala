@@ -42,23 +42,19 @@ object RoguePlayer {
 
     /** Send a command to Rogue */
     def sendCommand(command: Command): Either[String, RoguePlayer] = {
-      for (lastInventory <- getInventory) yield {
-        for (k <- command.keypresses) rogue.sendKeypress(k)
-        if (!rogue.getScreen.split("\n").last.exists(_ != ' ')) {
-          return Right(new GameOver(rogue))
-        }
-        if (rogue.getScreen.split("\n").head.contains("-more-")) {
-          rogue.sendKeypress(' ')
-        }
-        if (rogue.getScreen.split("\n").head.contains("you feel as though someone is watching over you")) {
-          command match {
-            case Command.Read(slot, scroll) => new GameOn(rogue, powers.updated(scroll.title, ScrollPower.REMOVE_CURSE))
-            case cmd => return Left {
-              "Received remove curse message but did not read scroll"
-            }
-          }
-        } else this
+      for (k <- command.keypresses) rogue.sendKeypress(k)
+      if (!rogue.getScreen.split("\n").last.exists(_ != ' ')) {
+        return Right(new GameOver(rogue))
       }
+      if (rogue.getScreen.split("\n").head.contains("-more-")) {
+        rogue.sendKeypress(' ')
+      }
+      if (rogue.getScreen.split("\n").head.contains("you feel as though someone is watching over you")) {
+        command match {
+          case Command.Read(slot, scroll) => Right(new GameOn(rogue, powers.updated(scroll.title, ScrollPower.REMOVE_CURSE)))
+          case cmd => Left("Received remove curse message but did not read scroll")
+        }
+      } else Right(this)
     }
   }
 
