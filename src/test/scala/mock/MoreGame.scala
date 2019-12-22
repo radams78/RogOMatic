@@ -1,5 +1,6 @@
 package mock
 
+/** A game of Rogue which includes a screen that displays -more- */
 object MoreGame {
   val firstScreen: String = MockRogue.makeScreen(
     """
