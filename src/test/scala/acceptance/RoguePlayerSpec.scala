@@ -44,7 +44,7 @@ class RoguePlayerSpec extends AnyFeatureSpec with GivenWhenThen with Matchers {
       p4.getScreen should be(TestGame.fourthScreen)
 
       And("the final inventory should be displayed")
-      p4.getInventory should be(TestGame.fourthInventory)
+      p4.getInventory should be(Right(TestGame.fourthInventory))
 
       And("the scroll power should be remembered")
       p4.getPowers should be(Map("coph rech" -> ScrollPower.REMOVE_CURSE))
