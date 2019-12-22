@@ -84,6 +84,7 @@ object ZeroMoveGame {
       |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
       |""".stripMargin
 
+  /** The PC's inventory at the start of [[zeroMoveGame]] */
   val firstInventory: Inventory = Inventory(
     items = Map(
       Slot.A -> Food(1),
@@ -96,6 +97,9 @@ object ZeroMoveGame {
     wielding = Some(Slot.C)
   )
 
-  val emptyInventoryGame: MockRogue = MockRogue.Start.End(firstScreen, emptyInventoryScreen)
+  /** Game of Rogue which does not allow any moves to be made */
   val zeroMoveGame: MockRogue = MockRogue.Start.End(firstScreen, firstInventoryScreen)
+
+  /** Game of Rogue with an empty inventory */
+  val emptyInventoryGame: MockRogue = MockRogue.Start.End(firstScreen, emptyInventoryScreen)
 }
