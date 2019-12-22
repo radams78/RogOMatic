@@ -9,108 +9,12 @@ import rogue._
 /** Unit tests for [[RoguePlayer]] class */
 class RoguePlayerTest extends AnyFlatSpec with Matchers {
 
-  trait FirstScreen {
-    val firstScreen: String =
-      """
-        |
-        |
-        |
-        |
-        |
-        |
-        |
-        |         ---------+--
-        |         |..........|
-        |         |.S........|
-        |         |.....@....|
-        |         |.K........|
-        |         |..........|
-        |         ------------
-        |
-        |
-        |
-        |
-        |
-        |
-        |
-        |
-        |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
-        |""".stripMargin
+  trait ZeroMoveGame {
+    val player: RoguePlayer.NotStarted = RoguePlayer(ZeroMoveGame.zeroMoveGame)
   }
 
-  trait EmptyInventory {
-    val inventoryScreen: String =
-      """                                                --press space to continue--
-        |
-        |
-        |
-        |
-        |
-        |
-        |
-        |         ---------+--
-        |         |..........|
-        |         |.S........|
-        |         |.....@....|
-        |         |.K........|
-        |         |..........|
-        |         ------------
-        |
-        |
-        |
-        |
-        |
-        |
-        |
-        |
-        |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
-        |""".stripMargin
-  }
-
-  trait FullInventory {
-    val firstInventoryScreen: String =
-      """                                                a) some food
-        |                                                b) +1 ring mail [4] being worn
-        |                                                c) a +1,+1 mace in hand
-        |                                                d) a +1,+0 short bow
-        |                                                e) 31 +0,+0 arrows
-        |                                                --press space to continue--
-        |
-        |
-        |         ---------+--
-        |         |..........|
-        |         |.S........|
-        |         |.....@....|
-        |         |.K........|
-        |         |..........|
-        |         ------------
-        |
-        |
-        |
-        |
-        |
-        |
-        |
-        |
-        |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
-        |""".stripMargin
-
-    val firstInventory: Inventory = Inventory(
-      items = Map(
-        Slot.A -> Food(1),
-        Slot.B -> Armor(ArmorType.RING_MAIL, +1),
-        Slot.C -> Weapon(WeaponType.MACE, +1, +1),
-        Slot.D -> Weapon(WeaponType.SHORT_BOW, +1, +0),
-        Slot.E -> Weapon(31, WeaponType.ARROW, +0, +0)
-      ),
-      wearing = Some(Slot.B),
-      wielding = Some(Slot.C)
-    )
-  }
-
-  trait ZeroMoveGame extends FirstScreen with FullInventory {
-    val rogue: MockRogue = MockRogue.Start.End(firstScreen, firstInventoryScreen)
-    val player: RoguePlayer.NotStarted = RoguePlayer(rogue)
+  trait EmptyInventoryGame {
+    val player: RoguePlayer.NotStarted = RoguePlayer(ZeroMoveGame.emptyInventoryGame)
   }
 
   trait TestGame {
@@ -133,18 +37,11 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
     ) // TODO Duplication
   }
 
-  "A player" should "be able to start a game of Rogue" in new ZeroMoveGame {
-    player.start()
-    assert(rogue.isStarted)
-  }
-
   it should "display the first screen of the game" in new ZeroMoveGame {
-    player.start().getScreen should be(firstScreen)
+    player.start().getScreen should be(ZeroMoveGame.firstScreen)
   }
 
-  it should "display the first inventory of the game" in new FirstScreen with EmptyInventory {
-    val rogue: MockRogue = MockRogue.Start.End(firstScreen, inventoryScreen)
-    val player: RoguePlayer.NotStarted = RoguePlayer(rogue)
+  it should "display the first inventory of the game" in new EmptyInventoryGame {
     player.start().getInventory should be(Right(Inventory()))
   }
 
