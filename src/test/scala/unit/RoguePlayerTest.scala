@@ -26,15 +26,15 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
   }
 
   trait MoreGame {
-    val player: RoguePlayer.GameOn = new RoguePlayer.GameOn(MoreGame.moreGame, Map()) // TODO Duplication
+    val player: RoguePlayer.GameOn = new RoguePlayer.GameOn(MoreGame.moreGame, new GameState(Map()))
   }
 
   trait ReadScroll {
     val player: RoguePlayer.GameOn = new RoguePlayer.GameOn(MockRogue.Build
       .WaitForCommand(TestGame.secondScreen, TestGame.secondInventoryScreen, 'r')
       .Wait(TestGame.thirdScreen, 'f')
-      .End(TestGame.fourthScreen, TestGame.fourthInventoryScreen), Map()
-    ) // TODO Duplication
+      .End(TestGame.fourthScreen, TestGame.fourthInventoryScreen), new GameState(Map())
+    )
   }
 
   it should "display the first screen of the game" in new ZeroMoveGame {

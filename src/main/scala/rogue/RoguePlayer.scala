@@ -1,6 +1,6 @@
 package rogue
 
-import gamedata.{Inventory, ScrollPower}
+import gamedata.{GameState, Inventory, ScrollPower}
 
 import scala.annotation.tailrec
 import scala.util.matching.Regex
@@ -18,14 +18,14 @@ object RoguePlayer {
     /** Start the game */
     def start(): GameOn = {
       rogue.start()
-      new GameOn(rogue, Map())
+      new GameOn(rogue, new GameState(Map()))
     }
   }
 
   /** Game of Rogue is in progress */
-  class GameOn(rogue: IRogue, powers: Map[String, ScrollPower]) extends RoguePlayer {
+  class GameOn(rogue: IRogue, gameState: GameState) extends RoguePlayer {
     /** Known powers of scrolls */
-    def getPowers: Map[String, ScrollPower] = powers
+    def getPowers: Map[String, ScrollPower] = gameState.scrollPowers
 
     /** Current inventory */
     def getInventory: Either[String, Inventory] = {
@@ -47,16 +47,7 @@ object RoguePlayer {
       update(command)
     }
 
-    private val removeCurseMessage: Regex = """you feel as though someone is watching over you""".r.unanchored
     private val moreRegex: Regex = """(.*)-more-""".r.unanchored
-
-    def interpretMessage(messageLine: String, lastCommand: Command): Either[String, GameOn] = messageLine match {
-      case removeCurseMessage() => lastCommand match {
-        case Command.Read(slot, scroll) => Right(new GameOn(rogue, powers.updated(scroll.title, ScrollPower.REMOVE_CURSE)))
-        case cmd => Left("Received remove curse message but did not read scroll")
-      }
-      case _ => Right(this)
-    }
 
     @tailrec
     private def update(lastCommand: Command): Either[String, RoguePlayer] = {
@@ -66,11 +57,12 @@ object RoguePlayer {
       rogue.getScreen.split("\n").head match {
         case moreRegex(message) =>
           rogue.sendKeypress(' ')
-          interpretMessage(message, lastCommand) match {
-            case Right(gs) => gs.update(lastCommand)
+          gameState.interpretMessage(message, lastCommand) match {
+            case Right(gs) => new GameOn(rogue, gs).update(lastCommand)
             case Left(s) => Left(s)
           }
-        case message => interpretMessage(message, lastCommand)
+        case message =>
+          for (gs <- gameState.interpretMessage(message, lastCommand)) yield new GameOn(rogue, gs)
       }
     }
   }
