@@ -187,7 +187,6 @@ object TestGame {
       |                                                c) a +1,+1 mace in hand
       |                                                d) a +1,+0 short bow
       |                                                e) 35 +0,+0 arrows
-      |                                                f) a scroll entitled: 'coph rech'
       |                                                g) scale mail
       |                                                h) a redwood staff
       |                                                i) 7 arrows
