@@ -22,8 +22,12 @@ class ItemTest extends AnyFlatSpec with Matchers with EitherValues {
     Item.parse("a +1,+0 long sword") should be(Right(Weapon(WeaponType.LONG_SWORD, +1, +0)))
   }
 
-  "31 arrows" should "be recognised as 31 arrows" in {
+  "identified arrows" should "be recognised as identified arrows" in {
     Item.parse("31 +0,+0 arrows") should be(Right(Weapon(31, WeaponType.ARROW, +0, +0)))
+  }
+
+  "unidentified arrows" should "be recognised as unidentified arrows" in {
+    Item.parse("31 arrows") should be(Right(Weapon(31, WeaponType.ARROW)))
   }
 
   "a stibotantalite ring" should "be recognised as a stibotantalite ring" in {
@@ -41,4 +45,6 @@ class ItemTest extends AnyFlatSpec with Matchers with EitherValues {
   "a redwood staff" should "be recognised as a redwood staff" in {
     Item.parse("a redwood staff") should be(Right(gamedata.Wand(WandType.STAFF, Material.REDWOOD)))
   }
+
+
 }

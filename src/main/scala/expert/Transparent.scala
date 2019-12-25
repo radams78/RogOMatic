@@ -86,6 +86,9 @@ class Transparent(player: RoguePlayer.NotStarted, view: IView) {
              case 'k' => Right(Command.DOWN)
              case 'l' => Right(Command.RIGHT)
              case 'n' => Right(Command.DOWNRIGHT)
+             case 'q' => for {
+               slot <- getItem
+             } yield Command.Quaff(slot)
              case 'r' => for {
                slot <- getItem
              } yield Command.Read(slot, inventory.items(slot).asInstanceOf[Scroll]) // TODO

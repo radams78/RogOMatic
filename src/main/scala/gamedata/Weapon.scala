@@ -11,7 +11,9 @@ object Weapon {
   }
 
   def apply(quantity: Int, weaponType: MissileType, plusToHit: Int, plusDamage: Int): Missile =
-    Missile(quantity, weaponType, Bonus(plusToHit), Bonus(plusDamage))
+    IdentifiedMissile(quantity, weaponType, Bonus(plusToHit), Bonus(plusDamage))
+
+  def apply(quantity: Int, weaponType: WeaponType): Missile = UnidentifiedMissile(quantity, weaponType)
 }
 
 /** A melee weapon or bow */
@@ -21,12 +23,19 @@ case class Wieldable(weaponType: WieldableType, plusToHit: Bonus, plusDamage: Bo
 }
 
 /** A stack of missiles */
-case class Missile(quantity: Int, weaponType: MissileType, plusToHit: Bonus, plusDamage: Bonus) extends Weapon {
+trait Missile extends Weapon
+
+case class IdentifiedMissile(quantity: Int, weaponType: MissileType, plusToHit: Bonus, plusDamage: Bonus) extends Missile {
   override def toString: String =
     s"$quantity $plusToHit,$plusDamage ${if (quantity > 1) weaponType.plural else weaponType.singular}"
 }
 
 object Missile {
+  def apply(quantity: Int, weaponType: MissileType, plusToHit: Bonus, plusDamage: Bonus): Missile =
+    IdentifiedMissile(quantity, weaponType, plusToHit, plusDamage)
+
   def apply(quantity: Int, weaponType: MissileType, plusToHit: Int, plusDamage: Int): Missile =
     Missile(quantity, weaponType, Bonus(plusToHit), Bonus(plusDamage))
 }
+
+case class UnidentifiedMissile(quantity: Int, weaponType: WeaponType) extends Missile
