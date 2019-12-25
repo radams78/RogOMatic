@@ -217,7 +217,8 @@ object TestGame {
       Slot.D -> Weapon(WeaponType.SHORT_BOW, +1, +0),
       Slot.E -> Missile(35, WeaponType.ARROW, +0, +0),
       Slot.G -> Armor(ArmorType.SCALE_MAIL),
-      Slot.H -> gamedata.Wand(WandType.STAFF, Material.REDWOOD)
+      Slot.H -> gamedata.Wand(WandType.STAFF, Material.REDWOOD),
+      Slot.I -> Missile(7, WeaponType.ARROW)
     ),
     wearing = Some(Slot.B),
     wielding = Some(Slot.C)
