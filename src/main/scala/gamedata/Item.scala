@@ -25,7 +25,7 @@ object Item {
       for (wt <- WeaponType.parse(weaponType)) yield Weapon(wt, plusToHit.toInt, plusDamage.toInt)
     case unidentifiedWeaponsRegex(quantity, missileType) =>
       for (wt <- WeaponType.parse(missileType)) yield wt match {
-        case wt: MissileType => UnidentifiedMissile(quantity.toInt, wt)
+        case wt: MissileType => Missile(quantity.toInt, wt)
         case _ => return Left(s"Expected missile type but received $wt in $description")
       }
     case identifiedWeaponsRegex(quantity, plusToHit, plusDamage, weaponType) =>
