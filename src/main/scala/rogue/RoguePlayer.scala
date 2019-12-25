@@ -47,20 +47,31 @@ object RoguePlayer {
       update(command)
     }
 
+    private val removeCurseMessage: Regex = """you feel as though someone is watching over you""".r.unanchored
+    private val moreRegex: Regex = """(.*)-more-""".r.unanchored
+
+    def interpretMessage(messageLine: String, lastCommand: Command): Either[String, GameOn] = messageLine match {
+      case removeCurseMessage() => lastCommand match {
+        case Command.Read(slot, scroll) => Right(new GameOn(rogue, powers.updated(scroll.title, ScrollPower.REMOVE_CURSE)))
+        case cmd => Left("Received remove curse message but did not read scroll")
+      }
+      case _ => Right(this)
+    }
+
     @tailrec
     private def update(lastCommand: Command): Either[String, RoguePlayer] = {
       if (!rogue.getScreen.split("\n").last.exists(_ != ' ')) {
         return Right(new GameOver(rogue))
       }
-      if (rogue.getScreen.split("\n").head.contains("-more-")) { // TODO Read message
-        rogue.sendKeypress(' ')
-        update(lastCommand)
-      } else if (rogue.getScreen.split("\n").head.contains("you feel as though someone is watching over you")) {
-        lastCommand match {
-          case Command.Read(slot, scroll) => Right(new GameOn(rogue, powers.updated(scroll.title, ScrollPower.REMOVE_CURSE)))
-          case cmd => Left("Received remove curse message but did not read scroll")
-        }
-      } else Right(this)
+      rogue.getScreen.split("\n").head match {
+        case moreRegex(message) =>
+          rogue.sendKeypress(' ')
+          interpretMessage(message, lastCommand) match {
+            case Right(gs) => gs.update(lastCommand)
+            case Left(s) => Left(s)
+          }
+        case message => interpretMessage(message, lastCommand)
+      }
     }
   }
 
