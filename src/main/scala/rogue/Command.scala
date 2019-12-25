@@ -67,6 +67,11 @@ object Command {
     override val keypresses: Seq[Char] = Seq('t', dir.keypress, slot.label)
   }
 
+  /** Drink a potion */
+  case class Quaff(slot: Slot) extends Command {
+    override val keypresses: Seq[Char] = Seq('q', slot.label)
+  }
+
   /** Read a scroll */
   case class Read(slot: Slot, scroll: Scroll) extends Command {
     override val keypresses: Seq[Char] = Seq('r', slot.label)
@@ -76,9 +81,4 @@ object Command {
   case object DOWNSTAIRS extends Command {
     override val keypresses: Seq[Char] = Seq('>')
   }
-
-  case class Quaff(slot: Slot) extends Command {
-    override val keypresses: Seq[Char] = Seq('q', slot.label)
-  }
-
 }
