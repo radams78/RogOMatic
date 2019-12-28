@@ -9,18 +9,18 @@ import rogue.Command
 import scala.util.matching.Regex
 
 /** Partial information about the state of the game */
-class GameState(val scrollKnowledge: ScrollKnowledge = new ScrollKnowledge(Map()),
-                val potionKnowledge: PotionKnowledge = new PotionKnowledge(Map()),
+class GameState(val scrollKnowledge: ScrollKnowledge = ScrollKnowledge(),
+                val potionKnowledge: PotionKnowledge = PotionKnowledge(),
                 val lastCommand: Option[Command] = None) {
-  private def complete: Either[String, GameState] = lastCommand match {
-    case None => Right(this)
-    case Some(cmd) => for {
+  /** Deduce all information possible */
+  private def complete: Either[String, GameState] =
+    lastCommand.fold[Either[String, GameState]](Right(this))((cmd: Command) => for {
       sp <- scrollKnowledge.infer(cmd)
       pp <- potionKnowledge.infer(cmd)
       command <- cmd.infer(scrollKnowledge)
       command2 <- command.infer(potionKnowledge)
     } yield new GameState(sp, pp, Some(command2))
-  }
+    )
 }
 
 object GameState {
@@ -91,6 +91,8 @@ class ScrollKnowledge(private val powers: Map[String, ScrollPower]) {
 }
 
 object ScrollKnowledge {
+  def apply(): ScrollKnowledge = new ScrollKnowledge(Map())
+
   implicit def domain: Domain[ScrollKnowledge] = (x: ScrollKnowledge, y: ScrollKnowledge) => x.powers.merge(y.powers).map(new ScrollKnowledge(_))
 }
 
@@ -112,5 +114,7 @@ class PotionKnowledge(private val powers: Map[Colour, PotionPower]) {
 }
 
 object PotionKnowledge {
+  def apply(): PotionKnowledge = new PotionKnowledge(Map())
+  
   implicit def domain: Domain[PotionKnowledge] = (x: PotionKnowledge, y: PotionKnowledge) => x.powers.merge(y.powers).map(new PotionKnowledge(_))
 }
