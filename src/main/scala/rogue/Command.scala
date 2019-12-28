@@ -3,54 +3,23 @@ package rogue
 import gamedata.Domain._
 import gamedata._
 
-/** A move that can be made by the player in Rogue. */
+/** Partial information about a move that can be made by the player in Rogue. */
 // TODO Validation 
 sealed trait Command {
+  /** Combine two pieces of information about a command */
   def merge(that: Command): Either[String, Command]
 
+  /** Add information from the given knowledge about scroll powers */
   def infer(scrollKnowledge: ScrollKnowledge): Either[String, Command] = Right(this)
 
+  /** Add information from the given knowledge about potion powers */
   def infer(potionKnowledge: PotionKnowledge): Either[String, Command] = Right(this)
 
-  /** Keypress to send to Rogue to execute command */
+  /** Keypresses to send to Rogue to execute command */
   def keypresses: Seq[Char]
 }
 
 object Command {
-
-  /** Wield a weapon */
-  case class Wield(slot: Slot) extends Command {
-    override val keypresses: Seq[Char] = Seq('w', slot.label)
-
-    override def merge(that: Command): Either[String, Command] = that match {
-      case Wield(thatSlot) => for (inferredSlot <- slot.merge(thatSlot)) yield Wield(inferredSlot)
-      case _ => Left(s"Incompatible commands: $this and $that")
-    }
-  }
-
-  /** Throw an item */
-  case class Throw(dir: Direction, slot: Slot, item: Item) extends Command {
-    override val keypresses: Seq[Char] = Seq('t', dir.keypress, slot.label)
-
-    override def infer(scrollKnowledge: ScrollKnowledge): Either[String, Command] = item match {
-      case scroll: Scroll => for (_scroll <- scroll.infer(scrollKnowledge)) yield Throw(dir, slot, _scroll)
-      case _ => Right(this)
-    }
-
-    override def infer(potionKnowledge: PotionKnowledge): Either[String, Command] = item match {
-      case potion: Potion => for (_potion <- potion.infer(potionKnowledge)) yield Throw(dir, slot, _potion)
-      case _ => Right(this)
-    }
-
-    override def merge(that: Command): Either[String, Command] = that match {
-      case Throw(thatDir, thatSlot, thatItem) => for {
-        inferredDir <- dir.merge(thatDir)
-        inferredSlot <- slot.merge(thatSlot)
-        inferredItem <- item.merge(thatItem)
-      } yield Throw(inferredDir, inferredSlot, inferredItem)
-      case _ => Left(s"Incompatible commands: $this and $that")
-    }
-  }
 
   /** Drink a potion */
   case class Quaff(slot: Option[Slot], potion: Potion) extends Command {
@@ -86,6 +55,54 @@ object Command {
         inferredSlot <- slot.merge(thatSlot)
         inferredScroll <- scroll.merge(thatScroll)
       } yield Read(inferredSlot, inferredScroll)
+      case _ => Left(s"Incompatible commands: $this and $that")
+    }
+  }
+
+  /** Throw an item */
+  case class Throw(dir: Direction, slot: Slot, item: Item) extends Command {
+    override val keypresses: Seq[Char] = Seq('t', dir.keypress, slot.label)
+
+    override def infer(scrollKnowledge: ScrollKnowledge): Either[String, Command] = item match {
+      case scroll: Scroll => for (_scroll <- scroll.infer(scrollKnowledge)) yield Throw(dir, slot, _scroll)
+      case _ => Right(this)
+    }
+
+    override def infer(potionKnowledge: PotionKnowledge): Either[String, Command] = item match {
+      case potion: Potion => for (_potion <- potion.infer(potionKnowledge)) yield Throw(dir, slot, _potion)
+      case _ => Right(this)
+    }
+
+    override def merge(that: Command): Either[String, Command] = that match {
+      case Throw(thatDir, thatSlot, thatItem) => for {
+        inferredDir <- dir.merge(thatDir)
+        inferredSlot <- slot.merge(thatSlot)
+        inferredItem <- item.merge(thatItem)
+      } yield Throw(inferredDir, inferredSlot, inferredItem)
+      case _ => Left(s"Incompatible commands: $this and $that")
+    }
+  }
+
+  object Read {
+    def apply(slot: Slot, scroll: Scroll): Read = Read(Some(slot), scroll)
+  }
+
+  /** Rest */
+  case object REST extends Command {
+    override val keypresses: Seq[Char] = Seq('.')
+
+    override def merge(that: Command): Either[String, Command] = that match {
+      case REST => Right(REST)
+      case _ => Left(s"Incompatible commands: $this and $that")
+    }
+  }
+
+  /** Wield a weapon */
+  case class Wield(slot: Slot) extends Command {
+    override val keypresses: Seq[Char] = Seq('w', slot.label)
+
+    override def merge(that: Command): Either[String, Command] = that match {
+      case Wield(thatSlot) => for (inferredSlot <- slot.merge(thatSlot)) yield Wield(inferredSlot)
       case _ => Left(s"Incompatible commands: $this and $that")
     }
   }
@@ -168,20 +185,6 @@ object Command {
       case DOWNRIGHT => Right(DOWNRIGHT)
       case _ => Left(s"Incompatible commands: $this and $that")
     }
-  }
-
-  /** Rest */
-  case object REST extends Command {
-    override val keypresses: Seq[Char] = Seq('.')
-
-    override def merge(that: Command): Either[String, Command] = that match {
-      case REST => Right(REST)
-      case _ => Left(s"Incompatible commands: $this and $that")
-    }
-  }
-
-  object Read {
-    def apply(slot: Slot, scroll: Scroll): Read = Read(Some(slot), scroll)
   }
 
   /** Go downstairs */
