@@ -10,6 +10,10 @@ sealed trait WieldableType extends WeaponType {
   override def toString: String = name
 }
 
+object WieldableType {
+  implicit def domain: Domain[WieldableType] = Domain.flatDomain
+}
+
 /** The types of missile */
 sealed trait MissileType extends WeaponType {
   /** Name of the weapon in the singular */
@@ -17,6 +21,10 @@ sealed trait MissileType extends WeaponType {
 
   /** Name of the weapon in the plural */
   val plural: String
+}
+
+object MissileType {
+  implicit def domain: Domain[MissileType] = Domain.flatDomain
 }
 
 object WeaponType {

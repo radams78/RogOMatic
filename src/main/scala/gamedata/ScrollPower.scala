@@ -1,10 +1,15 @@
 package gamedata
 
-/** A power that a scroll can have */
-sealed trait ScrollPower
+/** The set of powers that a scroll can have */
+object ScrollPower extends Enumeration {
 
-object ScrollPower {
+  type ScrollPower = Value
 
-  case object REMOVE_CURSE extends ScrollPower
+  implicit def valueToScrollPowertVal(x: Value): Val = x.asInstanceOf[Val]
 
+  val REMOVE_CURSE: ScrollPower = Val("you feel as though someone is watching over you")
+
+  protected case class Val(effect: String) extends super.Val
+
+  implicit def scrollPowerDomain: Domain[ScrollPower] = Domain.flatDomain
 }

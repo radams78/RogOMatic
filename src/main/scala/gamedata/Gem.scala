@@ -18,4 +18,6 @@ object Gem extends ParsableEnum {
   val TURQUOISE: gamedata.Gem.Value = Value("turquoise")
   val PEARL: gamedata.Gem.Value = Value("pearl")
   val GARNET: gamedata.Gem.Value = Value("garnet")
+
+  implicit def domain: Domain[Gem] = Domain.flatDomain
 }

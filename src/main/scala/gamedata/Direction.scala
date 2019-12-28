@@ -41,4 +41,5 @@ object Direction {
     override val keypress: Char = 'y'
   }
 
+  implicit def domain: Domain[Direction] = Domain.flatDomain
 }

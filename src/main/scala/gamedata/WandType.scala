@@ -6,4 +6,6 @@ object WandType extends ParsableEnum {
   override val setName: String = "wand type"
   val STAFF: gamedata.WandType.Value = Value("staff")
   val WAND: gamedata.WandType.Value = Value("wand")
+
+  implicit def domain: Domain[WandType] = Domain.flatDomain
 }

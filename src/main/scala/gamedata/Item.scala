@@ -3,7 +3,9 @@ package gamedata
 import scala.util.matching.Regex
 
 /** An item that the PC can pick up */
-class Item
+trait Item {
+  def merge[T <: Item](that: T): Either[String, T]
+}
 
 object Item {
   private val rationsRegex: Regex = """(\d+) rations of food""".r
@@ -42,4 +44,6 @@ object Item {
     } yield Wand(wt, m)
     case description => for (at <- ArmorType.parse(description)) yield Armor(at)
   }
+
+  implicit def domain: Domain[Item] = (x: Item, y: Item) => x.merge(y)
 }

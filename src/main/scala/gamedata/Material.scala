@@ -34,4 +34,6 @@ object Material extends ParsableEnum {
   val ELM: gamedata.Material.Value = Value("elm")
   val PALM: gamedata.Material.Value = Value("palm")
   val WOOD: gamedata.Material.Value = Value("wooden")
+
+  implicit def domain: Domain[Material] = Domain.flatDomain
 }

@@ -11,4 +11,6 @@ object ArmorType extends ParsableEnum {
   val BANDED_MAIL: gamedata.ArmorType.Value = Value("banded mail")
   val SPLINT_MAIL: gamedata.ArmorType.Value = Value("splint mail")
   val PLATE_MAIL: gamedata.ArmorType.Value = Value("plate mail")
+
+  implicit def domain: Domain[ArmorType] = Domain.flatDomain
 }

@@ -26,14 +26,14 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
   }
 
   trait MoreGame {
-    val player: RoguePlayer.GameOn = new RoguePlayer.GameOn(MoreGame.moreGame, new GameState(Map()))
+    val player: RoguePlayer.GameOn = new RoguePlayer.GameOn(MoreGame.moreGame, new GameState())
   }
 
   trait ReadScroll {
     val player: RoguePlayer.GameOn = new RoguePlayer.GameOn(MockRogue.Build
       .WaitForCommand(TestGame.secondScreen, TestGame.secondInventoryScreen, 'r')
       .Wait(TestGame.thirdScreen, 'f')
-      .End(TestGame.fourthScreen, TestGame.fourthInventoryScreen), new GameState(Map())
+      .End(TestGame.fourthScreen, TestGame.fourthInventoryScreen), new GameState()
     )
   }
 
@@ -80,7 +80,7 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
 
   it should "remember scroll powers" in new ReadScroll {
     player.sendCommand(Command.Read(Slot.F, Scroll(1, "coph rech"))) match {
-      case Right(p: RoguePlayer.GameOn) => p.getPowers should be(Map("coph rech" -> ScrollPower.REMOVE_CURSE))
+      case Right(p: RoguePlayer.GameOn) => p.getScrollKnowledge.getPower("coph rech") should contain(ScrollPower.REMOVE_CURSE)
       case Right(_) => fail("Game ended prematurely")
       case Left(s) => fail(s)
     }

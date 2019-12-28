@@ -18,4 +18,6 @@ object Colour extends ParsableEnum {
   val PLAID: gamedata.Colour.Value = Value("plaid")
   val BURGUNDY: gamedata.Colour.Value = Value("burgundy")
   val BEIGE: gamedata.Colour.Value = Value("beige")
+
+  implicit def domain: Domain[Colour] = Domain.flatDomain
 }

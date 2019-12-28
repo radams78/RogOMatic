@@ -1,6 +1,6 @@
 package acceptance
 
-import gamedata.{GameState, Scroll, ScrollPower, Slot}
+import gamedata._
 import mock._
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
@@ -47,7 +47,7 @@ class RoguePlayerSpec extends AnyFeatureSpec with GivenWhenThen with Matchers {
       p4.getInventory should be(Right(TestGame.fourthInventory))
 
       And("the scroll power should be remembered")
-      p4.getPowers should be(Map("coph rech" -> ScrollPower.REMOVE_CURSE))
+      p4.getScrollKnowledge should be(new ScrollKnowledge(Map("coph rech" -> ScrollPower.REMOVE_CURSE)))
     }
 
     Scenario("User plays a game of Rogue in transparent mode and is killed") {
@@ -72,7 +72,7 @@ class RoguePlayerSpec extends AnyFeatureSpec with GivenWhenThen with Matchers {
     Scenario("Rogue displays a -more- message") {
       Given("a game of Rogue in progress")
       val rogue: MockRogue = MoreGame.moreGame
-      val player: RoguePlayer.GameOn = new RoguePlayer.GameOn(rogue, new GameState(Map())) // TODO Duplication
+      val player: RoguePlayer.GameOn = new RoguePlayer.GameOn(rogue, new GameState()) // TODO Duplication
 
       When("the user enters a command to which Rogue responds with -more-")
       val p2: GameOn = getGameOn(player.sendCommand(Command.RIGHT))

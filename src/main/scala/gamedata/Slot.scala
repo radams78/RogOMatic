@@ -20,4 +20,6 @@ object Slot {
 
   def parse(slot: String): Either[String, Slot] =
     if (slot.length == 1 && slot.head.isLower) Right(Slot(slot.head)) else Left(s"Unrecognised inventory slot: $slot")
+
+  implicit def domain: Domain[Slot] = Domain.flatDomain
 }

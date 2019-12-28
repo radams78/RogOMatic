@@ -1,6 +1,6 @@
 package expert
 
-import gamedata.{Direction, Inventory, Scroll, Slot}
+import gamedata._
 import rogue.RoguePlayer.GameOver
 import rogue._
 import view.IView
@@ -88,14 +88,20 @@ class Transparent(player: RoguePlayer.NotStarted, view: IView) {
              case 'n' => Right(Command.DOWNRIGHT)
              case 'q' => for {
                slot <- getItem
-             } yield Command.Quaff(slot)
+             } yield inventory.items.get(slot) match {
+               case Some(p: Potion) => Command.Quaff(Some(slot), p)
+               case _ => return Left(s"Invalid potion: $slot")
+             }
              case 'r' => for {
                slot <- getItem
-             } yield Command.Read(slot, inventory.items(slot).asInstanceOf[Scroll]) // TODO
+             } yield inventory.items.get(slot) match {
+               case Some(s: Scroll) => Command.Read(Some(slot), s)
+               case _ => return Left(s"Invalid scroll: $slot")
+             }
              case 't' => for {
                dir <- getDirection
                slot <- getItem
-             } yield Command.Throw(dir, slot)
+             } yield Command.Throw(dir, slot, inventory.items(slot)) // TODO Better error handling
              case 'u' => Right(Command.UPRIGHT)
              case 'w' => for (slot <- getItem) yield Command.Wield(slot)
              case 'y' => Right(Command.UPLEFT)

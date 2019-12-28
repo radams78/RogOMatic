@@ -1,8 +1,8 @@
 package rogue
 
-import gamedata.{GameState, Inventory, ScrollPower}
+import gamedata.Domain._
+import gamedata.{GameState, Inventory, PotionKnowledge, ScrollKnowledge}
 
-import scala.annotation.tailrec
 import scala.util.matching.Regex
 
 /** High-level communication with the game of Rogue. */
@@ -18,14 +18,14 @@ object RoguePlayer {
     /** Start the game */
     def start(): GameOn = {
       rogue.start()
-      new GameOn(rogue, new GameState(Map()))
+      new GameOn(rogue, new GameState(new ScrollKnowledge(Map()), new PotionKnowledge(Map()), None))
     }
   }
 
   /** Game of Rogue is in progress */
   class GameOn(rogue: IRogue, gameState: GameState) extends RoguePlayer {
     /** Known powers of scrolls */
-    def getPowers: Map[String, ScrollPower] = gameState.scrollPowers
+    def getScrollKnowledge: ScrollKnowledge = gameState.scrollKnowledge
 
     /** Current inventory */
     def getInventory: Either[String, Inventory] = {
@@ -49,20 +49,18 @@ object RoguePlayer {
 
     private val moreRegex: Regex = """(.*)-more-""".r.unanchored
 
-    @tailrec
     private def update(lastCommand: Command): Either[String, RoguePlayer] = {
       if (!rogue.getScreen.split("\n").last.exists(_ != ' ')) {
         return Right(new GameOver(rogue))
       }
-      rogue.getScreen.split("\n").head match {
+      rogue.getScreen.split("\n")(0) match {
         case moreRegex(message) =>
           rogue.sendKeypress(' ')
-          gameState.interpretMessage(message, lastCommand) match {
-            case Right(gs) => new GameOn(rogue, gs).update(lastCommand)
-            case Left(s) => Left(s)
-          }
+          for (gs <- new GameState(gameState.scrollKnowledge, gameState.potionKnowledge, Some(lastCommand))
+            .merge(GameState.interpretMessage(message))) yield new GameOn(rogue, gs)
         case message =>
-          for (gs <- gameState.interpretMessage(message, lastCommand)) yield new GameOn(rogue, gs)
+          for (gs <- new GameState(gameState.scrollKnowledge, gameState.potionKnowledge, Some(lastCommand))
+            .merge(GameState.interpretMessage(message))) yield new GameOn(rogue, gs) // TODO Duplication
       }
     }
   }
