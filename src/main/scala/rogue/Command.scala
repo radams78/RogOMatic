@@ -59,6 +59,12 @@ object Command {
     }
   }
 
+  object Read {
+    def apply(scroll: Scroll): Read = Read(None, scroll)
+
+    def apply(slot: Slot, scroll: Scroll): Read = Read(Some(slot), scroll)
+  }
+
   /** Throw an item */
   case class Throw(dir: Direction, slot: Slot, item: Item) extends Command {
     override val keypresses: Seq[Char] = Seq('t', dir.keypress, slot.label)
@@ -81,10 +87,6 @@ object Command {
       } yield Throw(inferredDir, inferredSlot, inferredItem)
       case _ => Left(s"Incompatible commands: $this and $that")
     }
-  }
-
-  object Read {
-    def apply(slot: Slot, scroll: Scroll): Read = Read(Some(slot), scroll)
   }
 
   /** Rest */

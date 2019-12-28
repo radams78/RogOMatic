@@ -8,6 +8,17 @@ import rogue.Command
 
 import scala.util.matching.Regex
 
+object Event extends Enumeration {
+  type Event = Value
+  val REMOVE_CURSE: Event = Val("you feel as though someone is watching over you",
+    GameState(Command.Read(Scroll(ScrollPower.REMOVE_CURSE))))
+
+  implicit def toValue(x: Value): Val = x.asInstanceOf[Val]
+
+  protected case class Val(message: String, inference: GameState) extends super.Val
+
+}
+
 /** Partial information about the state of the game */
 class GameState(val scrollKnowledge: ScrollKnowledge = ScrollKnowledge(),
                 val potionKnowledge: PotionKnowledge = PotionKnowledge(),
@@ -19,11 +30,12 @@ class GameState(val scrollKnowledge: ScrollKnowledge = ScrollKnowledge(),
       pp <- potionKnowledge.infer(cmd)
       command <- cmd.infer(scrollKnowledge)
       command2 <- command.infer(potionKnowledge)
-    } yield new GameState(sp, pp, Some(command2))
-    )
+    } yield new GameState(sp, pp, Some(command2)))
 }
 
 object GameState {
+  def apply(lastCommand: Command): GameState = new GameState(ScrollKnowledge(), PotionKnowledge(), Some(lastCommand))
+
   private val removeCurseMessage: Regex = """you feel as though someone is watching over you""".r.unanchored
   private val healingMessage: Regex = """you begin to feel better""".r.unanchored
   private val blankLine: String = " " * 80
@@ -34,30 +46,6 @@ object GameState {
     case blankLine => new GameState()
     case _ => throw new Error(s"Unrecognised message: $messageLine")
   }
-
-  def infer(scrollPowers: Map[String, ScrollPower], scroll: Scroll): Either[String, Map[String, ScrollPower]] =
-    (scroll.title, scroll.power) match {
-      case (Some(t), Some(p)) => scrollPowers.get(t) match {
-        case Some(pp) => for (power <- p.merge(pp)) yield scrollPowers.updated(t, power)
-        case None => Right(scrollPowers + (t -> p))
-      }
-      case _ => Right(scrollPowers)
-    }
-
-  def infer(potionPowers: Map[Colour, PotionPower], command: Command): Either[String, Map[Colour, PotionPower]] = command match {
-    case Command.Throw(_, _, potion: Potion) => infer(potionPowers, potion)
-    case Command.Quaff(_, potion) => infer(potionPowers, potion)
-    case _ => Right(potionPowers)
-  }
-
-  def infer(potionPowers: Map[Colour, PotionPower], potion: Potion): Either[String, Map[Colour, PotionPower]] =
-    (potion.colour, potion.power) match {
-      case (Some(c), Some(p)) => potionPowers.get(c) match {
-        case Some(pp) => for (power <- p.merge(pp)) yield potionPowers.updated(c, power)
-        case None => Right(potionPowers + (c -> p))
-      }
-      case _ => Right(potionPowers)
-    }
 
   implicit def domain: Domain[GameState] = (x: GameState, y: GameState) => for {
     scrollKnowledge <- x.scrollKnowledge.merge(y.scrollKnowledge)
