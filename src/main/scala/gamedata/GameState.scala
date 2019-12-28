@@ -8,17 +8,6 @@ import rogue.Command
 
 import scala.util.matching.Regex
 
-object Event extends Enumeration {
-  type Event = Value
-  val REMOVE_CURSE: Event = Val("you feel as though someone is watching over you",
-    GameState(Command.Read(Scroll(ScrollPower.REMOVE_CURSE))))
-
-  implicit def toValue(x: Value): Val = x.asInstanceOf[Val]
-
-  protected case class Val(message: String, inference: GameState) extends super.Val
-
-}
-
 /** Partial information about the state of the game */
 class GameState(val scrollKnowledge: ScrollKnowledge = ScrollKnowledge(),
                 val potionKnowledge: PotionKnowledge = PotionKnowledge(),

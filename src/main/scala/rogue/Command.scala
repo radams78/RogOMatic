@@ -40,6 +40,10 @@ object Command {
     }
   }
 
+  object Quaff {
+    def apply(potion: Potion): Quaff = Quaff(None, potion)
+  }
+  
   /** Read a scroll */
   case class Read(slot: Option[Slot], scroll: Scroll) extends Command {
     override def keypresses: Seq[Char] = slot match {

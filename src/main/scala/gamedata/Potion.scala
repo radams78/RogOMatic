@@ -41,6 +41,8 @@ case class Potion(quantity: Option[Int] = None,
 }
 
 object Potion {
+  def apply(power: PotionPower): Potion = Potion(None, None, Some(power))
+
   def apply(quantity: Int, colour: Colour): Potion = Potion(Some(quantity), Some(colour), None)
 
   implicit def domain: Domain[Potion] = (x: Potion, y: Potion) => x.merge(y)
