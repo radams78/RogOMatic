@@ -23,8 +23,8 @@ class GameState(val scrollKnowledge: ScrollKnowledge = ScrollKnowledge(),
 object GameState {
   def apply(): GameState = new GameState()
 
-  def build(lastCommand: Command): Either[String, GameState] =
-    build(ScrollKnowledge(), PotionKnowledge(), Some(lastCommand))
+  def apply(lastCommand: Command): GameState =
+    new GameState(lastCommand.scrollKnowledge, lastCommand.potionKnowledge, Some(lastCommand))
 
   def build(scrollKnowledge: ScrollKnowledge, potionKnowledge: PotionKnowledge, lastCommand: Option[Command]): Either[String, GameState] =
     lastCommand.fold[Either[String, GameState]](

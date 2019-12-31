@@ -5,6 +5,11 @@ import gamedata.ScrollPower.ScrollPower
 
 /** A stack of scrolls */
 case class Scroll(quantity: Option[Int], title: Option[String], power: Option[ScrollPower]) extends Item {
+  def scrollKnowledge: ScrollKnowledge = (title, power) match {
+    case (Some(t), Some(p)) => ScrollKnowledge(Map(t -> p))
+    case _ => ScrollKnowledge()
+  }
+
   override def toString: String =
     (Seq("a scroll") ++
       (for (p <- power) yield s"of $p") ++

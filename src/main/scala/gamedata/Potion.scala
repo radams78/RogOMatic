@@ -9,6 +9,11 @@ import gamedata.PotionPower.PotionPower
 case class Potion(quantity: Option[Int] = None,
                   colour: Option[Colour] = None,
                   power: Option[PotionPower] = None) extends Item {
+  def potionKnowledge: PotionKnowledge = (colour, power) match {
+    case (Some(c), Some(p)) => PotionKnowledge(Map(c -> p))
+    case _ => PotionKnowledge()
+  }
+
   def infer(potionKnowledge: PotionKnowledge): Either[String, Potion] = (colour, power) match {
     case (Some(c), power) => for (_power <- potionKnowledge.getPower(c).merge(power)) yield Potion(quantity, colour, _power)
     case (None, Some(p)) => Right(Potion(quantity, potionKnowledge.getColour(p), Some(p)))

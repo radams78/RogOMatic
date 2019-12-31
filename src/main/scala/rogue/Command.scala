@@ -6,6 +6,10 @@ import gamedata._
 /** Partial information about a move that can be made by the player in Rogue. */
 // TODO Validation 
 sealed trait Command {
+  def potionKnowledge: PotionKnowledge = PotionKnowledge()
+
+  def scrollKnowledge: ScrollKnowledge = ScrollKnowledge()
+
   /** Combine two pieces of information about a command */
   def merge(that: Command): Either[String, Command]
 
@@ -27,6 +31,8 @@ object Command {
       case Some(slot) => Seq('q', slot.label)
       case None => throw new Error("Tried to execute Quaff command with unknown slot") // TODO Duplication
     }
+
+    override def potionKnowledge: PotionKnowledge = potion.potionKnowledge
 
     override def infer(potionKnowledge: PotionKnowledge): Either[String, Command] =
       for (_potion <- potion.infer(potionKnowledge)) yield Quaff(slot, _potion)
@@ -51,6 +57,8 @@ object Command {
       case None => throw new Error("Tried to execute Read command with unknown slot")
     }
 
+    override def scrollKnowledge: ScrollKnowledge = scroll.scrollKnowledge
+
     override def infer(scrollKnowledge: ScrollKnowledge): Either[String, Read] =
       for (_scroll <- scroll.infer(scrollKnowledge)) yield Read(slot, _scroll)
 
@@ -72,6 +80,16 @@ object Command {
   /** Throw an item */
   case class Throw(dir: Direction, slot: Slot, item: Item) extends Command {
     override val keypresses: Seq[Char] = Seq('t', dir.keypress, slot.label)
+
+    override def scrollKnowledge: ScrollKnowledge = item match {
+      case scroll: Scroll => scroll.scrollKnowledge
+      case _ => ScrollKnowledge()
+    }
+
+    override def potionKnowledge: PotionKnowledge = item match {
+      case potion: Potion => potion.potionKnowledge
+      case _ => PotionKnowledge()
+    }
 
     override def infer(scrollKnowledge: ScrollKnowledge): Either[String, Command] = item match {
       case scroll: Scroll => for (_scroll <- scroll.infer(scrollKnowledge)) yield Throw(dir, slot, _scroll)
