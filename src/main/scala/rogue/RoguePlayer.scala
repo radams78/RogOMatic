@@ -1,8 +1,8 @@
 package rogue
 
-import gamedata.Domain._
-import gamedata.{GameState, Inventory, PotionKnowledge, ScrollKnowledge}
+import gamedata.{Event, GameState, Inventory, ScrollKnowledge}
 
+import scala.annotation.tailrec
 import scala.util.matching.Regex
 
 /** High-level communication with the game of Rogue. */
@@ -18,7 +18,7 @@ object RoguePlayer {
     /** Start the game */
     def start(): GameOn = {
       rogue.start()
-      new GameOn(rogue, new GameState(new ScrollKnowledge(Map()), new PotionKnowledge(Map()), None))
+      new GameOn(rogue, GameState())
     }
   }
 
@@ -50,18 +50,31 @@ object RoguePlayer {
     private val moreRegex: Regex = """(.*)-more-""".r.unanchored
 
     private def update(lastCommand: Command): Either[String, RoguePlayer] = {
-      if (!rogue.getScreen.split("\n").last.exists(_ != ' ')) {
-        return Right(new GameOver(rogue))
+
+      @tailrec
+      def update0(gameState: GameState): Either[String, RoguePlayer] = {
+        if (!rogue.getScreen.split("\n").last.exists(_ != ' ')) {
+          return Right(new GameOver(rogue))
+        }
+        rogue.getScreen.split("\n")(0) match {
+          case moreRegex(message) =>
+            rogue.sendKeypress(' ')
+            (for {gs <- Event.interpretMessage(message)
+                  gs2 <- GameState.build(gameState.scrollKnowledge, gameState.potionKnowledge, Some(lastCommand))
+                  gs3 <- gs2.merge(gs)}
+              yield gs3) match {
+              case Left(s) => Left(s)
+              case Right(gs3) => update0(gs3)
+            }
+          case message =>
+            for {gs <- Event.interpretMessage(message)
+                 gs2 <- GameState.build(gameState.scrollKnowledge, gameState.potionKnowledge, Some(lastCommand))
+                 gs3 <- gs2.merge(gs)}
+              yield new GameOn(rogue, gs3)
+        }
       }
-      rogue.getScreen.split("\n")(0) match {
-        case moreRegex(message) =>
-          rogue.sendKeypress(' ')
-          for (gs <- new GameState(gameState.scrollKnowledge, gameState.potionKnowledge, Some(lastCommand))
-            .merge(GameState.interpretMessage(message))) yield new GameOn(rogue, gs)
-        case message =>
-          for (gs <- new GameState(gameState.scrollKnowledge, gameState.potionKnowledge, Some(lastCommand))
-            .merge(GameState.interpretMessage(message))) yield new GameOn(rogue, gs) // TODO Duplication
-      }
+
+      GameState.build(gameState.scrollKnowledge, gameState.potionKnowledge, Some(lastCommand)).flatMap(update0)
     }
   }
 

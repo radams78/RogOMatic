@@ -26,14 +26,14 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
   }
 
   trait MoreGame {
-    val player: RoguePlayer.GameOn = new RoguePlayer.GameOn(MoreGame.moreGame, new GameState())
+    val player: RoguePlayer.GameOn = new RoguePlayer.GameOn(MoreGame.moreGame, GameState())
   }
 
   trait ReadScroll {
     val player: RoguePlayer.GameOn = new RoguePlayer.GameOn(MockRogue.Build
       .WaitForCommand(TestGame.secondScreen, TestGame.secondInventoryScreen, 'r')
       .Wait(TestGame.thirdScreen, 'f')
-      .End(TestGame.fourthScreen, TestGame.fourthInventoryScreen), new GameState()
+      .End(TestGame.fourthScreen, TestGame.fourthInventoryScreen), GameState()
     )
   }
 

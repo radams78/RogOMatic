@@ -6,45 +6,40 @@ import gamedata.PotionPower.PotionPower
 import gamedata.ScrollPower.ScrollPower
 import rogue.Command
 
-import scala.util.matching.Regex
-
-/** Partial information about the state of the game */
+/** Partial information about the state of the game 
+ *
+ * TODO Invariants */
 class GameState(val scrollKnowledge: ScrollKnowledge = ScrollKnowledge(),
                 val potionKnowledge: PotionKnowledge = PotionKnowledge(),
                 val lastCommand: Option[Command] = None) {
-  /** Deduce all information possible */
-  private def complete: Either[String, GameState] =
-    lastCommand.fold[Either[String, GameState]](Right(this))((cmd: Command) => for {
+  def merge(that: GameState): Either[String, GameState] = for {
+    inferredScrollKnowledge <- scrollKnowledge.merge(that.scrollKnowledge)
+    inferredPotionKnowledge <- potionKnowledge.merge(that.potionKnowledge)
+    inferredLastCommand <- lastCommand.merge(that.lastCommand)
+    gs <- GameState.build(inferredScrollKnowledge, inferredPotionKnowledge, inferredLastCommand)
+  } yield gs
+}
+
+object GameState {
+  def apply(): GameState = new GameState()
+
+  def build(lastCommand: Command): Either[String, GameState] =
+    build(ScrollKnowledge(), PotionKnowledge(), Some(lastCommand))
+
+  def build(scrollKnowledge: ScrollKnowledge, potionKnowledge: PotionKnowledge, lastCommand: Option[Command]): Either[String, GameState] =
+    lastCommand.fold[Either[String, GameState]](
+      Right(new GameState(scrollKnowledge, potionKnowledge, None))
+    )((cmd: Command) => for {
       sp <- scrollKnowledge.infer(cmd)
       pp <- potionKnowledge.infer(cmd)
       command <- cmd.infer(scrollKnowledge)
       command2 <- command.infer(potionKnowledge)
     } yield new GameState(sp, pp, Some(command2)))
+
+  implicit def domain: Domain[GameState] = (x: GameState, y: GameState) => x.merge(y)
 }
 
-object GameState {
-  def apply(lastCommand: Command): GameState = new GameState(ScrollKnowledge(), PotionKnowledge(), Some(lastCommand))
-
-  private val removeCurseMessage: Regex = """you feel as though someone is watching over you""".r.unanchored
-  private val healingMessage: Regex = """you begin to feel better""".r.unanchored
-  private val blankLine: String = " " * 80
-
-  def interpretMessage(messageLine: String): GameState = messageLine match {
-    case removeCurseMessage() => new GameState(new ScrollKnowledge(Map()), new PotionKnowledge(Map()), Some(Command.Read(None, Scroll(None, None, Some(ScrollPower.REMOVE_CURSE)))))
-    case healingMessage() => new GameState(new ScrollKnowledge(Map()), new PotionKnowledge(Map()), Some(Command.Quaff(None, Potion(None, None, Some(PotionPower.HEALING)))))
-    case blankLine => new GameState()
-    case _ => throw new Error(s"Unrecognised message: $messageLine")
-  }
-
-  implicit def domain: Domain[GameState] = (x: GameState, y: GameState) => for {
-    scrollKnowledge <- x.scrollKnowledge.merge(y.scrollKnowledge)
-    potionKnowledge <- y.potionKnowledge.merge(y.potionKnowledge)
-    lastCommand <- x.lastCommand.merge(y.lastCommand)
-    gameState <- new GameState(scrollKnowledge, potionKnowledge, lastCommand).complete
-  } yield gameState
-}
-
-class ScrollKnowledge(private val powers: Map[String, ScrollPower]) {
+case class ScrollKnowledge(private val powers: Map[String, ScrollPower]) {
   def getTitle(p: ScrollPower): Option[String] = powers.find(_._2 == p).map(_._1)
 
   def getPower(title: String): Option[ScrollPower] = powers.get(title)
@@ -73,7 +68,7 @@ object ScrollKnowledge {
   implicit def domain: Domain[ScrollKnowledge] = (x: ScrollKnowledge, y: ScrollKnowledge) => x.powers.merge(y.powers).map(new ScrollKnowledge(_))
 }
 
-class PotionKnowledge(private val powers: Map[Colour, PotionPower]) {
+case class PotionKnowledge(private val powers: Map[Colour, PotionPower]) {
   def getColour(p: PotionPower): Option[Colour] = powers.find(_._2 == p).map(_._1)
 
   def getPower(c: Colour): Option[PotionPower] = powers.get(c)
@@ -92,6 +87,24 @@ class PotionKnowledge(private val powers: Map[Colour, PotionPower]) {
 
 object PotionKnowledge {
   def apply(): PotionKnowledge = new PotionKnowledge(Map())
-  
+
   implicit def domain: Domain[PotionKnowledge] = (x: PotionKnowledge, y: PotionKnowledge) => x.powers.merge(y.powers).map(new PotionKnowledge(_))
+}
+
+object MonsterType extends Enumeration {
+
+  type MonsterType = Value
+  val HOBGOBLIN: MonsterType = Val("hobgoblin")
+
+  def parse(description: String): Either[String, MonsterType] =
+    values
+      .find(_.name == description)
+      .map(Right(_))
+      .getOrElse(Left(s"Unrecognised monster type: $description"))
+
+  protected case class Val(name: String) extends super.Val
+
+  implicit def toVal(x: Value): Val = x.asInstanceOf[Val]
+
+  implicit def domain: Domain[MonsterType] = Domain.flatDomain
 }

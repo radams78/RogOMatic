@@ -72,7 +72,7 @@ class RoguePlayerSpec extends AnyFeatureSpec with GivenWhenThen with Matchers {
     Scenario("Rogue displays a -more- message") {
       Given("a game of Rogue in progress")
       val rogue: MockRogue = MoreGame.moreGame
-      val player: RoguePlayer.GameOn = new RoguePlayer.GameOn(rogue, new GameState()) // TODO Duplication
+      val player: RoguePlayer.GameOn = new RoguePlayer.GameOn(rogue, GameState()) // TODO Duplication
 
       When("the user enters a command to which Rogue responds with -more-")
       val p2: GameOn = getGameOn(player.sendCommand(Command.RIGHT))
