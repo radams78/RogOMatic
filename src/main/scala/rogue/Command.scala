@@ -3,10 +3,10 @@ package rogue
 import gamedata.Domain._
 import gamedata._
 
-/** Partial information about a move that can be made by the player in Rogue. 
+/** Partial information about a move that can be made by the player in Rogue.
  *
  * Invariants:
- * - command.infer(command.scrollKnowledge) == command 
+ * - command.infer(command.scrollKnowledge) == command
  * - command.infer(command.potionKnowledge) == command */
 // TODO Validation 
 sealed trait Command {

@@ -3,7 +3,10 @@ package gamedata
 import gamedata.Domain._
 import gamedata.ScrollPower.ScrollPower
 
-/** A stack of scrolls */
+/** A stack of scrolls 
+ *
+ * Invariant:
+ * - scroll.infer(scroll.scrollKnowledge) == Right(scroll) */
 case class Scroll(quantity: Option[Int], title: Option[String], power: Option[ScrollPower]) extends Item {
   def scrollKnowledge: ScrollKnowledge = (title, power) match {
     case (Some(t), Some(p)) => ScrollKnowledge(Map(t -> p))
