@@ -5,9 +5,17 @@ import gamedata._
 
 /** Partial information about a move that can be made by the player in Rogue.
  *
- * Invariants:
+ * Invariants (All equations are assuming merges and infers terminate, and we omit 'Right's):
+ * - potionKnowledge is monotone
+ * - command <= command.infer(potionKnowledge)
+ * - scrollKnowledge is monotone
+ * - command <= command.infer(scrollKnowledge)
  * - command.infer(command.scrollKnowledge) == command
- * - command.infer(command.potionKnowledge) == command */
+ * - command.infer(command.potionKnowledge) == command 
+ * - command.infer(scrollKnowledge).scrollKnowledge <= command.scrollKnowledge.merge(scrollKnowledge)
+ * - command.infer(potionKnowledge).potionKnowledge <= command.potionKnowledge.merge(potionKnowledge) 
+ * - command.infer(potionKnowledge).scrollKnowledge == command.scrollKnowledge 
+ * - command.infer(scrollKnowledge).potionKnowledge == command.potionKnowledge */
 // TODO Validation 
 sealed trait Command {
   def potionKnowledge: PotionKnowledge = PotionKnowledge()
