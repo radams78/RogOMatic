@@ -1,6 +1,7 @@
-package gamedata
+package gamedata.items
 
 import domain.Domain
+import gamedata.ParsableEnum
 
 /** The set of powers that a scroll can have */
 object ScrollPower extends ParsableEnum {
@@ -9,6 +10,7 @@ object ScrollPower extends ParsableEnum {
 
   implicit def valueToScrollPowertVal(x: Value): Val = x.asInstanceOf[Val]
 
+  override val name: String = "scroll power"
   val AGGRAVATE_MONSTER: ScrollPower = Val("aggravate monster")
   val CREATE_MONSTER: ScrollPower = Val("create monster")
   val CONFUSE_MONSTER: ScrollPower = Val("confuse monster")
@@ -23,9 +25,8 @@ object ScrollPower extends ParsableEnum {
   val SLEEP: ScrollPower = Val("sleep")
   val TELEPORTATION: ScrollPower = Val("teleportation")
 
-  protected case class Val(effect: String) extends super.Val
-
   implicit def scrollPowerDomain: Domain[ScrollPower] = Domain.flatDomain
 
-  override val name: String = "scroll power"
+  protected case class Val(effect: String) extends super.Val
+
 }

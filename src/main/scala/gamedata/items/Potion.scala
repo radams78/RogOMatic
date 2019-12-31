@@ -1,9 +1,9 @@
-package gamedata
+package gamedata.items
 
 import domain.Domain
 import domain.Domain._
-import gamedata.Colour.Colour
-import gamedata.PotionPower.PotionPower
+import gamedata.items.Colour.Colour
+import gamedata.items.PotionPower.PotionPower
 import gamestate.PotionKnowledge
 
 /** A stack of potions

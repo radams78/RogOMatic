@@ -2,7 +2,7 @@ package gamestate
 
 import domain.Domain
 import domain.Domain._
-import gamedata.ScrollPower.ScrollPower
+import gamedata.items.ScrollPower.ScrollPower
 
 /** Memory of which scroll titles map to which powers */
 case class ScrollKnowledge(private val powers: Map[String, ScrollPower]) {

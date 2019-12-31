@@ -1,7 +1,8 @@
-package gamedata
+package gamedata.items
 
 import domain.Domain._
-import gamedata.ArmorType.ArmorType
+import gamedata.items
+import gamedata.items.ArmorType.ArmorType
 
 /** A suit of armor */
 trait Armor extends Item
@@ -29,7 +30,7 @@ case class UnidentifiedArmor(armorType: ArmorType) extends Armor {
   override def merge[T <: Item](that: T): Either[String, T] = that match {
     case IdentifiedArmor(thatArmorType, thatBonus) => for {
       inferredArmorType <- armorType.merge(thatArmorType)
-    } yield IdentifiedArmor(inferredArmorType, thatBonus).asInstanceOf[T]
+    } yield items.IdentifiedArmor(inferredArmorType, thatBonus).asInstanceOf[T]
     case UnidentifiedArmor(thatArmorType) => for {
       inferredArmorType <- armorType.merge(thatArmorType)
     } yield UnidentifiedArmor(inferredArmorType).asInstanceOf[T]

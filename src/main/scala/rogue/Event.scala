@@ -1,6 +1,6 @@
 package rogue
 
-import gamedata._
+import gamedata.items.{Potion, PotionPower, Scroll, ScrollPower}
 import gamestate.GameState
 
 import scala.util.matching.Regex

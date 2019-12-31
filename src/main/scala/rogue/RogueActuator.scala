@@ -1,5 +1,6 @@
 package rogue
 
+
 import gamedata.Inventory
 
 import scala.annotation.tailrec

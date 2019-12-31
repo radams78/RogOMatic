@@ -1,6 +1,7 @@
 package expert
 
 import gamedata._
+import gamedata.items.{Potion, Scroll}
 import rogue._
 import view.IView
 

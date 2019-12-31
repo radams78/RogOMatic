@@ -1,8 +1,8 @@
-package gamedata
+package gamedata.items
 
 import domain.Domain._
-import gamedata.Material.Material
-import gamedata.WandType.WandType
+import gamedata.items.Material.Material
+import gamedata.items.WandType.WandType
 
 /** A wand or staff */
 case class Wand(wandType: WandType, material: Material) extends Item {

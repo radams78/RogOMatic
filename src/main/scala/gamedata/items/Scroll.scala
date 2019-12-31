@@ -1,8 +1,8 @@
-package gamedata
+package gamedata.items
 
 import domain.Domain
 import domain.Domain._
-import gamedata.ScrollPower.ScrollPower
+import gamedata.items.ScrollPower.ScrollPower
 import gamestate.ScrollKnowledge
 
 /** A stack of scrolls 

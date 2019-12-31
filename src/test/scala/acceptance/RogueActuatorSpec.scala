@@ -1,6 +1,7 @@
 package acceptance
 
 import gamedata._
+import gamedata.items.{Scroll, ScrollPower}
 import gamestate.ScrollKnowledge
 import mock._
 import org.scalatest.GivenWhenThen

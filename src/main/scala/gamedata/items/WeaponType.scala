@@ -1,4 +1,4 @@
-package gamedata
+package gamedata.items
 
 import domain.Domain
 

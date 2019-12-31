@@ -3,6 +3,7 @@ package rogue
 import domain.Domain
 import domain.Domain._
 import gamedata._
+import gamedata.items.{Item, Potion, Scroll}
 import gamestate.{PotionKnowledge, ScrollKnowledge}
 
 /** Partial information about a move that can be made by the player in Rogue.

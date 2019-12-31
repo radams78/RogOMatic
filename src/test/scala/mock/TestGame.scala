@@ -1,6 +1,7 @@
 package mock
 
-import gamedata._
+import gamedata.items._
+import gamedata.{items, _}
 
 object TestGame {
   val firstScreen: String = MockRogue.makeScreen(
@@ -66,7 +67,7 @@ object TestGame {
       Slot.E -> Missile(35, WeaponType.ARROW, +0, +0),
       Slot.F -> Scroll(1, "coph rech"),
       Slot.G -> Armor(ArmorType.SCALE_MAIL),
-      Slot.H -> gamedata.Wand(WandType.STAFF, Material.REDWOOD),
+      Slot.H -> Wand(WandType.STAFF, Material.REDWOOD),
       Slot.I -> Missile(7, WeaponType.ARROW)
     ),
     wearing = Some(Slot.B),
@@ -216,7 +217,7 @@ object TestGame {
       Slot.D -> Weapon(WeaponType.SHORT_BOW, +1, +0),
       Slot.E -> Missile(35, WeaponType.ARROW, +0, +0),
       Slot.G -> Armor(ArmorType.SCALE_MAIL),
-      Slot.H -> gamedata.Wand(WandType.STAFF, Material.REDWOOD),
+      Slot.H -> items.Wand(WandType.STAFF, Material.REDWOOD),
       Slot.I -> Missile(7, WeaponType.ARROW)
     ),
     wearing = Some(Slot.B),

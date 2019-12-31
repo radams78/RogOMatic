@@ -1,6 +1,6 @@
 package unit
 
-import gamedata.{Material, Scroll, _}
+import gamedata.items._
 import org.scalatest.EitherValues
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
@@ -31,11 +31,11 @@ class ItemTest extends AnyFlatSpec with Matchers with EitherValues {
   }
 
   "a stibotantalite ring" should "be recognised as a stibotantalite ring" in {
-    Item.parse("a stibotantalite ring") should be(Right(gamedata.Ring(Gem.STIBOTANTALITE)))
+    Item.parse("a stibotantalite ring") should be(Right(Ring(Gem.STIBOTANTALITE)))
   }
 
   "a yellow potion" should "be recognised as a yellow potion" in {
-    Item.parse("a yellow potion") should be(Right(gamedata.Potion(1, Colour.YELLOW)))
+    Item.parse("a yellow potion") should be(Right(Potion(1, Colour.YELLOW)))
   }
 
   "a scroll" should "be recognised as a scroll" in {
@@ -43,7 +43,7 @@ class ItemTest extends AnyFlatSpec with Matchers with EitherValues {
   }
 
   "a redwood staff" should "be recognised as a redwood staff" in {
-    Item.parse("a redwood staff") should be(Right(gamedata.Wand(WandType.STAFF, Material.REDWOOD)))
+    Item.parse("a redwood staff") should be(Right(Wand(WandType.STAFF, Material.REDWOOD)))
   }
 
 

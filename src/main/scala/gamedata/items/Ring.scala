@@ -1,7 +1,7 @@
-package gamedata
+package gamedata.items
 
 import domain.Domain._
-import gamedata.Gem.Gem
+import gamedata.items.Gem.Gem
 
 /** A ring */
 case class Ring(gem: Gem) extends Item {

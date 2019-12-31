@@ -1,6 +1,7 @@
 package unit
 
 import gamedata._
+import gamedata.items._
 import org.scalatest.EitherValues
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers

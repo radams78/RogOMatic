@@ -1,6 +1,7 @@
 package mock
 
 import gamedata._
+import gamedata.items._
 
 object ZeroMoveGame {
   val firstScreen: String =

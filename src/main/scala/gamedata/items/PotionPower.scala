@@ -1,6 +1,7 @@
-package gamedata
+package gamedata.items
 
 import domain.Domain
+import gamedata.ParsableEnum
 
 object PotionPower extends ParsableEnum {
 
@@ -8,6 +9,7 @@ object PotionPower extends ParsableEnum {
 
   implicit def valueToPotionPowertVal(x: Value): Val = x.asInstanceOf[Val]
 
+  override val name: String = "potion power"
   val BLINDNESS: PotionPower = Val("blindness")
   val CONFUSION: PotionPower = Val("confusion")
   val DETECT_MONSTER: PotionPower = Val("detect monster")
@@ -23,9 +25,8 @@ object PotionPower extends ParsableEnum {
   val RESTORE_STRENGTH: PotionPower = Val("restore strength")
   val SEE_INVISIBLE: PotionPower = Val("see invisible")
 
-  protected case class Val(effect: String) extends super.Val
-
   implicit def domain: Domain[Value] = Domain.flatDomain
 
-  override val name: String = "potion power"
+  protected case class Val(effect: String) extends super.Val
+
 }

@@ -1,5 +1,7 @@
 package gamedata
 
+import gamedata.items.Item
+
 import scala.util.matching.UnanchoredRegex
 
 /** The PC's inventory */

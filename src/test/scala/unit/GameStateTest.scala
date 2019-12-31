@@ -1,6 +1,7 @@
 package unit
 
 import gamedata._
+import gamedata.items.{Colour, Potion, PotionPower}
 import gamestate.GameState
 import mock.EitherAssertion._
 import org.scalatest.flatspec.AnyFlatSpec
