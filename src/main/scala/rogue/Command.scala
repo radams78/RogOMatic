@@ -1,6 +1,7 @@
 package rogue
 
-import gamedata.Domain._
+import domain.Domain
+import domain.Domain._
 import gamedata._
 
 /** Partial information about a move that can be made by the player in Rogue.

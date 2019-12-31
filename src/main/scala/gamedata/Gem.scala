@@ -1,5 +1,7 @@
 package gamedata
 
+import domain.Domain
+
 /** The gems that a ring can have */
 object Gem extends ParsableEnum {
   type Gem = Value

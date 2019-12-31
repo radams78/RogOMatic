@@ -1,5 +1,7 @@
 package gamedata
 
+import domain.Domain
+
 /** An enum for the set of weapon types in the game of Rogue */
 sealed trait WeaponType
 

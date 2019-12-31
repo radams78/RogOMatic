@@ -1,6 +1,6 @@
 package gamedata
 
-import gamedata.Domain._
+import domain.Domain._
 
 /** A weapon in the game of Rogue */
 trait Weapon extends Item

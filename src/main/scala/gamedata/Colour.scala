@@ -1,5 +1,7 @@
 package gamedata
 
+import domain.Domain
+
 /** The colours that a potion can have */
 object Colour extends ParsableEnum {
   type Colour = Value

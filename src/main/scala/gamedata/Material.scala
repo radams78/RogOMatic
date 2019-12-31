@@ -1,5 +1,7 @@
 package gamedata
 
+import domain.Domain
+
 /** The set of materials that a wand or staff can be made of */
 object Material extends ParsableEnum {
   type Material = Value

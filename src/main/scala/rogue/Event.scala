@@ -1,6 +1,6 @@
-package gamedata
+package rogue
 
-import rogue.Command
+import gamedata._
 
 import scala.util.matching.Regex
 
@@ -19,6 +19,9 @@ object Event extends Enumeration {
     Val("""you begin to feel better""".r.unanchored, GameState(Command.Quaff(Potion(PotionPower.HEALING))))
   /** Monster attacked PC and missed */
   val MISSED_BY: Event = Val("""the (.*) misses""".r.unanchored, GameState()) // TODO Monster is awake
+  /** PC read a scroll of remove curse */
+  val REMOVE_CURSE: Event = Val("""you feel as though someone is watching over you""".r.unanchored,
+    new GameState(lastCommand = Some(Command.Read(Scroll(ScrollPower.REMOVE_CURSE)))))
 
   /** Given the top line of a screen from Rogue, return the corresponding [[Event]] if there is one; otherwise
    * returns an error message */
@@ -31,10 +34,6 @@ object Event extends Enumeration {
       .find(_.nonEmpty)
       .flatten
       .getOrElse(Left(s"Unrecognised event: $messageLine"))
-
-  /** PC read a scroll of remove curse */
-  val REMOVE_CURSE: Event = Val("""you feel as though someone is watching over you""".r.unanchored,
-    new GameState(lastCommand = Some(Command.Read(Scroll(ScrollPower.REMOVE_CURSE)))))
 
   protected case class Val(message: Regex, inference: GameState) extends super.Val
 

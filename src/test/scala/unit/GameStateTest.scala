@@ -4,7 +4,7 @@ import gamedata._
 import mock.EitherAssertion._
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import rogue.Command
+import rogue.{Command, Event}
 
 class GameStateTest extends AnyFlatSpec with Matchers {
   "Quaffing a potion of healing" should "record the power of healing" in {

@@ -1,7 +1,8 @@
 package gamedata
 
+import domain.Domain
+import domain.Domain._
 import gamedata.Colour.Colour
-import gamedata.Domain._
 import gamedata.PotionPower.PotionPower
 
 /** A stack of potions

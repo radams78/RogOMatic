@@ -1,6 +1,6 @@
 package gamedata
 
-import gamedata.Domain._
+import domain.Domain._
 
 /** A stack of rations of food */
 case class Food(quantity: Int) extends Item {

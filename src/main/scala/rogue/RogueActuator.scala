@@ -1,6 +1,6 @@
 package rogue
 
-import gamedata.{Event, Inventory}
+import gamedata.Inventory
 
 import scala.annotation.tailrec
 import scala.util.matching.Regex
@@ -76,4 +76,3 @@ object RogueActuator {
   private val moreRegex: Regex = """(.*)-more-""".r.unanchored
   private val scoreRegex: Regex = """(\d+) gold""".r.unanchored
 }
-

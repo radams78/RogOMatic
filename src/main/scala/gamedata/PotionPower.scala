@@ -1,5 +1,7 @@
 package gamedata
 
+import domain.Domain
+
 object PotionPower extends Enumeration {
 
   type PotionPower = Value

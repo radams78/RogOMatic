@@ -1,5 +1,7 @@
 package gamedata
 
+import domain.Domain
+
 import scala.util.matching.Regex
 
 /** An item that the PC can pick up */

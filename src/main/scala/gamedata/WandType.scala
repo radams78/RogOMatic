@@ -1,5 +1,7 @@
 package gamedata
 
+import domain.Domain
+
 /** The two types of wand-like object in Rogue */
 object WandType extends ParsableEnum {
   type WandType = Value

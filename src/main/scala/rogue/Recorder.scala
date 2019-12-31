@@ -1,7 +1,7 @@
 package rogue
 
-import gamedata.Event.Event
 import gamedata.{GameState, Inventory, ScrollKnowledge}
+import rogue.Event.Event
 
 class Recorder {
   private var _gameOver: Boolean = false

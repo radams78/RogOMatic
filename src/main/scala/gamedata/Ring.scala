@@ -1,6 +1,6 @@
 package gamedata
 
-import gamedata.Domain._
+import domain.Domain._
 import gamedata.Gem.Gem
 
 /** A ring */

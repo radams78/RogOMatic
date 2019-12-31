@@ -1,5 +1,7 @@
 package gamedata
 
+import domain.Domain
+
 /** The set of armor types in the game of Rogue */
 object ArmorType extends ParsableEnum {
   type ArmorType = Value

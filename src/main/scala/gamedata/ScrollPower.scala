@@ -1,5 +1,7 @@
 package gamedata
 
+import domain.Domain
+
 /** The set of powers that a scroll can have */
 object ScrollPower extends Enumeration {
 

@@ -1,4 +1,4 @@
-package gamedata
+package domain
 
 /** Invariants:
  * - x.merge(x) == x */
