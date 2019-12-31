@@ -4,6 +4,7 @@ import domain.Domain
 import domain.Domain._
 import gamedata.Colour.Colour
 import gamedata.PotionPower.PotionPower
+import gamestate.PotionKnowledge
 
 /** A stack of potions
  *

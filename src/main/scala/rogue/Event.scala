@@ -1,6 +1,7 @@
 package rogue
 
 import gamedata._
+import gamestate.GameState
 
 import scala.util.matching.Regex
 

@@ -3,6 +3,7 @@ package gamedata
 import domain.Domain
 import domain.Domain._
 import gamedata.ScrollPower.ScrollPower
+import gamestate.ScrollKnowledge
 
 /** A stack of scrolls 
  *

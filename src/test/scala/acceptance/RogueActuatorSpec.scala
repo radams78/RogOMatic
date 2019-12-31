@@ -1,6 +1,7 @@
 package acceptance
 
 import gamedata._
+import gamestate.ScrollKnowledge
 import mock._
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec

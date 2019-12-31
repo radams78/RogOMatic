@@ -1,4 +1,4 @@
-package gamedata
+package gamestate
 
 import domain.Domain
 import domain.Domain._

@@ -2,7 +2,7 @@ package gamedata
 
 import domain.Domain
 
-object PotionPower extends Enumeration {
+object PotionPower extends ParsableEnum {
 
   type PotionPower = Value
 
@@ -13,4 +13,6 @@ object PotionPower extends Enumeration {
   protected case class Val(effect: String) extends super.Val
 
   implicit def domain: Domain[Value] = Domain.flatDomain
+
+  override val setName: String = "potion power"
 }

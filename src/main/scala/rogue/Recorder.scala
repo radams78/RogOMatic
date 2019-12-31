@@ -1,6 +1,7 @@
 package rogue
 
-import gamedata.{GameState, Inventory, ScrollKnowledge}
+import gamedata.Inventory
+import gamestate.{GameState, ScrollKnowledge}
 import rogue.Event.Event
 
 class Recorder {
