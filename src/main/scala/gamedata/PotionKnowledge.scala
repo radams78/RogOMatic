@@ -4,9 +4,12 @@ import gamedata.Colour.Colour
 import gamedata.Domain._
 import gamedata.PotionPower.PotionPower
 
+/** Memory of which potion colours correspond to which powers */
 case class PotionKnowledge(private val powers: Map[Colour, PotionPower]) {
+  /** Given a power, return the corresponding colour, if known */
   def getColour(p: PotionPower): Option[Colour] = powers.find(_._2 == p).map(_._1)
 
+  /** Given a colour, return the corresponding power, if any */
   def getPower(c: Colour): Option[PotionPower] = powers.get(c)
 }
 
