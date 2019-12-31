@@ -27,6 +27,7 @@ object GameState {
   def apply(lastCommand: Command): GameState =
     new GameState(lastCommand.scrollKnowledge, lastCommand.potionKnowledge, Some(lastCommand))
 
+  /** Build a game state from the given data, inferring as much data as possible */
   def build(scrollKnowledge: ScrollKnowledge, potionKnowledge: PotionKnowledge, lastCommand: Option[Command]): Either[String, GameState] =
     lastCommand.fold[Either[String, GameState]](
       Right(new GameState(scrollKnowledge, potionKnowledge, None))
