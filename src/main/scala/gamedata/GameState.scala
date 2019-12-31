@@ -30,8 +30,8 @@ object GameState {
     lastCommand.fold[Either[String, GameState]](
       Right(new GameState(scrollKnowledge, potionKnowledge, None))
     )((cmd: Command) => for {
-      sp <- scrollKnowledge.infer(cmd)
-      pp <- potionKnowledge.infer(cmd)
+      sp <- scrollKnowledge.merge(cmd.scrollKnowledge)
+      pp <- potionKnowledge.merge(cmd.potionKnowledge)
       command <- cmd.infer(scrollKnowledge)
       command2 <- command.infer(potionKnowledge)
     } yield new GameState(sp, pp, Some(command2)))
@@ -43,23 +43,6 @@ case class ScrollKnowledge(private val powers: Map[String, ScrollPower]) {
   def getTitle(p: ScrollPower): Option[String] = powers.find(_._2 == p).map(_._1)
 
   def getPower(title: String): Option[ScrollPower] = powers.get(title)
-
-  def infer(command: Command): Either[String, ScrollKnowledge] = command match {
-    case Command.Read(_, scroll) => infer(scroll)
-    case Command.Throw(_, _, scroll: Scroll) => infer(scroll)
-    case _ => Right(this)
-  }
-
-
-  def infer(scroll: Scroll): Either[String, ScrollKnowledge] = scroll.title match {
-    case Some(t) => for {
-      power <- powers.get(t).merge(scroll.power)
-    } yield power match {
-      case Some(p) => new ScrollKnowledge(powers.updated(t, p))
-      case None => this
-    }
-    case None => Right(this)
-  }
 }
 
 object ScrollKnowledge {
@@ -72,17 +55,6 @@ case class PotionKnowledge(private val powers: Map[Colour, PotionPower]) {
   def getColour(p: PotionPower): Option[Colour] = powers.find(_._2 == p).map(_._1)
 
   def getPower(c: Colour): Option[PotionPower] = powers.get(c)
-
-  def infer(cmd: Command): Either[String, PotionKnowledge] = cmd match {
-    case Command.Quaff(_, potion) => infer(potion)
-    case Command.Throw(_, _, potion: Potion) => infer(potion)
-    case _ => Right(this)
-  }
-
-  def infer(potion: Potion): Either[String, PotionKnowledge] = potion.colour match {
-    case Some(c) => for {power <- powers.get(c).merge(potion.power)} yield new PotionKnowledge(powers ++ power.map((c, _)))
-    case None => Right(this)
-  }
 }
 
 object PotionKnowledge {
