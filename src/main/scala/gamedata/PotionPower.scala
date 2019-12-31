@@ -14,5 +14,5 @@ object PotionPower extends ParsableEnum {
 
   implicit def domain: Domain[Value] = Domain.flatDomain
 
-  override val setName: String = "potion power"
+  override val name: String = "potion power"
 }

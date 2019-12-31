@@ -5,7 +5,7 @@ import domain.Domain
 /** The colours that a potion can have */
 object Colour extends ParsableEnum {
   type Colour = Value
-  override val setName: String = "colour"
+  override val name: String = "colour"
   val BLUE: gamedata.Colour.Value = Value("blue")
   val RED: gamedata.Colour.Value = Value("red")
   val GREEN: gamedata.Colour.Value = Value("green")

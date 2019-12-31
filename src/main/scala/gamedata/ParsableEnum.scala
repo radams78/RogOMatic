@@ -4,12 +4,12 @@ package gamedata
  * uses [[Either]] for error handling instead of throwing an exception */
 trait ParsableEnum extends Enumeration {
   /** Name of the set of values */
-  val setName: String
+  val name: String
 
   /** Returns the value with the given name, or an error message if there is no value with that name */
-  def parse(name: String): Either[String, Value] = try {
-    Right(withName(name))
+  def parse(description: String): Either[String, Value] = try {
+    Right(withName(description))
   } catch {
-    case _: NoSuchElementException => Left(s"Unrecognised $setName: $name")
+    case _: NoSuchElementException => Left(s"Unrecognised $name: $description")
   }
 }

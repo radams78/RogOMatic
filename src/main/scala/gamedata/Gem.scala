@@ -5,7 +5,7 @@ import domain.Domain
 /** The gems that a ring can have */
 object Gem extends ParsableEnum {
   type Gem = Value
-  override val setName: String = "gem"
+  override val name: String = "gem"
   val DIAMOND: gamedata.Gem.Value = Value("diamond")
   val STIBOTANTALITE: gamedata.Gem.Value = Value("stibotantalite")
   val LAPI_LAZULI: gamedata.Gem.Value = Value("lapi-lazuli")

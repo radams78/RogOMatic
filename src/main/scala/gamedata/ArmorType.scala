@@ -5,7 +5,7 @@ import domain.Domain
 /** The set of armor types in the game of Rogue */
 object ArmorType extends ParsableEnum {
   type ArmorType = Value
-  override val setName: String = "armor type"
+  override val name: String = "armor type"
   val LEATHER_ARMOR: gamedata.ArmorType.Value = Value("leather armor")
   val RING_MAIL: gamedata.ArmorType.Value = Value("ring mail")
   val SCALE_MAIL: gamedata.ArmorType.Value = Value("scale mail")

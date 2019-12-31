@@ -5,7 +5,7 @@ import domain.Domain
 /** The set of materials that a wand or staff can be made of */
 object Material extends ParsableEnum {
   type Material = Value
-  override val setName: String = "material"
+  override val name: String = "material"
   val STEEL: gamedata.Material.Value = Value("steel")
   val BRONZE: gamedata.Material.Value = Value("bronze")
   val GOLD: gamedata.Material.Value = Value("gold")
