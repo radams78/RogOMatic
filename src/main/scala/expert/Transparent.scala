@@ -1,7 +1,6 @@
 package expert
 
 import gamedata._
-import rogue.RoguePlayer.GameOver
 import rogue._
 import view.IView
 
@@ -9,33 +8,19 @@ import scala.annotation.tailrec
 import scala.io.StdIn
 
 /** Expert for playing the game in transparent mode, i.e. interactively, getting moves from the user one by one */
-class Transparent(player: RoguePlayer.NotStarted, view: IView) {
+class Transparent(player: RogueActuator, recorder: Recorder, view: IView) {
   /** Play a game of rogue */
-  def playRogue(): Unit = {
-    @tailrec
-    def playRogue0(player: RoguePlayer): Unit = playRogue1(player) match {
-      case Right(p: GameOver) => view.displayGameOver(p.getScore)
-      case Right(p) => playRogue0(p)
-      case Left(s) =>
-        view.displayError(s)
-        playRogue0(player)
+  @tailrec
+  final def playRogue(): Unit = {
+    if (recorder.gameOver) {
+      view.displayGameOver(recorder.getScore)
+    } else {
+      view.displayScreen(recorder.getScreen)
+      val inventory: Inventory = recorder.getInventory
+      view.displayInventory(inventory)
+      player.sendCommand(getCommand(inventory))
+      playRogue()
     }
-
-    def playRogue1(player: RoguePlayer): Either[String, RoguePlayer] = player match {
-      case p: RoguePlayer.NotStarted => Right(p.start())
-      case p: RoguePlayer.GameOn =>
-        view.displayScreen(p.getScreen)
-        for {
-          i <- p.getInventory
-          pl <- {
-            view.displayInventory(i)
-            p.sendCommand(getCommand(i))
-          }
-        } yield pl
-      case p: GameOver => Right(p)
-    }
-
-    playRogue0(player)
   }
 
   /** Get a character from the user.
