@@ -1,9 +1,6 @@
 package gamedata
 
-import gamedata.Colour.Colour
 import gamedata.Domain._
-import gamedata.PotionPower.PotionPower
-import gamedata.ScrollPower.ScrollPower
 import rogue.Command
 
 /** Partial information about the state of the game 
@@ -43,44 +40,11 @@ object GameState {
   implicit def domain: Domain[GameState] = (x: GameState, y: GameState) => x.merge(y)
 }
 
-case class ScrollKnowledge(private val powers: Map[String, ScrollPower]) {
-  def getTitle(p: ScrollPower): Option[String] = powers.find(_._2 == p).map(_._1)
 
-  def getPower(title: String): Option[ScrollPower] = powers.get(title)
-}
 
-object ScrollKnowledge {
-  def apply(): ScrollKnowledge = new ScrollKnowledge(Map())
 
-  implicit def domain: Domain[ScrollKnowledge] = (x: ScrollKnowledge, y: ScrollKnowledge) => x.powers.merge(y.powers).map(new ScrollKnowledge(_))
-}
 
-case class PotionKnowledge(private val powers: Map[Colour, PotionPower]) {
-  def getColour(p: PotionPower): Option[Colour] = powers.find(_._2 == p).map(_._1)
 
-  def getPower(c: Colour): Option[PotionPower] = powers.get(c)
-}
 
-object PotionKnowledge {
-  def apply(): PotionKnowledge = new PotionKnowledge(Map())
 
-  implicit def domain: Domain[PotionKnowledge] = (x: PotionKnowledge, y: PotionKnowledge) => x.powers.merge(y.powers).map(new PotionKnowledge(_))
-}
 
-object MonsterType extends Enumeration {
-
-  type MonsterType = Value
-  val HOBGOBLIN: MonsterType = Val("hobgoblin")
-
-  def parse(description: String): Either[String, MonsterType] =
-    values
-      .find(_.name == description)
-      .map(Right(_))
-      .getOrElse(Left(s"Unrecognised monster type: $description"))
-
-  protected case class Val(name: String) extends super.Val
-
-  implicit def toVal(x: Value): Val = x.asInstanceOf[Val]
-
-  implicit def domain: Domain[MonsterType] = Domain.flatDomain
-}
