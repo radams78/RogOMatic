@@ -20,11 +20,13 @@ class RogueActuatorSpec extends AnyFeatureSpec with GivenWhenThen with Matchers 
       val player: RogueActuator = new RogueActuator(rogue, recorder)
 
       When("the user starts the game in transparent mode")
+      player.start()
+
       Then("the first screen should be displayed")
       recorder.getScreen should be(TestGame.firstScreen)
 
       And("the first inventory should be displayed")
-      recorder.getInventory should be(Right(TestGame.firstInventory))
+      recorder.getInventory should be(TestGame.firstInventory)
 
       When("the user enters the command to go right")
       player.sendCommand(Command.RIGHT)
@@ -33,7 +35,7 @@ class RogueActuatorSpec extends AnyFeatureSpec with GivenWhenThen with Matchers 
       recorder.getScreen should be(TestGame.secondScreen)
 
       And("the inventory should be displayed")
-      recorder.getInventory should be(Right(TestGame.firstInventory))
+      recorder.getInventory should be(TestGame.firstInventory)
 
       When("the user enters the command te read a scroll")
       player.sendCommand(Command.Read(Slot.F, Scroll(1, "coph rech")))
@@ -42,7 +44,7 @@ class RogueActuatorSpec extends AnyFeatureSpec with GivenWhenThen with Matchers 
       recorder.getScreen should be(TestGame.fourthScreen)
 
       And("the final inventory should be displayed")
-      recorder.getInventory should be(Right(TestGame.fourthInventory))
+      recorder.getInventory should be(TestGame.fourthInventory)
 
       And("the scroll power should be remembered")
       recorder.getScrollKnowledge should be(new ScrollKnowledge(Map("coph rech" -> ScrollPower.REMOVE_CURSE)))
@@ -55,6 +57,8 @@ class RogueActuatorSpec extends AnyFeatureSpec with GivenWhenThen with Matchers 
       val player: RogueActuator = new RogueActuator(rogue, recorder)
 
       When("the user starts the game in transparent mode")
+      player.start()
+      
       And("the PC is killed")
       player.sendCommand(Command.REST)
 
