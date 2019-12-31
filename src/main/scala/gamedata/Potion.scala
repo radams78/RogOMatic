@@ -4,7 +4,11 @@ import gamedata.Colour.Colour
 import gamedata.Domain._
 import gamedata.PotionPower.PotionPower
 
-/** A stack of potions */
+/** A stack of potions
+ *
+ * Invariants:
+ *   - potion.infer(potion.potionKnowledge) == Right(potion) 
+ *   - potion.infer(PotionKnowledge()) == Right(potion) */
 // TODO Duplication with Scroll
 case class Potion(quantity: Option[Int] = None,
                   colour: Option[Colour] = None,

@@ -8,7 +8,11 @@ import rogue.Command
 
 /** Partial information about the state of the game 
  *
- * TODO Invariants */
+ * Invariants: if lastCommand == Some(lc) then
+ * - scrollKnowledge.merge(lc.scrollKnowledge) == scrollKnowledge
+ * - potionKnowledge.merge(lc.potionKnowledge) == potionKnowledge
+ * - lc.infer(scrollKnowledge) == lc
+ * - lc.infer(potionKnowledge) == lc */
 class GameState(val scrollKnowledge: ScrollKnowledge = ScrollKnowledge(),
                 val potionKnowledge: PotionKnowledge = PotionKnowledge(),
                 val lastCommand: Option[Command] = None) {

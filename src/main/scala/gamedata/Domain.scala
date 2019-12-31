@@ -1,5 +1,7 @@
 package gamedata
 
+/** Invariants:
+ * - x.merge(x) == x */
 trait Domain[D] {
   def merge(x: D, y: D): Either[String, D]
 }
