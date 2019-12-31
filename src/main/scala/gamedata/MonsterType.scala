@@ -31,12 +31,11 @@ object MonsterType extends ParsableEnum {
   val WRAITH: MonsterType = Val("wraith")
   val XEROC: MonsterType = Val("xeroc")
   val YETI: MonsterType = Val("yeti")
+  val ZOMBIE: MonsterType = Val("zombie")
 
   protected case class Val(name: String) extends super.Val
 
   implicit def toVal(x: Value): Val = x.asInstanceOf[Val]
 
   implicit def domain: Domain[MonsterType] = Domain.flatDomain
-
-  val ZOMBIE: MonsterType = Val("zombie")
 }
