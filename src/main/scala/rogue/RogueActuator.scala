@@ -1,13 +1,13 @@
 package rogue
 
-import gamedata.Event.Event
-import gamedata.{Event, GameState, Inventory, ScrollKnowledge}
+import gamedata.{Event, Inventory}
 
 import scala.annotation.tailrec
 import scala.util.matching.Regex
 
 /** High-level communication with the game of Rogue. */
 class RogueActuator(rogue: IRogue, recorder: Recorder) {
+  /** Start the game of Rogue and read the first screen and inventory */
   def start(): Either[String, Unit] = {
     rogue.start()
     for {
@@ -21,7 +21,7 @@ class RogueActuator(rogue: IRogue, recorder: Recorder) {
     } yield recorder.recordInventory(inventory)
   }
 
-  /** Send a command to Rogue */
+  /** Send a command to Rogue, then read all possible information from the screen and inventory */
   def sendCommand(command: Command): Either[String, Unit] = {
     for {_ <- recorder.recordCommand(command)
          _ <- {
@@ -77,40 +77,3 @@ object RogueActuator {
   private val scoreRegex: Regex = """(\d+) gold""".r.unanchored
 }
 
-class Recorder {
-  private var _gameOver: Boolean = false
-  private var gameState: GameState = GameState()
-  private var inventory: Inventory = _
-  private var score: Int = 0
-  private var screen: String = ""
-
-  def getScrollKnowledge: ScrollKnowledge = gameState.scrollKnowledge
-
-  def getInventory: Inventory = inventory
-
-  def recordScreen(_screen: String): Unit = screen = _screen
-
-  def getScreen: String = screen
-
-  def getScore: Int = score
-
-  def gameOver: Boolean = _gameOver
-
-  def recordEvent(e: Event): Either[String, Unit] = for (gs <- gameState.merge(e.inference)) yield {
-    gameState = gs
-    ()
-  }
-
-  def recordFinalScore(_score: Int): Unit = {
-    _gameOver = true
-    score = _score
-  }
-
-  def recordInventory(_inventory: Inventory): Unit = inventory = _inventory
-
-  def recordCommand(command: Command): Either[String, Unit] =
-    for (gs <- GameState.build(gameState.scrollKnowledge, gameState.potionKnowledge, Some(command))) yield {
-      gameState = gs
-      ()
-    }
-}
