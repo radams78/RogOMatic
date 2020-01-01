@@ -11,16 +11,23 @@ import scala.io.StdIn
 /** Expert for playing the game in transparent mode, i.e. interactively, getting moves from the user one by one */
 class Transparent(player: RogueActuator, recorder: Recorder, view: IView) {
   /** Play a game of rogue */
-  @tailrec
-  final def playRogue(): Unit = {
-    if (recorder.gameOver) {
-      view.displayGameOver(recorder.getScore)
-    } else {
-      view.displayScreen(recorder.getScreen)
-      val inventory: Inventory = recorder.getInventory
-      view.displayInventory(inventory)
-      player.sendCommand(getCommand(inventory))
-      playRogue()
+  def playRogue(): Unit = {
+    player.start()
+    playRogue0()
+
+    @tailrec
+    def playRogue0(): Unit = {
+      if (recorder.gameOver) {
+        view.displayGameOver(recorder.getScore)
+      } else {
+        view.displayScreen(recorder.getScreen)
+        val inventory: Inventory = recorder.getInventory
+        view.displayInventory(inventory)
+        player.sendCommand(getCommand(inventory)) match {
+          case Left(err) => view.displayError(err)
+          case Right(_) => playRogue0()
+        }
+      }
     }
   }
 

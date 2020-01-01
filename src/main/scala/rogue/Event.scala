@@ -20,6 +20,10 @@ object Event extends Enumeration {
     Val("""you begin to feel better""".r.unanchored, GameState(Command.Quaff(Potion(PotionPower.HEALING))))
   /** Monster attacked PC and missed */
   val MISSED_BY: Event = Val("""the (.*) misses""".r.unanchored, GameState()) // TODO Monster is awake
+
+  /** PC picked up an item */
+  val PICKED_UP: Event = Val("""(.*) \(\w\)""".r.unanchored, GameState()) // TODO Do anything here?
+  
   /** PC read a scroll of remove curse */
   val REMOVE_CURSE: Event = Val("""you feel as though someone is watching over you""".r.unanchored,
     new GameState(lastCommand = Some(Command.Read(Scroll(ScrollPower.REMOVE_CURSE)))))
