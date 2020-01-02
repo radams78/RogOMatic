@@ -60,16 +60,18 @@ class RogueActuator(rogue: IRogue, recorder: Recorder) {
     }
     lines(0) match {
       case RogueActuator.moreRegex(message) =>
-        for {e <- Event.interpretMessage(message)
-             _ <- recorder.recordEvent(e)
-             } yield ()
+        readEvent(message)
         rogue.sendKeypress(' ')
         update()
-      case message => for {
-        e <- Event.interpretMessage(message)
-        _ <- recorder.recordEvent(e)
-      } yield ()
+      case message =>
+        readEvent(message)
     }
+  }
+
+  private def readEvent(message: String): Either[String, Unit] = {
+    for {e <- Event.interpretMessage(message)
+         _ <- recorder.recordEvent(e)
+         } yield ()
   }
 }
 

@@ -18,6 +18,7 @@ object Event extends Enumeration {
   /** PC quaffed a potion of healing */
   val HEALING: Event =
     Val("""you begin to feel better""".r.unanchored, GameState(Command.Quaff(Potion(PotionPower.HEALING))))
+
   /** Monster attacked PC and missed */
   val MISSED_BY: Event = Val("""the (.*) misses""".r.unanchored, GameState()) // TODO Monster is awake
 
