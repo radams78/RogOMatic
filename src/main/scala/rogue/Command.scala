@@ -63,6 +63,11 @@ object Command {
 
   object Quaff {
     def apply(potion: Potion): Quaff = Quaff(None, potion)
+
+    def apply(inventory: Inventory, slot: Slot): Quaff = {
+      assert(inventory.items(slot).isInstanceOf[Potion])
+      Quaff(Some(slot), inventory.items(slot).asInstanceOf[Potion])
+    }
   }
   
   /** Read a scroll */

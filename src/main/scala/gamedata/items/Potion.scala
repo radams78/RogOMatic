@@ -9,6 +9,7 @@ import gamestate.PotionKnowledge
 /** A stack of potions
  *
  * Invariants:
+ *   - potionKnowledge is monotone
  *   - potion.infer(potion.potionKnowledge) == Right(potion) 
  *   - potion.infer(PotionKnowledge()) == Right(potion) */
 // TODO Duplication with Scroll
