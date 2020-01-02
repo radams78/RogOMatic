@@ -13,4 +13,6 @@ case class Wand(wandType: WandType, material: Material) extends Item {
     } yield Wand(inferredWandType, inferredMaterial).asInstanceOf[T]
     case _ => Left(s"Incompatible items: $this and $that")
   }
+
+  override def toString: String = s"a $material $wandType"
 }
