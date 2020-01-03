@@ -40,7 +40,7 @@ case class Potion(quantity: Option[Int] = None,
       (power match {
         case Some(p) => " " + p.toString
         case None => ""
-      }) // TODO Duplication
+      })
 
   override def merge[T <: Item](that: T): Either[String, T] = that match {
     case Potion(thatQuantity, thatColour, thatPower) => for {

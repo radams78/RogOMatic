@@ -82,19 +82,19 @@ class Transparent(player: RogueActuator, recorder: Recorder, view: IView) {
              case 'q' => for {
                slot <- getItem
              } yield inventory.items.get(slot) match {
-               case Some(p: Potion) => Command.Quaff(Some(slot), p)
+               case Some(p: Potion) => Command.Quaff(slot, p)
                case _ => return Left(s"Invalid potion: $slot")
              }
              case 'r' => for {
                slot <- getItem
              } yield inventory.items.get(slot) match {
-               case Some(s: Scroll) => Command.Read(Some(slot), s)
+               case Some(s: Scroll) => Command.Read(slot, s)
                case _ => return Left(s"Invalid scroll: $slot")
              }
              case 't' => for {
                dir <- getDirection
                slot <- getItem
-             } yield Command.Throw(dir, slot, inventory.items(slot)) // TODO Better error handling
+             } yield Command.Throw(dir, slot, inventory.items(slot))
              case 'u' => Right(Command.UPRIGHT)
              case 'w' => for (slot <- getItem) yield Command.Wield(slot)
              case 'y' => Right(Command.UPLEFT)

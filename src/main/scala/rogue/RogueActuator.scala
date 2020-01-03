@@ -25,8 +25,9 @@ class RogueActuator(rogue: IRogue, recorder: Recorder) {
   /** Send a command to Rogue, then read all possible information from the screen and inventory */
   def sendCommand(command: Command): Either[String, Unit] = {
     for {_ <- recorder.recordCommand(command)
+         keys <- command.keypresses
          _ <- {
-           for (k <- command.keypresses) rogue.sendKeypress(k)
+           for (k <- keys) rogue.sendKeypress(k)
            update()
          }
          _ <- if (!recorder.gameOver) {

@@ -35,17 +35,14 @@ sealed trait Command {
   def infer(potionKnowledge: PotionKnowledge): Either[String, Command] = Right(this)
 
   /** Keypresses to send to Rogue to execute command */
-  def keypresses: Seq[Char]
+  def keypresses: Either[String, Seq[Char]]
 }
 
 object Command {
 
   /** Drink a potion */
-  case class Quaff(slot: Option[Slot], potion: Potion) extends Command {
-    override def keypresses: Seq[Char] = slot match {
-      case Some(slot) => Seq('q', slot.label)
-      case None => throw new Error("Tried to execute Quaff command with unknown slot") // TODO Duplication
-    }
+  case class Quaff(slot: pSlot, potion: Potion) extends Command {
+    override def keypresses: Either[String, Seq[Char]] = for (k <- slot.keypress) yield Seq('q', k)
 
     override def potionKnowledge: PotionKnowledge = potion.potionKnowledge
 
@@ -61,21 +58,9 @@ object Command {
     }
   }
 
-  object Quaff {
-    def apply(potion: Potion): Quaff = Quaff(None, potion)
-
-    def apply(inventory: Inventory, slot: Slot): Quaff = {
-      assert(inventory.items(slot).isInstanceOf[Potion])
-      Quaff(Some(slot), inventory.items(slot).asInstanceOf[Potion])
-    }
-  }
-  
   /** Read a scroll */
-  case class Read(slot: Option[Slot], scroll: Scroll) extends Command {
-    override def keypresses: Seq[Char] = slot match {
-      case Some(slot) => Seq('r', slot.label)
-      case None => throw new Error("Tried to execute Read command with unknown slot")
-    }
+  case class Read(slot: pSlot, scroll: Scroll) extends Command {
+    override def keypresses: Either[String, Seq[Char]] = for (k <- slot.keypress) yield Seq('r', k)
 
     override def scrollKnowledge: ScrollKnowledge = scroll.scrollKnowledge
 
@@ -91,15 +76,9 @@ object Command {
     }
   }
 
-  object Read {
-    def apply(scroll: Scroll): Read = Read(None, scroll)
-
-    def apply(slot: Slot, scroll: Scroll): Read = Read(Some(slot), scroll)
-  }
-
   /** Throw an item */
   case class Throw(dir: Direction, slot: Slot, item: Item) extends Command {
-    override val keypresses: Seq[Char] = Seq('t', dir.keypress, slot.label)
+    override val keypresses: Either[String, Seq[Char]] = Right(Seq('t', dir.keypress, slot.label))
 
     override def scrollKnowledge: ScrollKnowledge = item match {
       case scroll: Scroll => scroll.scrollKnowledge
@@ -131,19 +110,9 @@ object Command {
     }
   }
 
-  /** Rest */
-  case object REST extends Command {
-    override val keypresses: Seq[Char] = Seq('.')
-
-    override def merge(that: Command): Either[String, Command] = that match {
-      case REST => Right(REST)
-      case _ => Left(s"Incompatible commands: $this and $that")
-    }
-  }
-
   /** Wield a weapon */
   case class Wield(slot: Slot) extends Command {
-    override val keypresses: Seq[Char] = Seq('w', slot.label)
+    override val keypresses: Either[String, Seq[Char]] = Right(Seq('w', slot.label))
 
     override def merge(that: Command): Either[String, Command] = that match {
       case Wield(thatSlot) => for (inferredSlot <- slot.merge(thatSlot)) yield Wield(inferredSlot)
@@ -151,9 +120,34 @@ object Command {
     }
   }
 
+  object Quaff {
+    def apply(potion: Potion): Quaff = Quaff(pSlot.UNKNOWN, potion)
+
+    // TODO Error handling
+    def apply(inventory: Inventory, slot: Slot): Quaff = {
+      Quaff(pSlot(slot), inventory.items(slot).asInstanceOf[Potion])
+    }
+  }
+
+  object Read {
+    def apply(scroll: Scroll): Read = Read(pSlot.UNKNOWN, scroll)
+
+    def apply(slot: Slot, scroll: Scroll): Read = Read(pSlot(slot), scroll)
+  }
+
+  /** Rest */
+  case object REST extends Command {
+    override val keypresses: Either[String, Seq[Char]] = Right(Seq('.'))
+
+    override def merge(that: Command): Either[String, Command] = that match {
+      case REST => Right(REST)
+      case _ => Left(s"Incompatible commands: $this and $that")
+    }
+  }
+
   /** Move up */
   case object UP extends Command {
-    override val keypresses: Seq[Char] = Seq('j')
+    override val keypresses: Either[String, Seq[Char]] = Right(Seq('j'))
 
     override def merge(that: Command): Either[String, Command] = that match {
       case UP => Right(UP)
@@ -163,7 +157,7 @@ object Command {
 
   /** Move down */
   case object DOWN extends Command {
-    override val keypresses: Seq[Char] = Seq('k')
+    override val keypresses: Either[String, Seq[Char]] = Right(Seq('k'))
 
     override def merge(that: Command): Either[String, Command] = that match {
       case DOWN => Right(DOWN)
@@ -173,7 +167,7 @@ object Command {
 
   /** Move left */
   case object LEFT extends Command {
-    override val keypresses: Seq[Char] = Seq('h')
+    override val keypresses: Either[String, Seq[Char]] = Right(Seq('h'))
 
     override def merge(that: Command): Either[String, Command] = that match {
       case LEFT => Right(LEFT)
@@ -183,7 +177,7 @@ object Command {
 
   /** Move right */
   case object RIGHT extends Command {
-    override val keypresses: Seq[Char] = Seq('l')
+    override val keypresses: Either[String, Seq[Char]] = Right(Seq('l'))
 
     override def merge(that: Command): Either[String, Command] = that match {
       case RIGHT => Right(RIGHT)
@@ -193,7 +187,7 @@ object Command {
 
   /** Move up left */
   case object UPLEFT extends Command {
-    override val keypresses: Seq[Char] = Seq('y')
+    override val keypresses: Either[String, Seq[Char]] = Right(Seq('y'))
 
     override def merge(that: Command): Either[String, Command] = that match {
       case UPLEFT => Right(UPLEFT)
@@ -203,7 +197,7 @@ object Command {
 
   /** Move up right */
   case object UPRIGHT extends Command {
-    override val keypresses: Seq[Char] = Seq('u')
+    override val keypresses: Either[String, Seq[Char]] = Right(Seq('u'))
 
     override def merge(that: Command): Either[String, Command] = that match {
       case UPRIGHT => Right(UPRIGHT)
@@ -213,7 +207,7 @@ object Command {
 
   /** Move down left */
   object DOWNLEFT extends Command {
-    override val keypresses: Seq[Char] = Seq('b')
+    override val keypresses: Either[String, Seq[Char]] = Right(Seq('b'))
 
     override def merge(that: Command): Either[String, Command] = that match {
       case DOWNLEFT => Right(DOWNLEFT)
@@ -223,7 +217,7 @@ object Command {
 
   /** Move down right */
   case object DOWNRIGHT extends Command {
-    override val keypresses: Seq[Char] = Seq('n')
+    override val keypresses: Either[String, Seq[Char]] = Right(Seq('n'))
 
     override def merge(that: Command): Either[String, Command] = that match {
       case DOWNRIGHT => Right(DOWNRIGHT)
@@ -233,7 +227,7 @@ object Command {
 
   /** Go downstairs */
   case object DOWNSTAIRS extends Command {
-    override val keypresses: Seq[Char] = Seq('>')
+    override val keypresses: Either[String, Seq[Char]] = Right(Seq('>'))
 
     override def merge(that: Command): Either[String, Command] = that match {
       case DOWNSTAIRS => Right(DOWNSTAIRS)
