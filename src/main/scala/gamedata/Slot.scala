@@ -27,6 +27,7 @@ object Slot {
   implicit def domain: Domain[Slot] = Domain.flatDomain
 }
 
+/** Partial information about a slot: either a slot, or UNKNOWN */
 case class pSlot(slot: Option[Slot]) {
   def keypress: Either[String, Char] = slot match {
     case Some(s) => Right(s.label)
