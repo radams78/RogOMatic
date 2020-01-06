@@ -7,7 +7,7 @@ import view.IView
 import scala.annotation.tailrec
 
 /** Expert for playing the game in transparent mode, i.e. interactively, getting moves from the user one by one. */
-class Transparent(player: RogueActuator, recorder: Recorder, view: IView) {
+class Transparent(player: IRogueActuator, recorder: IRecorder, view: IView) {
   /** Play a game of rogue */
   def playRogue(): Unit = {
     player.start()

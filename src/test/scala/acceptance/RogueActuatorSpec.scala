@@ -72,9 +72,9 @@ class MockUser extends IView with Assertions {
       else SecondScreen(displayedScreen, displayedInventory = true)
   }
 
-  private class ThirdScreen(displayedScreen: Boolean, displayedInventory: Boolean, displayedPower: Boolean) extends MockUserState {
+  private class FourthScreen(displayedScreen: Boolean, displayedInventory: Boolean, displayedPower: Boolean) extends MockUserState {
     override def displayScreen(screen: String): MockUserState =
-      if (screen != TestGame.thirdScreen) fail(s"Unexpected screen: $screen")
+      if (screen != TestGame.fourthScreen) fail(s"Unexpected screen: $screen")
       else ThirdScreen(displayedScreen = true, displayedInventory = displayedInventory, displayedPower = displayedPower)
 
     override def displayInventory(inventory: Inventory): MockUserState =
@@ -110,16 +110,14 @@ class MockUser extends IView with Assertions {
   }
 
   private object ThirdScreen {
-    def apply(): ThirdScreen = new ThirdScreen(false, false, false)
+    def apply(): FourthScreen = new FourthScreen(false, false, false)
 
     def apply(displayedScreen: Boolean, displayedInventory: Boolean, displayedPower: Boolean): MockUserState =
-      if (displayedScreen && displayedInventory && displayedPower) FINISHED else new ThirdScreen(displayedScreen, displayedInventory, displayedPower)
+      if (displayedScreen && displayedInventory && displayedPower) {
+        succeed
+        Initial()
+      } else new FourthScreen(displayedScreen, displayedInventory, displayedPower)
   }
-
-  private object FINISHED extends MockUserState {
-    override val finished: Boolean = true
-  }
-
 }
 
 /** Acceptance tests for playing Rogue in transparent mode */
@@ -143,7 +141,6 @@ class RogueActuatorSpec extends AnyFeatureSpec with GivenWhenThen with Matchers 
       Then("the final screen should be displayed")
       And("the final inventory should be displayed")
       And("the scroll power should be remembered")
-      assert(user.finished)
     }
 
     Scenario("User plays a game of Rogue in transparent mode and is killed") {

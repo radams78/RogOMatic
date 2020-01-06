@@ -4,7 +4,18 @@ import gamedata.Inventory
 import gamestate.{GameState, ScrollKnowledge}
 import rogue.Event.Event
 
-class Recorder {
+trait IRecorder {
+  def getInventory: Inventory
+
+  def getScreen: String
+
+  def getScore: Int
+
+  def gameOver: Boolean
+
+}
+
+class Recorder extends IRecorder {
   private var _gameOver: Boolean = false
   private var gameState: GameState = GameState()
   private var inventory: Inventory = _

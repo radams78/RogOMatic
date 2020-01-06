@@ -6,8 +6,14 @@ import gamedata.Inventory
 import scala.annotation.tailrec
 import scala.util.matching.Regex
 
+trait IRogueActuator {
+  def sendCommand(getCommand: Command): Either[String, Unit]
+
+  def start(): Either[String, Unit]
+} // todo
+
 /** High-level communication with the game of Rogue. */
-class RogueActuator(rogue: IRogue, recorder: Recorder) {
+class RogueActuator(rogue: IRogue, recorder: Recorder) extends IRogueActuator {
   /** Start the game of Rogue and read the first screen and inventory */
   def start(): Either[String, Unit] = {
     rogue.start()
