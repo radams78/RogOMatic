@@ -10,6 +10,12 @@ trait Item {
 }
 
 object Item {
+
+  // TODO For every other object: merging with UNKNOWN should not change object
+  case object UNKNOWN extends Item {
+    override def merge[T <: Item](that: T): Either[String, T] = Right(that)
+  }
+
   private val rationsRegex: Regex = """(\d+) rations of food""".r
   private val identifiedArmorRegex: Regex = """([-+]\d+) (\w+(?: \w+)?) \[\d+\]""".r
   private val identifiedWeaponRegex: Regex = """a(?:n?) ([-+]\d+),([-+]\d+) ([-\w]+(?: \w+)?)""".r

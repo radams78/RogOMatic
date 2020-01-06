@@ -15,6 +15,8 @@ class MockRogue(initialState: MockRogueState) extends IRogue with Assertions {
 
   /** True if the game of Rogue has started */
   final def isStarted: Boolean = state.isStarted
+
+  override def close(): Unit = state.close()
 }
 
 object MockRogue {
@@ -34,6 +36,8 @@ object MockRogue {
 
 /** The state of a [[MockRogue]] object */
 trait MockRogueState extends Assertions {
+  def close(): Unit = fail(s"Unexpected call to close Rogue in state $this")
+
   /** True if the game of Rogue has started */
   def isStarted: Boolean
 
@@ -69,6 +73,9 @@ object MockRogueState {
    * and Rogue displaying the inventory. We can switch between the two using 'i' and ' '. */
   trait ScreenInventoryPair {
     outer =>
+    /** Used in error messages and fail messages */
+    def name: String
+
     /** Screen displayed when waiting for next command */
     def screen: String
 
@@ -85,6 +92,8 @@ object MockRogueState {
       })
 
       override def getScreen: String = screen
+
+      override def toString: String = s"$name.Screen"
     }
 
     /** State representing Rogue displaying the inventory */
@@ -98,12 +107,12 @@ object MockRogueState {
   }
 
   /** A [[ScreenInventoryPair]] with no further transitions possible */
-  case class Terminal(screen: String, inventoryScreen: String) extends ScreenInventoryPair {
+  case class Terminal(name: String, screen: String, inventoryScreen: String) extends ScreenInventoryPair {
     override def transitions: PartialFunction[Char, MockRogueState] = PartialFunction.empty
   }
 
   /** A [[ScreenInventoryPair]] with one further transation: the keiypress 'command' will switch to state 'next' */
-  case class WaitForCommand(screen: String, inventoryScreen: String, command: Char, next: MockRogueState) extends ScreenInventoryPair {
+  case class WaitForCommand(name: String, screen: String, inventoryScreen: String, command: Char, next: MockRogueState) extends ScreenInventoryPair {
     override def transitions: PartialFunction[Char, MockRogueState] = {
       case k if k == command => next
     }
@@ -148,9 +157,9 @@ trait MockRogueBuilder {
   def build(mockRogueState: MockRogueState): MockRogueState
 
   /** Display screen and inventoryScreen until command is received, then switch to state (hole) */
-  final case class WaitForCommand(screen: String, inventoryScreen: String, command: Char) extends MockRogueBuilder {
+  final case class WaitForCommand(name: String, screen: String, inventoryScreen: String, command: Char) extends MockRogueBuilder {
     override def build(mockRogueState: MockRogueState): MockRogueState =
-      outer.build(MockRogueState.WaitForCommand(screen, inventoryScreen, command, mockRogueState).Screen)
+      outer.build(MockRogueState.WaitForCommand(name, screen, inventoryScreen, command, mockRogueState).Screen)
   }
 
   final case class Wait(screen: String, command: Char) extends MockRogueBuilder {
@@ -159,7 +168,7 @@ trait MockRogueBuilder {
   }
 
   /** Fill in the hole with a state that displays screen and inventoryScreen */
-  final case class End(screen: String, inventoryScreen: String)
-    extends MockRogue(build(MockRogueState.Terminal(screen, inventoryScreen).Screen))
+  final case class End(name: String, screen: String, inventoryScreen: String)
+    extends MockRogue(build(MockRogueState.Terminal(name, screen, inventoryScreen).Screen))
 
 }

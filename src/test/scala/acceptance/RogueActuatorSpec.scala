@@ -1,13 +1,126 @@
 package acceptance
 
 import gamedata._
-import gamedata.items.{Scroll, ScrollPower}
-import gamestate.ScrollKnowledge
+import gamedata.items.ScrollPower
+import gamedata.items.ScrollPower.ScrollPower
 import mock._
-import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
+import org.scalatest.{Assertions, GivenWhenThen}
+import rogomatic.RogOMatic
 import rogue._
+import view.IView
+
+class MockUser extends IView with Assertions {
+  private var state: MockUserState = Initial()
+
+  def finished: Boolean = state.finished
+
+  override def displayGameOver(finalScore: Int): Unit = state = state.displayGameOver(finalScore)
+
+  override def displayError(err: String): Unit = state = state.displayError(err)
+
+  override def displayInventory(inventory: Inventory): Unit = state = state.displayInventory(inventory)
+
+  override def displayScreen(screen: String): Unit = state = state.displayScreen(screen)
+
+  override def getCommand: Command = state.getCommand match {
+    case (cmd, newState) =>
+      state = newState
+      cmd
+  }
+
+  private trait MockUserState {
+    val finished: Boolean = false
+
+    def displayError(err: String): MockUserState = fail(s"ERROR: $err")
+
+    def displayGameOver(finalScore: Int): MockUserState = fail("Displayed game over")
+
+    def getCommand: (Command, MockUserState) = fail(s"Asked for command in state $state")
+
+    def displayScreen(screen: String): MockUserState = fail(s"Unexpected screen: $screen")
+
+    def displayInventory(inventory: Inventory): MockUserState = fail(s"Unexpected inventory: $inventory")
+
+    def displayPower(title: String, power: ScrollPower): MockUserState = fail(s"Unexpected scroll power: $title and $power")
+  }
+
+  private class Initial(displayedScreen: Boolean, displayedInventory: Boolean) extends MockUserState {
+    override def displayScreen(screen: String): MockUserState = {
+      if (screen != TestGame.firstScreen) fail(s"Unexpected screen: $screen")
+      else Initial(displayedScreen = true, displayedInventory = displayedInventory)
+    }
+
+    override def displayInventory(inventory: Inventory): MockUserState = {
+      if (inventory != TestGame.firstInventory) fail(s"Unexpected inventory: $inventory")
+      else Initial(displayedScreen, displayedInventory = true)
+    }
+  }
+
+  private class SecondScreen(displayedScreen: Boolean, displayedInventory: Boolean) extends MockUserState {
+    override def getCommand: (Command, MockUserState) = fail(s"Asked for command while\n"
+      + (if (displayedScreen) "" else "screen not displayed")
+      + (if (displayedInventory) "" else "inventory not displayed"))
+
+    override def displayScreen(screen: String): MockUserState =
+      if (screen != TestGame.secondScreen) fail(s"Unexpected screen: $screen")
+      else SecondScreen(displayedScreen = true, displayedInventory = displayedInventory)
+
+    override def displayInventory(inventory: Inventory): MockUserState =
+      if (inventory != TestGame.firstInventory) fail(s"Unexpected inventory: $inventory")
+      else SecondScreen(displayedScreen, displayedInventory = true)
+  }
+
+  private class ThirdScreen(displayedScreen: Boolean, displayedInventory: Boolean, displayedPower: Boolean) extends MockUserState {
+    override def displayScreen(screen: String): MockUserState =
+      if (screen != TestGame.thirdScreen) fail(s"Unexpected screen: $screen")
+      else ThirdScreen(displayedScreen = true, displayedInventory = displayedInventory, displayedPower = displayedPower)
+
+    override def displayInventory(inventory: Inventory): MockUserState =
+      if (inventory != TestGame.fourthInventory) fail(s"Unexpected inventory: $inventory")
+      else ThirdScreen(displayedScreen, displayedInventory = true, displayedPower = displayedPower)
+
+    override def displayPower(title: String, power: ScrollPower): MockUserState =
+      if (title != "coph rech") fail(s"Unexpected scroll title: $title")
+      else if (power != ScrollPower.REMOVE_CURSE) fail(s"Unexpected scroll power: $power")
+      else ThirdScreen(displayedScreen, displayedInventory, displayedPower = true)
+  }
+
+  private object Initial {
+    def apply(): Initial = new Initial(false, false)
+
+    def apply(displayedScreen: Boolean, displayedInventory: Boolean): MockUserState =
+      if (displayedScreen && displayedInventory) FIRST_COMMAND else new Initial(displayedScreen, displayedInventory)
+  }
+
+  private object FIRST_COMMAND extends MockUserState {
+    override def getCommand: (Command, MockUserState) = (Command.RIGHT, SecondScreen())
+  }
+
+  private object SecondScreen {
+    def apply(): SecondScreen = new SecondScreen(false, false)
+
+    def apply(displayedScreen: Boolean, displayedInventory: Boolean): MockUserState =
+      if (displayedScreen && displayedInventory) SECOND_COMMAND else new SecondScreen(displayedScreen, displayedInventory)
+  }
+
+  private object SECOND_COMMAND extends MockUserState {
+    override def getCommand: (Command, MockUserState) = (Command.Read(TestGame.firstInventory, Slot.F), ThirdScreen())
+  }
+
+  private object ThirdScreen {
+    def apply(): ThirdScreen = new ThirdScreen(false, false, false)
+
+    def apply(displayedScreen: Boolean, displayedInventory: Boolean, displayedPower: Boolean): MockUserState =
+      if (displayedScreen && displayedInventory && displayedPower) FINISHED else new ThirdScreen(displayedScreen, displayedInventory, displayedPower)
+  }
+
+  private object FINISHED extends MockUserState {
+    override val finished: Boolean = true
+  }
+
+}
 
 /** Acceptance tests for playing Rogue in transparent mode */
 class RogueActuatorSpec extends AnyFeatureSpec with GivenWhenThen with Matchers {
@@ -16,38 +129,21 @@ class RogueActuatorSpec extends AnyFeatureSpec with GivenWhenThen with Matchers 
     Scenario("User starts a game of Rogue in transparent mode") {
       Given("an instance of Rog-O-Matic")
       val rogue: MockRogue = TestGame.testGame
-      val recorder: Recorder = new Recorder
-      val player: RogueActuator = new RogueActuator(rogue, recorder)
+      val user: MockUser = new MockUser
 
       When("the user starts the game in transparent mode")
-      player.start()
+      RogOMatic.playTransparentGame(rogue, user)
 
       Then("the first screen should be displayed")
-      recorder.getScreen should be(TestGame.firstScreen)
-
       And("the first inventory should be displayed")
-      recorder.getInventory should be(TestGame.firstInventory)
-
       When("the user enters the command to go right")
-      player.sendCommand(Command.RIGHT)
-
       Then("the second screen should be displayed")
-      recorder.getScreen should be(TestGame.secondScreen)
-
       And("the inventory should be displayed")
-      recorder.getInventory should be(TestGame.firstInventory)
-
       When("the user enters the command te read a scroll")
-      player.sendCommand(Command.Read(Slot.F, Scroll(1, "coph rech")))
-
       Then("the final screen should be displayed")
-      recorder.getScreen should be(TestGame.fourthScreen)
-
       And("the final inventory should be displayed")
-      recorder.getInventory should be(TestGame.fourthInventory)
-
       And("the scroll power should be remembered")
-      recorder.getScrollKnowledge should be(new ScrollKnowledge(Map("coph rech" -> ScrollPower.REMOVE_CURSE)))
+      assert(user.finished)
     }
 
     Scenario("User plays a game of Rogue in transparent mode and is killed") {

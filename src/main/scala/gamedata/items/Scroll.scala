@@ -38,6 +38,8 @@ case class Scroll(quantity: Option[Int], title: Option[String], power: Option[Sc
 }
 
 object Scroll {
+  val UNKNOWN: Scroll = Scroll(None, None, None)
+
   def apply(power: ScrollPower): Scroll = Scroll(None, None, Some(power))
 
   def apply(quantity: Int, title: String): Scroll = Scroll(Some(quantity), Some(title), None)

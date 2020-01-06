@@ -53,6 +53,8 @@ case class Potion(quantity: Option[Int] = None,
 }
 
 object Potion {
+  val UNKNOWN: Potion = Potion()
+
   def apply(power: PotionPower): Potion = Potion(None, None, Some(power))
 
   def apply(quantity: Int, colour: Colour): Potion = Potion(Some(quantity), Some(colour), None)

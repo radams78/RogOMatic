@@ -2,6 +2,9 @@ package rogue
 
 /** Interface for the Rogue process */
 trait IRogue {
+  /** Close the Rogue process */
+  def close(): Unit
+
   /** Start the game of Rogue */
   def start(): Unit
 

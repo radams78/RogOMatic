@@ -133,7 +133,7 @@ object DeathGame {
     }
 
     new MockRogue(MockRogue.Start
-      .WaitForCommand(firstScreen, firstInventoryScreen, '.')
+      .WaitForCommand("death game", firstScreen, firstInventoryScreen, '.')
       .build(penultimateState))
   }
 }

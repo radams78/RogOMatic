@@ -99,8 +99,8 @@ object ZeroMoveGame {
   )
 
   /** Game of Rogue which does not allow any moves to be made */
-  val zeroMoveGame: MockRogue = MockRogue.Start.End(firstScreen, firstInventoryScreen)
+  val zeroMoveGame: MockRogue = MockRogue.Start.End("zeroMoveGame", firstScreen, firstInventoryScreen)
 
   /** Game of Rogue with an empty inventory */
-  val emptyInventoryGame: MockRogue = MockRogue.Start.End(firstScreen, emptyInventoryScreen)
+  val emptyInventoryGame: MockRogue = MockRogue.Start.End("emptyInventoryGame", firstScreen, emptyInventoryScreen)
 }

@@ -58,6 +58,17 @@ object Command {
     }
   }
 
+  object Quaff {
+    def apply(potion: Potion): Quaff = Quaff(pSlot.UNKNOWN, potion)
+
+    // TODO Error handling
+    def apply(inventory: Inventory, slot: Slot): Quaff = {
+      Quaff(pSlot(slot), inventory.items(slot).asInstanceOf[Potion])
+    }
+
+    def apply(slot: Slot): Quaff = Quaff(pSlot(slot), Potion.UNKNOWN)
+  }
+
   /** Read a scroll */
   case class Read(slot: pSlot, scroll: Scroll) extends Command {
     override def keypresses: Either[String, Seq[Char]] = for (k <- slot.keypress) yield Seq('r', k)
@@ -74,6 +85,16 @@ object Command {
       } yield Read(inferredSlot, inferredScroll)
       case _ => Left(s"Incompatible commands: $this and $that")
     }
+  }
+
+  object Read {
+    def apply(inventory: Inventory, slot: Slot): Read = Read(slot, inventory.items(slot).asInstanceOf[Scroll]) // TODO Better error handling
+
+    def apply(slot: Slot, scroll: Scroll): Read = Read(pSlot(slot), scroll)
+
+    def apply(slot: Slot): Read = Read(pSlot(slot), Scroll.UNKNOWN)
+
+    def apply(scroll: Scroll): Read = Read(pSlot.UNKNOWN, scroll)
   }
 
   /** Throw an item */
@@ -110,6 +131,10 @@ object Command {
     }
   }
 
+  object Throw {
+    def apply(dir: Direction, slot: Slot): Throw = Throw(dir, slot, Item.UNKNOWN)
+  }
+
   /** Wield a weapon */
   case class Wield(slot: Slot) extends Command {
     override val keypresses: Either[String, Seq[Char]] = Right(Seq('w', slot.label))
@@ -118,21 +143,6 @@ object Command {
       case Wield(thatSlot) => for (inferredSlot <- slot.merge(thatSlot)) yield Wield(inferredSlot)
       case _ => Left(s"Incompatible commands: $this and $that")
     }
-  }
-
-  object Quaff {
-    def apply(potion: Potion): Quaff = Quaff(pSlot.UNKNOWN, potion)
-
-    // TODO Error handling
-    def apply(inventory: Inventory, slot: Slot): Quaff = {
-      Quaff(pSlot(slot), inventory.items(slot).asInstanceOf[Potion])
-    }
-  }
-
-  object Read {
-    def apply(scroll: Scroll): Read = Read(pSlot.UNKNOWN, scroll)
-
-    def apply(slot: Slot, scroll: Scroll): Read = Read(pSlot(slot), scroll)
   }
 
   /** Rest */

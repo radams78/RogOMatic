@@ -36,9 +36,9 @@ class RogueActuatorTest extends AnyFlatSpec with Matchers {
 
   trait ReadScroll extends Fixture {
     val player: RogueActuator = new RogueActuator(MockRogue.Build
-      .WaitForCommand(TestGame.secondScreen, TestGame.secondInventoryScreen, 'r')
+      .WaitForCommand("readScroll state 1", TestGame.secondScreen, TestGame.secondInventoryScreen, 'r')
       .Wait(TestGame.thirdScreen, 'f')
-      .End(TestGame.fourthScreen, TestGame.fourthInventoryScreen), recorder
+      .End("readScroll state 3", TestGame.fourthScreen, TestGame.fourthInventoryScreen), recorder
     )
   }
 

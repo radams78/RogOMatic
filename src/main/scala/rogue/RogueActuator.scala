@@ -48,7 +48,7 @@ class RogueActuator(rogue: IRogue, recorder: Recorder) {
   @tailrec
   private def update(): Either[String, Unit] = {
     val screen: String = rogue.getScreen
-    val lines: Array[String] = screen.split("\n").map(_.padTo(80, ' '))
+    val lines: Seq[String] = screen.split("\n").map(_.padTo(80, ' '))
     recorder.recordScreen(screen)
     if (!lines.last.exists(_ != ' ')) {
       screen match {
@@ -59,7 +59,7 @@ class RogueActuator(rogue: IRogue, recorder: Recorder) {
           return Left(s"Could not parse screen: $screen")
       }
     }
-    lines(0) match {
+    lines.head match {
       case RogueActuator.moreRegex(message) =>
         readEvent(message)
         rogue.sendKeypress(' ')

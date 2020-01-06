@@ -140,7 +140,7 @@ object MoreGame {
 
   val moreGame: MockRogue =
     MockRogue.Build
-      .WaitForCommand(firstScreen, firstInventoryScreen, 'l')
+      .WaitForCommand("moreGame state 1", firstScreen, firstInventoryScreen, 'l')
       .Wait(secondScreen, ' ')
-      .End(thirdScreen, thirdInventoryScreen)
+      .End("moreGame state 3", thirdScreen, thirdInventoryScreen)
 }

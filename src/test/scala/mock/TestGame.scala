@@ -226,8 +226,8 @@ object TestGame {
 
   def testGame: MockRogue =
     MockRogue.Start
-      .WaitForCommand(firstScreen, firstInventoryScreen, 'l')
-      .WaitForCommand(secondScreen, secondInventoryScreen, 'r')
+      .WaitForCommand("testGame state 1", firstScreen, firstInventoryScreen, 'l')
+      .WaitForCommand("testGame state 2", secondScreen, secondInventoryScreen, 'r')
       .Wait(thirdScreen, 'f')
-      .End(fourthScreen, fourthInventoryScreen)
+      .End("testGame state 4", fourthScreen, fourthInventoryScreen)
 }
