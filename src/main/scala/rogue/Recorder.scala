@@ -1,6 +1,7 @@
 package rogue
 
 import gamedata.Inventory
+import gamedata.items.ScrollPower.ScrollPower
 import gamestate.{GameState, ScrollKnowledge}
 import rogue.Event.Event
 
@@ -13,6 +14,7 @@ trait IRecorder {
 
   def gameOver: Boolean
 
+  def getScrollPowers: Map[String, ScrollPower]
 }
 
 class Recorder extends IRecorder {
@@ -51,4 +53,6 @@ class Recorder extends IRecorder {
       gameState = gs
       ()
     }
+
+  override def getScrollPowers: Map[String, ScrollPower] = Map() // TODO
 }

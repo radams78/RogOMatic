@@ -18,9 +18,7 @@ class Transparent(player: IRogueActuator, recorder: IRecorder, view: IView) {
       if (recorder.gameOver) {
         view.displayGameOver(recorder.getScore)
       } else {
-        view.displayScreen(recorder.getScreen)
-        val inventory: Inventory = recorder.getInventory
-        view.displayInventory(inventory)
+        displayAll()
         player.sendCommand(getCommand) match {
           case Left(err) => view.displayError(err)
           case Right(_) => playRogue0()
@@ -29,6 +27,13 @@ class Transparent(player: IRogueActuator, recorder: IRecorder, view: IView) {
     }
   }
 
+
+  def displayAll(): Unit = {
+    view.displayScreen(recorder.getScreen)
+    val inventory: Inventory = recorder.getInventory
+    view.displayInventory(inventory)
+    for ((title, power) <- recorder.getScrollPowers) view.displayScrollPower(title, power)
+  }
 
   /** Get a command from the user */
   private def getCommand: Command = view.getCommand

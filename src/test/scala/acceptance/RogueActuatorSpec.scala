@@ -72,19 +72,21 @@ class MockUser extends IView with Assertions {
       else SecondScreen(displayedScreen, displayedInventory = true)
   }
 
+  override def displayScrollPower(title: String, power: ScrollPower): Unit = state = state.displayPower(title, power)
+
   private class FourthScreen(displayedScreen: Boolean, displayedInventory: Boolean, displayedPower: Boolean) extends MockUserState {
     override def displayScreen(screen: String): MockUserState =
       if (screen != TestGame.fourthScreen) fail(s"Unexpected screen: $screen")
-      else ThirdScreen(displayedScreen = true, displayedInventory = displayedInventory, displayedPower = displayedPower)
+      else FourthScreen(displayedScreen = true, displayedInventory = displayedInventory, displayedPower = displayedPower)
 
     override def displayInventory(inventory: Inventory): MockUserState =
       if (inventory != TestGame.fourthInventory) fail(s"Unexpected inventory: $inventory")
-      else ThirdScreen(displayedScreen, displayedInventory = true, displayedPower = displayedPower)
+      else FourthScreen(displayedScreen, displayedInventory = true, displayedPower = displayedPower)
 
     override def displayPower(title: String, power: ScrollPower): MockUserState =
       if (title != "coph rech") fail(s"Unexpected scroll title: $title")
       else if (power != ScrollPower.REMOVE_CURSE) fail(s"Unexpected scroll power: $power")
-      else ThirdScreen(displayedScreen, displayedInventory, displayedPower = true)
+      else FourthScreen(displayedScreen, displayedInventory, displayedPower = true)
   }
 
   private object Initial {
@@ -106,10 +108,10 @@ class MockUser extends IView with Assertions {
   }
 
   private object SECOND_COMMAND extends MockUserState {
-    override def getCommand: (Command, MockUserState) = (Command.Read(TestGame.firstInventory, Slot.F), ThirdScreen())
+    override def getCommand: (Command, MockUserState) = (Command.Read(TestGame.firstInventory, Slot.F), FourthScreen())
   }
 
-  private object ThirdScreen {
+  private object FourthScreen {
     def apply(): FourthScreen = new FourthScreen(false, false, false)
 
     def apply(displayedScreen: Boolean, displayedInventory: Boolean, displayedPower: Boolean): MockUserState =

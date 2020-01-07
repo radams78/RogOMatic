@@ -1,6 +1,7 @@
 package view
 
 import gamedata.Inventory
+import gamedata.items.ScrollPower.ScrollPower
 import rogue.Command
 
 /** Interface for the IO view. The implementations should be Humble Object */
@@ -18,4 +19,6 @@ trait IView {
 
   /** Display the game over message */
   def displayGameOver(finalScore: Int): Unit
+
+  def displayScrollPower(title: String, power: ScrollPower): Unit
 }
