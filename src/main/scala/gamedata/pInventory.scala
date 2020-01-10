@@ -3,7 +3,7 @@ package gamedata
 import domain.Domain
 import domain.Domain._
 import gamedata.items.Item
-import gamestate.ScrollKnowledge
+import gamestate.{PotionKnowledge, ScrollKnowledge}
 
 import scala.util.matching.UnanchoredRegex
 
@@ -17,13 +17,29 @@ import scala.util.matching.UnanchoredRegex
  *  - If ! items.keys.contains(s) then it is unknown whether slot s is empty or not */
 case class pInventory(items: Map[Slot, Option[Item]],
                       wearing: pOption[Slot],
-                      wielding: pOption[Slot]) {
-  def infer(item: ProvidesScrollKnowledge): Either[String, pInventory] = infer(item.scrollKnowledge)
+                      wielding: pOption[Slot]) extends ProvidesKnowledge {
+  override def potionKnowledge: Either[String, PotionKnowledge] = items.foldLeft[Either[String, PotionKnowledge]](Right(PotionKnowledge()))({
+    case (Left(s), _) => Left(s)
+    case (Right(pk), (_: Slot, None)) => Right(pk)
+    case (Right(pk), (_: Slot, Some(item))) => for {
+      pk2 <- item.potionKnowledge
+      pk3 <- pk.merge(pk2)
+    } yield pk3
+  })
 
-  def infer(scrollKnowledge: ScrollKnowledge): Either[String, pInventory] = {
+  override def scrollKnowledge: Either[String, ScrollKnowledge] = items.foldLeft[Either[String, ScrollKnowledge]](Right(ScrollKnowledge()))({
+    case (Left(s), _) => Left(s)
+    case (Right(pk), (_: Slot, None)) => Right(pk)
+    case (Right(pk), (_: Slot, Some(item))) => for {
+      sk2 <- item.scrollKnowledge
+      sk3 <- pk.merge(sk2)
+    } yield sk3 // TODO Fix variable names
+  })
+
+  def infer(item: ProvidesKnowledge): Either[String, pInventory] = {
     def step2(x: Option[Item]): Either[String, Option[Item]] = x match {
       case None => Right(None)
-      case Some(y) => for (z <- y.infer(scrollKnowledge)) yield Some(z)
+      case Some(y) => for (z <- y.infer(item)) yield Some(z)
     }
 
     def step3(items: Map[Slot, Option[Item]]): Either[String, Map[Slot, Option[Item]]] = items.foldLeft[Either[String, Map[Slot, Option[Item]]]](

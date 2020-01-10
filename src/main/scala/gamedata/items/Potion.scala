@@ -2,6 +2,7 @@ package gamedata.items
 
 import domain.Domain
 import domain.Domain._
+import gamedata.ProvidesKnowledge
 import gamedata.items.Colour.Colour
 import gamedata.items.PotionPower.PotionPower
 import gamestate.PotionKnowledge
@@ -16,10 +17,15 @@ import gamestate.PotionKnowledge
 case class Potion(quantity: Option[Int] = None,
                   colour: Option[Colour] = None,
                   power: Option[PotionPower] = None) extends Item {
-  def potionKnowledge: PotionKnowledge = (colour, power) match {
+  override def potionKnowledge: Either[String, PotionKnowledge] = Right((colour, power) match {
     case (Some(c), Some(p)) => PotionKnowledge(Map(c -> p))
     case _ => PotionKnowledge()
-  }
+  })
+
+  override def infer(that: ProvidesKnowledge): Either[String, Potion] = for {
+    pk <- that.potionKnowledge
+    potion <- infer(pk)
+  } yield potion
 
   def infer(potionKnowledge: PotionKnowledge): Either[String, Potion] = (colour, power) match {
     case (Some(c), power) => for (_power <- potionKnowledge.getPower(c).merge(power)) yield Potion(quantity, colour, _power)

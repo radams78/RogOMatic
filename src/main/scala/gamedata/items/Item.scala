@@ -1,13 +1,13 @@
 package gamedata.items
 
 import domain.Domain
-import gamestate.ScrollKnowledge
+import gamedata.ProvidesKnowledge
 
 import scala.util.matching.Regex
 
 /** An item that the PC can pick up */
-trait Item {
-  def infer(scrollKnowledge: ScrollKnowledge): Either[String, Item] = Right(this) // TODO
+trait Item extends ProvidesKnowledge { // TODO
+  def infer(that: ProvidesKnowledge): Either[String, Item] = Right(this) // TODO
 
   def merge[T <: Item](that: T): Either[String, T]
 }

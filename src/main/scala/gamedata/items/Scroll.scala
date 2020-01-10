@@ -2,6 +2,7 @@ package gamedata.items
 
 import domain.Domain
 import domain.Domain._
+import gamedata.ProvidesKnowledge
 import gamedata.items.ScrollPower.ScrollPower
 import gamestate.ScrollKnowledge
 
@@ -10,18 +11,23 @@ import gamestate.ScrollKnowledge
  * Invariant:
  * - scroll.infer(scroll.scrollKnowledge) == Right(scroll) */
 case class Scroll(quantity: Option[Int], title: Option[String], power: Option[ScrollPower]) extends Item {
-  def scrollKnowledge: ScrollKnowledge = (title, power) match {
+  override def scrollKnowledge: Either[String, ScrollKnowledge] = Right((title, power) match {
     case (Some(t), Some(p)) => ScrollKnowledge(Map(t -> p))
     case _ => ScrollKnowledge()
-  }
+  })
 
   override def toString: String =
     (Seq("a scroll") ++
       (for (p <- power) yield s"of $p") ++
       (for (t <- title) yield s"entitled: '$t'")).mkString(" ")
 
+  override def infer(that: ProvidesKnowledge): Either[String, Scroll] = for {
+    sk <- that.scrollKnowledge
+    scroll <- infer(sk)
+  } yield scroll
+
   /** Infer what we can about this scroll from the given information */
-  override def infer(scrollKnowledge: ScrollKnowledge): Either[String, Scroll] = (title, power) match {
+  def infer(scrollKnowledge: ScrollKnowledge): Either[String, Scroll] = (title, power) match {
     case (Some(t), power) => for {p <- power.merge(scrollKnowledge.getPower(t))} yield Scroll(quantity, title, p)
     case (None, Some(p)) => Right(Scroll(quantity, scrollKnowledge.getTitle(p), Some(p)))
     case _ => Right(this)

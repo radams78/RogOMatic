@@ -20,21 +20,11 @@ import gamestate.{PotionKnowledge, ScrollKnowledge}
  * - command.infer(potionKnowledge).scrollKnowledge == command.scrollKnowledge 
  * - command.infer(scrollKnowledge).potionKnowledge == command.potionKnowledge */
 // TODO Validation 
-sealed trait Command extends ProvidesScrollKnowledge {
-  def potionKnowledge: PotionKnowledge = PotionKnowledge()
-
-  def scrollKnowledge: ScrollKnowledge = ScrollKnowledge()
-
+sealed trait Command extends ProvidesKnowledge {
   /** Combine two pieces of information about a command */
   def merge(that: Command): Either[String, Command]
 
-  def infer(inventory: pInventory): Either[String, Command] = Right(this) // TODO
-
-  /** Add information from the given knowledge about scroll powers */
-  def infer(scrollKnowledge: ScrollKnowledge): Either[String, Command] = Right(this)
-
-  /** Add information from the given knowledge about potion powers */
-  def infer(potionKnowledge: PotionKnowledge): Either[String, Command] = Right(this)
+  def infer(item: ProvidesKnowledge): Either[String, Command] = Right(this) // TODO
 
   /** Keypresses to send to Rogue to execute command */
   def keypresses: Either[String, Seq[Char]]
@@ -46,10 +36,10 @@ object Command {
   case class Quaff(slot: pSlot, potion: Potion) extends Command {
     override def keypresses: Either[String, Seq[Char]] = for (k <- slot.keypress) yield Seq('q', k)
 
-    override def potionKnowledge: PotionKnowledge = potion.potionKnowledge
+    override def potionKnowledge: Either[String, PotionKnowledge] = potion.potionKnowledge
 
-    override def infer(potionKnowledge: PotionKnowledge): Either[String, Command] =
-      for (_potion <- potion.infer(potionKnowledge)) yield Quaff(slot, _potion)
+    override def infer(item: ProvidesKnowledge): Either[String, Command] =
+      for (_potion <- potion.infer(item)) yield new Quaff(slot, _potion)
 
     override def merge(that: Command): Either[String, Command] = that match {
       case Quaff(thatSlot, thatPotion) => for {
@@ -75,10 +65,10 @@ object Command {
   case class Read(slot: pSlot, scroll: Scroll) extends Command {
     override def keypresses: Either[String, Seq[Char]] = for (k <- slot.keypress) yield Seq('r', k)
 
-    override def scrollKnowledge: ScrollKnowledge = scroll.scrollKnowledge
+    override def scrollKnowledge: Either[String, ScrollKnowledge] = scroll.scrollKnowledge
 
-    override def infer(scrollKnowledge: ScrollKnowledge): Either[String, Read] =
-      for (_scroll <- scroll.infer(scrollKnowledge)) yield Read(slot, _scroll)
+    override def infer(item: ProvidesKnowledge): Either[String, Read] =
+      for (_scroll <- scroll.infer(item)) yield Read(slot, _scroll)
 
     override def merge(that: Command): Either[String, Command] = that match {
       case Read(thatSlot, thatScroll) => for {
@@ -103,25 +93,19 @@ object Command {
   case class Throw(dir: Direction, slot: Slot, item: Item) extends Command {
     override val keypresses: Either[String, Seq[Char]] = Right(Seq('t', dir.keypress, slot.label))
 
-    override def scrollKnowledge: ScrollKnowledge = item match {
+    // TODO
+    override def scrollKnowledge: Either[String, ScrollKnowledge] = item match {
       case scroll: Scroll => scroll.scrollKnowledge
-      case _ => ScrollKnowledge()
+      case _ => Right(ScrollKnowledge())
     }
 
-    override def potionKnowledge: PotionKnowledge = item match {
+    override def potionKnowledge: Either[String, PotionKnowledge] = item match {
       case potion: Potion => potion.potionKnowledge
-      case _ => PotionKnowledge()
+      case _ => Right(PotionKnowledge())
     }
 
-    override def infer(scrollKnowledge: ScrollKnowledge): Either[String, Command] = item match {
-      case scroll: Scroll => for (_scroll <- scroll.infer(scrollKnowledge)) yield Throw(dir, slot, _scroll)
-      case _ => Right(this)
-    }
-
-    override def infer(potionKnowledge: PotionKnowledge): Either[String, Command] = item match {
-      case potion: Potion => for (_potion <- potion.infer(potionKnowledge)) yield Throw(dir, slot, _potion)
-      case _ => Right(this)
-    }
+    override def infer(x: ProvidesKnowledge): Either[String, Command] =
+      for (_item <- item.infer(x)) yield Throw(dir, slot, _item)
 
     override def merge(that: Command): Either[String, Command] = that match {
       case Throw(thatDir, thatSlot, thatItem) => for {
