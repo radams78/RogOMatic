@@ -4,9 +4,9 @@ import domain.Domain
 import domain.Domain._
 import gamedata.items.Item
 import gamestate.ScrollKnowledge
-import rogue.Command
 
 import scala.util.matching.UnanchoredRegex
+
 
 /** Partial information about the PC's inventory 
  *
@@ -18,7 +18,7 @@ import scala.util.matching.UnanchoredRegex
 case class pInventory(items: Map[Slot, Option[Item]],
                       wearing: pOption[Slot],
                       wielding: pOption[Slot]) {
-  def infer(command: Command): Either[String, pInventory] = infer(command.scrollKnowledge)
+  def infer(item: ProvidesScrollKnowledge): Either[String, pInventory] = infer(item.scrollKnowledge)
 
   def infer(scrollKnowledge: ScrollKnowledge): Either[String, pInventory] = {
     def step2(x: Option[Item]): Either[String, Option[Item]] = x match {

@@ -20,7 +20,7 @@ import gamestate.{PotionKnowledge, ScrollKnowledge}
  * - command.infer(potionKnowledge).scrollKnowledge == command.scrollKnowledge 
  * - command.infer(scrollKnowledge).potionKnowledge == command.potionKnowledge */
 // TODO Validation 
-sealed trait Command {
+sealed trait Command extends ProvidesScrollKnowledge {
   def potionKnowledge: PotionKnowledge = PotionKnowledge()
 
   def scrollKnowledge: ScrollKnowledge = ScrollKnowledge()
