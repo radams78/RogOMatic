@@ -1,7 +1,7 @@
 package view
 
 import gamedata.items.ScrollPower.ScrollPower
-import gamedata.{Direction, Inventory, Slot}
+import gamedata.{Direction, Slot, pInventory}
 import rogue.Command
 
 import scala.io.StdIn
@@ -10,7 +10,7 @@ import scala.io.StdIn
 class TextView extends IView {
   override def displayScreen(screen: String): Unit = println(screen)
 
-  override def displayInventory(inventory: Inventory): Unit = {
+  override def displayInventory(inventory: pInventory): Unit = {
     for ((slot, item) <- inventory.items.toList.sortBy(_._1)) println(s"$slot) $item")
     for (slot <- inventory.wielding) println(s"WEAPON: $slot) ${inventory.items(slot)}")
     for (slot <- inventory.wearing) println(s"ARMOR: $slot) ${inventory.items(slot)}")

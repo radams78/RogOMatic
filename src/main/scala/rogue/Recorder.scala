@@ -1,32 +1,33 @@
 package rogue
 
-import gamedata.Inventory
-import gamedata.items.ScrollPower.ScrollPower
-import gamestate.{GameState, ScrollKnowledge}
+import domain.Domain._
+import expert.pGameState
+import gamedata.{pInventory, pOption}
+import gamestate._
 import rogue.Event.Event
 
 trait IRecorder {
-  def getInventory: Inventory
+  def getInventory: pInventory
 
   def getScreen: String
 
   def getScore: Int
 
   def gameOver: Boolean
-
-  def getScrollPowers: Map[String, ScrollPower]
 }
 
 class Recorder extends IRecorder {
   private var _gameOver: Boolean = false
-  private var gameState: GameState = GameState()
-  private var inventory: Inventory = _
+  private var _gameState: pGameState = pGameState()
+  private var inventory: pInventory = _
   private var score: Int = 0
   private var screen: String = ""
 
+  def gameState: pGameState = _gameState
+
   def getScrollKnowledge: ScrollKnowledge = gameState.scrollKnowledge
 
-  def getInventory: Inventory = inventory
+  def getInventory: pInventory = inventory
 
   def recordScreen(_screen: String): Unit = screen = _screen
 
@@ -36,23 +37,20 @@ class Recorder extends IRecorder {
 
   def gameOver: Boolean = _gameOver
 
-  def recordEvent(e: Event): Either[String, Unit] = for (gs <- gameState.merge(e.inference)) yield {
-    gameState = gs
-    ()
-  }
+  def recordEvent(e: Event): Either[String, Unit] =
+    for (gs <- _gameState.merge(e.inference)) yield {
+      _gameState = gs
+    }
 
   def recordFinalScore(_score: Int): Unit = {
     _gameOver = true
     score = _score
   }
 
-  def recordInventory(_inventory: Inventory): Unit = inventory = _inventory
+  def recordInventory(_inventory: pInventory): Unit = inventory = _inventory
 
-  def recordCommand(command: Command): Either[String, Unit] =
-    for (gs <- GameState.build(gameState.scrollKnowledge, gameState.potionKnowledge, Some(command))) yield {
-      gameState = gs
-      ()
+  def recordCommand(command: Command): Either[String, Unit] = for (gs <- pGameState(None, pInventory(), _gameState.scrollKnowledge, pOption.Some(command)).complete)
+    yield {
+      _gameState = gs
     }
-
-  override def getScrollPowers: Map[String, ScrollPower] = Map() // TODO
 }

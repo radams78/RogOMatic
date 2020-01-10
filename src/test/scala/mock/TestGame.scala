@@ -58,7 +58,7 @@ object TestGame {
       |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
       |""".stripMargin)
 
-  val firstInventory: Inventory = Inventory(
+  val firstInventory: pInventory = pInventory(
     items = Map(
       Slot.A -> Food(1),
       Slot.B -> Armor(ArmorType.RING_MAIL, +1),
@@ -209,7 +209,7 @@ object TestGame {
       |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
       |""".stripMargin)
 
-  val fourthInventory: Inventory = Inventory(
+  val fourthInventory: pInventory = pInventory(
     items = Map(
       Slot.A -> Food(1),
       Slot.B -> Armor(ArmorType.RING_MAIL, +1),

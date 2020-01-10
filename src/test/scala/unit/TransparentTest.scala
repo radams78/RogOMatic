@@ -1,40 +1,23 @@
 package unit
 
-import expert.Transparent
-import gamedata.Inventory
+import expert.{Transparent, pGameState}
 import gamedata.items.ScrollPower
 import gamedata.items.ScrollPower.ScrollPower
+import gamedata.{pInventory, pOption}
+import gamestate.ScrollKnowledge
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import rogue.{Command, IRecorder, IRogueActuator}
+import rogue.Command
 import view.IView
 
 class TransparentTest extends AnyFlatSpec with Matchers {
   "A transparent game of Rogue" should "report the known scroll powers to the user" in {
-    val transparent: Transparent = new Transparent(MockActuator, MockRecorder, MockView)
-    transparent.displayAll()
+    val transparent: Transparent = new Transparent(MockView)
+    transparent.displayAll(pGameState(Some(""), pInventory(), ScrollKnowledge(Map("abcde" -> ScrollPower.AGGRAVATE_MONSTER)), pOption.UNKNOWN))
     assert(MockView.displayedPower)
   }
 
-  object MockActuator extends IRogueActuator {
-    override def sendCommand(getCommand: Command): Either[String, Unit] = fail("Command sent to Rogue")
-
-    override def start(): Either[String, Unit] = fail("Start message sent to Rogue")
-  }
-
-  object MockRecorder extends IRecorder {
-    override def getInventory: Inventory = Inventory()
-
-    override def getScreen: String = ""
-
-    override def getScore: Int = 0
-
-    override def gameOver: Boolean = false
-
-    override def getScrollPowers: Map[String, ScrollPower] = Map("abcde" -> ScrollPower.AGGRAVATE_MONSTER)
-  }
-
-  object MockView extends IView {
+  private object MockView extends IView {
     private var _displayedPower: Boolean = false
 
     def displayedPower: Boolean = _displayedPower
@@ -43,7 +26,7 @@ class TransparentTest extends AnyFlatSpec with Matchers {
 
     override def displayError(err: String): Unit = fail(err)
 
-    override def displayInventory(inventory: Inventory): Unit = ()
+    override def displayInventory(inventory: pInventory): Unit = ()
 
     override def displayScreen(screen: String): Unit = ()
 

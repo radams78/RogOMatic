@@ -21,7 +21,7 @@ case class Scroll(quantity: Option[Int], title: Option[String], power: Option[Sc
       (for (t <- title) yield s"entitled: '$t'")).mkString(" ")
 
   /** Infer what we can about this scroll from the given information */
-  def infer(scrollKnowledge: ScrollKnowledge): Either[String, Scroll] = (title, power) match {
+  override def infer(scrollKnowledge: ScrollKnowledge): Either[String, Scroll] = (title, power) match {
     case (Some(t), power) => for {p <- power.merge(scrollKnowledge.getPower(t))} yield Scroll(quantity, title, p)
     case (None, Some(p)) => Right(Scroll(quantity, scrollKnowledge.getTitle(p), Some(p)))
     case _ => Right(this)

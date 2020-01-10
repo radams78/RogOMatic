@@ -1,18 +1,19 @@
 package view
 
-import gamedata.Inventory
 import gamedata.items.ScrollPower.ScrollPower
+import gamedata.pInventory
 import rogue.Command
 
 /** Interface for the IO view. The implementations should be Humble Object */
 trait IView {
+  /** Get a command from the user */
   def getCommand: Command
 
   /** Display an error message */
   def displayError(s: String): Unit
 
   /** Display the PC's inventory */
-  def displayInventory(inventory: Inventory): Unit
+  def displayInventory(inventory: pInventory): Unit
 
   /** Display the current screen exactly as received from Rogue */
   def displayScreen(screen: String): Unit
@@ -20,5 +21,6 @@ trait IView {
   /** Display the game over message */
   def displayGameOver(finalScore: Int): Unit
 
+  /** Display a known scroll power */
   def displayScrollPower(title: String, power: ScrollPower): Unit
 }

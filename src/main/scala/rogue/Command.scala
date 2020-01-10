@@ -28,6 +28,8 @@ sealed trait Command {
   /** Combine two pieces of information about a command */
   def merge(that: Command): Either[String, Command]
 
+  def infer(inventory: pInventory): Either[String, Command] = Right(this) // TODO
+
   /** Add information from the given knowledge about scroll powers */
   def infer(scrollKnowledge: ScrollKnowledge): Either[String, Command] = Right(this)
 
@@ -62,7 +64,7 @@ object Command {
     def apply(potion: Potion): Quaff = Quaff(pSlot.UNKNOWN, potion)
 
     // TODO Error handling
-    def apply(inventory: Inventory, slot: Slot): Quaff = {
+    def apply(inventory: pInventory, slot: Slot): Quaff = {
       Quaff(pSlot(slot), inventory.items(slot).asInstanceOf[Potion])
     }
 
@@ -88,7 +90,7 @@ object Command {
   }
 
   object Read {
-    def apply(inventory: Inventory, slot: Slot): Read = Read(slot, inventory.items(slot).asInstanceOf[Scroll]) // TODO Better error handling
+    def apply(inventory: pInventory, slot: Slot): Read = Read(slot, inventory.items(slot).asInstanceOf[Scroll]) // TODO Better error handling
 
     def apply(slot: Slot, scroll: Scroll): Read = Read(pSlot(slot), scroll)
 

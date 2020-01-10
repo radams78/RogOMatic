@@ -6,9 +6,9 @@ import org.scalatest.EitherValues
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
-class InventoryTest extends AnyFlatSpec with Matchers with EitherValues {
+class pInventoryTest extends AnyFlatSpec with Matchers with EitherValues {
   "a displayed inventory" should "be correctly parsed" in {
-    Inventory.parseInventoryScreen(
+    pInventory.parseInventoryScreen(
       """                                                a) some food
         |                                                b) +1 ring mail [4] being worn
         |                                                c) a +1,+1 mace in hand
@@ -36,7 +36,7 @@ class InventoryTest extends AnyFlatSpec with Matchers with EitherValues {
         |""".stripMargin.split("\n")
         .map(_.padTo(80, ' '))
         .mkString("\n")
-    ) should be(Right(Inventory(
+    ) should be(Right(pInventory(
       items = Map(
         Slot.A -> Food(1),
         Slot.B -> Armor(ArmorType.RING_MAIL, +1),

@@ -86,7 +86,7 @@ object ZeroMoveGame {
       |""".stripMargin
 
   /** The PC's inventory at the start of [[zeroMoveGame]] */
-  val firstInventory: Inventory = Inventory(
+  val firstInventory: pInventory = pInventory(
     items = Map(
       Slot.A -> Food(1),
       Slot.B -> Armor(ArmorType.RING_MAIL, +1),

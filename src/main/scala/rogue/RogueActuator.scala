@@ -1,7 +1,7 @@
 package rogue
 
 
-import gamedata.Inventory
+import gamedata.pInventory
 
 import scala.annotation.tailrec
 import scala.util.matching.Regex
@@ -23,7 +23,7 @@ class RogueActuator(rogue: IRogue, recorder: Recorder) extends IRogueActuator {
         rogue.sendKeypress('i')
         val screen: String = rogue.getScreen
         rogue.sendKeypress(' ')
-        Inventory.parseInventoryScreen(screen)
+        pInventory.parseInventoryScreen(screen)
       }
     } yield recorder.recordInventory(inventory)
   }
@@ -41,7 +41,7 @@ class RogueActuator(rogue: IRogue, recorder: Recorder) extends IRogueActuator {
              rogue.sendKeypress('i')
              val screen: String = rogue.getScreen
              rogue.sendKeypress(' ')
-             Inventory.parseInventoryScreen(screen)
+             pInventory.parseInventoryScreen(screen)
            }) yield {
              recorder.recordInventory(inventory)
              ()

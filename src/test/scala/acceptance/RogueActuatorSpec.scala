@@ -20,7 +20,7 @@ class MockUser extends IView with Assertions {
 
   override def displayError(err: String): Unit = state = state.displayError(err)
 
-  override def displayInventory(inventory: Inventory): Unit = state = state.displayInventory(inventory)
+  override def displayInventory(inventory: pInventory): Unit = state = state.displayInventory(inventory)
 
   override def displayScreen(screen: String): Unit = state = state.displayScreen(screen)
 
@@ -41,7 +41,7 @@ class MockUser extends IView with Assertions {
 
     def displayScreen(screen: String): MockUserState = fail(s"Unexpected screen: $screen")
 
-    def displayInventory(inventory: Inventory): MockUserState = fail(s"Unexpected inventory: $inventory")
+    def displayInventory(inventory: pInventory): MockUserState = fail(s"Unexpected inventory: $inventory")
 
     def displayPower(title: String, power: ScrollPower): MockUserState = fail(s"Unexpected scroll power: $title and $power")
   }
@@ -52,7 +52,7 @@ class MockUser extends IView with Assertions {
       else Initial(displayedScreen = true, displayedInventory = displayedInventory)
     }
 
-    override def displayInventory(inventory: Inventory): MockUserState = {
+    override def displayInventory(inventory: pInventory): MockUserState = {
       if (inventory != TestGame.firstInventory) fail(s"Unexpected inventory: $inventory")
       else Initial(displayedScreen, displayedInventory = true)
     }
@@ -67,7 +67,7 @@ class MockUser extends IView with Assertions {
       if (screen != TestGame.secondScreen) fail(s"Unexpected screen: $screen")
       else SecondScreen(displayedScreen = true, displayedInventory = displayedInventory)
 
-    override def displayInventory(inventory: Inventory): MockUserState =
+    override def displayInventory(inventory: pInventory): MockUserState =
       if (inventory != TestGame.firstInventory) fail(s"Unexpected inventory: $inventory")
       else SecondScreen(displayedScreen, displayedInventory = true)
   }
@@ -79,7 +79,7 @@ class MockUser extends IView with Assertions {
       if (screen != TestGame.fourthScreen) fail(s"Unexpected screen: $screen")
       else FourthScreen(displayedScreen = true, displayedInventory = displayedInventory, displayedPower = displayedPower)
 
-    override def displayInventory(inventory: Inventory): MockUserState =
+    override def displayInventory(inventory: pInventory): MockUserState =
       if (inventory != TestGame.fourthInventory) fail(s"Unexpected inventory: $inventory")
       else FourthScreen(displayedScreen, displayedInventory = true, displayedPower = displayedPower)
 
