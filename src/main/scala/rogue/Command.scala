@@ -7,19 +7,15 @@ import gamedata.items.{Item, Potion, Scroll}
 
 /** Partial information about a move that can be made by the player in Rogue.
  *
- * Invariants (All equations are assuming merges and infers terminate, and we omit 'Right's):
- * - potionKnowledge is monotone
- * - command <= command.infer(potionKnowledge)
- * - scrollKnowledge is monotone
- * - command <= command.infer(scrollKnowledge)
- * - command.infer(command.scrollKnowledge) == command
- * - command.infer(command.potionKnowledge) == command 
- * - command.infer(scrollKnowledge).scrollKnowledge <= command.scrollKnowledge.merge(scrollKnowledge)
- * - command.infer(potionKnowledge).potionKnowledge <= command.potionKnowledge.merge(potionKnowledge) 
- * - command.infer(potionKnowledge).scrollKnowledge == command.scrollKnowledge 
- * - command.infer(scrollKnowledge).potionKnowledge == command.potionKnowledge */
+ * Invariants:
+ * - implications is monotone
+ * - command <= command.infer(fact)
+ * - command.infer(command.implications) == command
+ * - command.infer(fact).implications contains fact */
 // TODO Validation 
+// TODO Prove invariants
 sealed trait Command {
+  /** Facts that can be deduced from this command */
   def implications: Set[Fact] = Set() // TODO
 
   /** Combine two pieces of information about a command */
@@ -34,6 +30,8 @@ sealed trait Command {
 object Command {
   implicit def providesKnowledge: ProvidesKnowledge[Command] = (self: Command) => self.implications
 
+  implicit def usesKnowledge: UsesKnowledge[Command] = (self: Command, fact: Fact) => self.infer(fact)
+
   /** Drink a potion */
   case class Quaff(slot: pSlot, potion: Potion) extends Command {
     override def keypresses: Either[String, Seq[Char]] = for (k <- slot.keypress) yield Seq('q', k)
@@ -45,6 +43,8 @@ object Command {
       } yield Quaff(inferredSlot, inferredPotion)
       case _ => Left(s"Incompatible commands: $this and $that")
     }
+
+    override def implications: Set[Fact] = potion.implications // TODO Plus fact that potion is in slot
   }
 
   object Quaff {
@@ -57,8 +57,6 @@ object Command {
 
     def apply(slot: Slot): Quaff = Quaff(pSlot(slot), Potion.UNKNOWN)
   }
-
-  implicit def usesKnowledge: UsesKnowledge[Command] = (self: Command, fact: Fact) => self.infer(fact)
 
   object Read {
     def apply(inventory: pInventory, slot: Slot): Read = Read(slot, inventory.items(slot).asInstanceOf[Scroll]) // TODO Better error handling
