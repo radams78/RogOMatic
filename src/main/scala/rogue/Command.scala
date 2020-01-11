@@ -54,6 +54,21 @@ object Command {
     def apply(slot: Slot): Quaff = Quaff(pSlot(slot), Potion.UNKNOWN)
   }
 
+  /** Read a scroll */
+  case class Read(slot: pSlot, scroll: Scroll) extends Command {
+    override def keypresses: Either[String, Seq[Char]] = for (k <- slot.keypress) yield Seq('r', k)
+
+    override def merge(that: Command): Either[String, Command] = that match {
+      case Read(thatSlot, thatScroll) => for {
+        inferredSlot <- slot.merge(thatSlot)
+        inferredScroll <- scroll.merge(thatScroll)
+      } yield Read(inferredSlot, inferredScroll)
+      case _ => Left(s"Incompatible commands: $this and $that")
+    }
+
+    override def implications: Set[Fact] = scroll.implications
+  }
+
   object Read {
     def apply(inventory: pInventory, slot: Slot): Read = Read(slot, inventory.items(slot).asInstanceOf[Scroll]) // TODO Better error handling
 
@@ -92,6 +107,8 @@ object Command {
       case Wield(thatSlot) => for (inferredSlot <- slot.merge(thatSlot)) yield Wield(inferredSlot)
       case _ => Left(s"Incompatible commands: $this and $that")
     }
+
+    // TODO Implications
   }
 
   /** Rest */
@@ -182,21 +199,6 @@ object Command {
       case DOWNSTAIRS => Right(DOWNSTAIRS)
       case _ => Left(s"Incompatible commands: $this and $that")
     }
-  }
-
-  /** Read a scroll */
-  case class Read(slot: pSlot, scroll: Scroll) extends Command {
-    override def keypresses: Either[String, Seq[Char]] = for (k <- slot.keypress) yield Seq('r', k)
-
-    override def merge(that: Command): Either[String, Command] = that match {
-      case Read(thatSlot, thatScroll) => for {
-        inferredSlot <- slot.merge(thatSlot)
-        inferredScroll <- scroll.merge(thatScroll)
-      } yield Read(inferredSlot, inferredScroll)
-      case _ => Left(s"Incompatible commands: $this and $that")
-    }
-
-    override def implications: Set[Fact] = scroll.implications
   }
 
   /** Move down left */

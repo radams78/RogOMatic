@@ -9,7 +9,7 @@ import gamedata.{Fact, UsesKnowledge}
 /** A stack of potions
  *
  * Invariants:
- *   - potionKnowledge is monotone
+ *   - implications is monotone
  *   - potion.infer(potion.potionKnowledge) == Right(potion) 
  *   - potion.infer(PotionKnowledge()) == Right(potion) */
 // TODO Duplication with Scroll
