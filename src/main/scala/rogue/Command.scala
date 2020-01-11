@@ -80,6 +80,8 @@ object Command {
       } yield Throw(inferredDir, inferredSlot, inferredItem)
       case _ => Left(s"Incompatible commands: $this and $that")
     }
+
+    override def implications: Set[Fact] = item.implications // TODO Plus fact that item is in slot
   }
 
   object Throw {
