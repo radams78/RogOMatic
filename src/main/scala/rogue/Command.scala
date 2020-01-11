@@ -54,8 +54,6 @@ object Command {
     def apply(slot: Slot): Quaff = Quaff(pSlot(slot), Potion.UNKNOWN)
   }
 
-  implicit def providesKnowledge: ProvidesKnowledge[Command] = (self: Command) => self.implications
-
   object Read {
     def apply(inventory: pInventory, slot: Slot): Read = Read(slot, inventory.items(slot).asInstanceOf[Scroll]) // TODO Better error handling
 
@@ -166,8 +164,6 @@ object Command {
     }
   }
 
-  implicit def usesKnowledge: UsesKnowledge[Command] = (self: Command, fact: Fact) => self.infer(fact)
-
   /** Move down right */
   case object DOWNRIGHT extends Command {
     override val keypresses: Either[String, Seq[Char]] = Right(Seq('n'))
@@ -187,8 +183,6 @@ object Command {
       case _ => Left(s"Incompatible commands: $this and $that")
     }
   }
-
-  implicit def domain: Domain[Command] = (x: Command, y: Command) => x.merge(y)
 
   /** Read a scroll */
   case class Read(slot: pSlot, scroll: Scroll) extends Command {
@@ -215,4 +209,9 @@ object Command {
     }
   }
 
+  implicit def domain: Domain[Command] = (x: Command, y: Command) => x.merge(y)
+
+  implicit def providesKnowledge: ProvidesKnowledge[Command] = (self: Command) => self.implications
+
+  implicit def usesKnowledge: UsesKnowledge[Command] = (self: Command, fact: Fact) => self.infer(fact)
 }
