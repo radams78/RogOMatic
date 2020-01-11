@@ -20,7 +20,7 @@ import gamedata.items.{Item, Potion, Scroll}
  * - command.infer(scrollKnowledge).potionKnowledge == command.potionKnowledge */
 // TODO Validation 
 sealed trait Command {
-  def _implications: Set[Fact] = Set() // TODO
+  def implications: Set[Fact] = Set() // TODO
 
   /** Combine two pieces of information about a command */
   def merge(that: Command): Either[String, Command]
@@ -32,7 +32,7 @@ sealed trait Command {
 }
 
 object Command {
-  implicit def providesKnowledge: ProvidesKnowledge[Command] = (self: Command) => self._implications
+  implicit def providesKnowledge: ProvidesKnowledge[Command] = (self: Command) => self.implications
 
   /** Drink a potion */
   case class Quaff(slot: pSlot, potion: Potion) extends Command {
@@ -212,7 +212,7 @@ object Command {
       case _ => Left(s"Incompatible commands: $this and $that")
     }
 
-    override def _implications: Set[Fact] = scroll.implications
+    override def implications: Set[Fact] = scroll.implications
   }
 
 }
