@@ -28,10 +28,6 @@ sealed trait Command {
 }
 
 object Command {
-  implicit def providesKnowledge: ProvidesKnowledge[Command] = (self: Command) => self.implications
-
-  implicit def usesKnowledge: UsesKnowledge[Command] = (self: Command, fact: Fact) => self.infer(fact)
-
   /** Drink a potion */
   case class Quaff(slot: pSlot, potion: Potion) extends Command {
     override def keypresses: Either[String, Seq[Char]] = for (k <- slot.keypress) yield Seq('q', k)
@@ -57,6 +53,8 @@ object Command {
 
     def apply(slot: Slot): Quaff = Quaff(pSlot(slot), Potion.UNKNOWN)
   }
+
+  implicit def providesKnowledge: ProvidesKnowledge[Command] = (self: Command) => self.implications
 
   object Read {
     def apply(inventory: pInventory, slot: Slot): Read = Read(slot, inventory.items(slot).asInstanceOf[Scroll]) // TODO Better error handling
@@ -168,15 +166,7 @@ object Command {
     }
   }
 
-  /** Move down left */
-  object DOWNLEFT extends Command {
-    override val keypresses: Either[String, Seq[Char]] = Right(Seq('b'))
-
-    override def merge(that: Command): Either[String, Command] = that match {
-      case DOWNLEFT => Right(DOWNLEFT)
-      case _ => Left(s"Incompatible commands: $this and $that")
-    }
-  }
+  implicit def usesKnowledge: UsesKnowledge[Command] = (self: Command, fact: Fact) => self.infer(fact)
 
   /** Move down right */
   case object DOWNRIGHT extends Command {
@@ -213,6 +203,16 @@ object Command {
     }
 
     override def implications: Set[Fact] = scroll.implications
+  }
+
+  /** Move down left */
+  case object DOWNLEFT extends Command {
+    override val keypresses: Either[String, Seq[Char]] = Right(Seq('b'))
+
+    override def merge(that: Command): Either[String, Command] = that match {
+      case DOWNLEFT => Right(DOWNLEFT)
+      case _ => Left(s"Incompatible commands: $this and $that")
+    }
   }
 
 }
