@@ -2,8 +2,8 @@ package rogue
 
 import domain.Domain._
 import expert.pGameState
-import gamedata.{pInventory, pOption}
-import gamestate._
+import gamedata.Fact.ScrollKnowledge
+import gamedata.pInventory
 import rogue.Event.Event
 
 trait IRecorder {
@@ -25,7 +25,7 @@ class Recorder extends IRecorder {
 
   def gameState: pGameState = _gameState
 
-  def getScrollKnowledge: ScrollKnowledge = gameState.scrollKnowledge
+  def getScrollKnowledge: Set[ScrollKnowledge] = gameState.scrollKnowledge
 
   def getInventory: pInventory = inventory
 
@@ -49,7 +49,7 @@ class Recorder extends IRecorder {
 
   def recordInventory(_inventory: pInventory): Unit = inventory = _inventory
 
-  def recordCommand(command: Command): Either[String, Unit] = for (gs <- pGameState(None, pInventory(), _gameState.scrollKnowledge, pOption.Some(command)).complete)
+  def recordCommand(command: Command): Either[String, Unit] = for (gs <- _gameState.merge(pGameState(command)))
     yield {
       _gameState = gs
     }

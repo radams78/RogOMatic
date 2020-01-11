@@ -1,11 +1,12 @@
 package view
 
-import gamedata.items.ScrollPower.ScrollPower
-import gamedata.pInventory
+import gamedata.{Fact, pInventory}
 import rogue.Command
 
 /** Interface for the IO view. The implementations should be Humble Object */
 trait IView {
+  def displayScrollKnowledge(sk: Fact.ScrollKnowledge): Unit
+
   /** Get a command from the user */
   def getCommand: Command
 
@@ -20,7 +21,4 @@ trait IView {
 
   /** Display the game over message */
   def displayGameOver(finalScore: Int): Unit
-
-  /** Display a known scroll power */
-  def displayScrollPower(title: String, power: ScrollPower): Unit
 }

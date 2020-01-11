@@ -1,28 +1,37 @@
 package gamedata
 
-import gamestate.{PotionKnowledge, ScrollKnowledge}
+import gamedata.items.Colour.Colour
+import gamedata.items.PotionPower.PotionPower
+import gamedata.items.ScrollPower.ScrollPower
 
-trait ProvidesKnowledge { // TODO Not compositional
-  def scrollKnowledge: Either[String, ScrollKnowledge] = Right(ScrollKnowledge()) // TODO Demand Right?
+trait Fact
 
-  def potionKnowledge: Either[String, PotionKnowledge] = Right(PotionKnowledge()) // TODO Demand Right?
+object Fact {
+
+  case class PotionKnowledge(colour: Colour, power: PotionPower) extends Fact
+
+  case class ScrollKnowledge(title: String, power: ScrollPower) extends Fact
+
 }
 
-trait UsesKnowledge[T] {
-  def infer(_this: T, scrollKnowledge: ScrollKnowledge): Either[String, T]
-
-  def infer(_this: T, potionKnowledge: PotionKnowledge): Either[String, T]
+trait ProvidesKnowledge[T] {
+  def implications(self: T): Set[Fact]
 }
 
-object UsesKnowledge {
+object ProvidesKnowledge {
 
-  implicit final class UsesKnowledgeOps[T](self: T)(implicit s: UsesKnowledge[T]) {
-    def infer(item: ProvidesKnowledge): Either[String, T] = for {
-      sk <- item.scrollKnowledge
-      item2 <- s.infer(self, sk)
-      pk <- item.potionKnowledge
-      item3 <- s.infer(item2, pk)
-    } yield item3
+  implicit final class ProvidesKnowledgeOps[T](self: T)(implicit s: ProvidesKnowledge[T]) {
+    def implications: Set[Fact] = s.implications(self)
   }
 
+  implicit def pOptionProvidesKnowledge[T](implicit s: ProvidesKnowledge[T]): ProvidesKnowledge[pOption[T]] = {
+    case pOption.UNKNOWN => Set()
+    case pOption.NONE => Set()
+    case pOption.Some(t) => t.implications
+  }
+
+  implicit def factProvidesKnowledge: ProvidesKnowledge[Fact] = (self: Fact) => Set(self)
 }
+
+
+

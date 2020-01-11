@@ -12,6 +12,8 @@ import rogue._
 import view.IView
 
 class MockUser extends IView with Assertions {
+  override def displayScrollKnowledge(sk: Fact.ScrollKnowledge): Unit = state = state.displayPower(sk.title, sk.power) // TODO Tidy up
+
   private var state: MockUserState = Initial()
 
   def finished: Boolean = state.finished
@@ -71,8 +73,6 @@ class MockUser extends IView with Assertions {
       if (inventory != TestGame.firstInventory) fail(s"Unexpected inventory: $inventory")
       else SecondScreen(displayedScreen, displayedInventory = true)
   }
-
-  override def displayScrollPower(title: String, power: ScrollPower): Unit = state = state.displayPower(title, power)
 
   private class FourthScreen(displayedScreen: Boolean, displayedInventory: Boolean, displayedPower: Boolean) extends MockUserState {
     override def displayScreen(screen: String): MockUserState =

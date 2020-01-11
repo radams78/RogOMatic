@@ -1,6 +1,6 @@
 package view
 
-import gamedata.items.ScrollPower.ScrollPower
+import gamedata.Fact.ScrollKnowledge
 import gamedata.{Direction, Slot, pInventory}
 import rogue.Command
 
@@ -96,5 +96,5 @@ class TextView extends IView {
     }
   }
 
-  override def displayScrollPower(title: String, power: ScrollPower): Unit = println(s"Scroll $title: $power")
+  override def displayScrollKnowledge(sk: ScrollKnowledge): Unit = println(s"Scroll ${sk.title}: ${sk.power}")
 }

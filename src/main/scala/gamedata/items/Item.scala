@@ -1,22 +1,28 @@
 package gamedata.items
 
 import domain.Domain
-import gamedata.ProvidesKnowledge
+import gamedata.{Fact, ProvidesKnowledge}
 
 import scala.util.matching.Regex
 
 /** An item that the PC can pick up */
-trait Item extends ProvidesKnowledge { // TODO
-  def infer(that: ProvidesKnowledge): Either[String, Item] = Right(this) // TODO
+trait Item { // TODO
+  def infer(fact: Fact): Either[String, Item] = Right(this) // TODO
 
   def merge[T <: Item](that: T): Either[String, T]
+
+  def implications: Set[Fact] = Set() // TODO
 }
 
 object Item {
 
+  implicit def providesKnowledge: ProvidesKnowledge[Item] = (self: Item) => self.implications
+
   // TODO For every other object: merging with UNKNOWN should not change object
   case object UNKNOWN extends Item {
     override def merge[T <: Item](that: T): Either[String, T] = Right(that)
+
+    override def implications: Set[Fact] = Set()
   }
 
   private val rationsRegex: Regex = """(\d+) rations of food""".r

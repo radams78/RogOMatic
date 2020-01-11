@@ -88,6 +88,6 @@ class Transparent(view: IView) extends Expert {
     }
     val inventory: pInventory = gameState.inventory
     view.displayInventory(inventory)
-    for ((title, power) <- gameState.scrollKnowledge.powers) view.displayScrollPower(title, power)
+    for (sk <- gameState.scrollKnowledge) view.displayScrollKnowledge(sk)
   }
 }

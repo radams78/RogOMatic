@@ -2,36 +2,24 @@ package gamedata.items
 
 import domain.Domain
 import domain.Domain._
-import gamedata.ProvidesKnowledge
 import gamedata.items.ScrollPower.ScrollPower
-import gamestate.ScrollKnowledge
+import gamedata.{Fact, UsesKnowledge}
 
 /** A stack of scrolls 
  *
  * Invariant:
  * - scroll.infer(scroll.scrollKnowledge) == Right(scroll) */
 case class Scroll(quantity: Option[Int], title: Option[String], power: Option[ScrollPower]) extends Item {
-  override def scrollKnowledge: Either[String, ScrollKnowledge] = Right((title, power) match {
-    case (Some(t), Some(p)) => ScrollKnowledge(Map(t -> p))
-    case _ => ScrollKnowledge()
-  })
+  override def implications: Set[Fact] = (title, power) match {
+    case (Some(t), Some(p)) => Set(Fact.ScrollKnowledge(t, p))
+    case _ => Set()
+  }
 
   override def toString: String =
     (Seq("a scroll") ++
       (for (p <- power) yield s"of $p") ++
       (for (t <- title) yield s"entitled: '$t'")).mkString(" ")
 
-  override def infer(that: ProvidesKnowledge): Either[String, Scroll] = for {
-    sk <- that.scrollKnowledge
-    scroll <- infer(sk)
-  } yield scroll
-
-  /** Infer what we can about this scroll from the given information */
-  def infer(scrollKnowledge: ScrollKnowledge): Either[String, Scroll] = (title, power) match {
-    case (Some(t), power) => for {p <- power.merge(scrollKnowledge.getPower(t))} yield Scroll(quantity, title, p)
-    case (None, Some(p)) => Right(Scroll(quantity, scrollKnowledge.getTitle(p), Some(p)))
-    case _ => Right(this)
-  }
 
   override def merge[T <: Item](that: T): Either[String, T] = that match {
     case Scroll(thatQuantity, thatTitle, thatPower) => for {
@@ -50,5 +38,15 @@ object Scroll {
 
   def apply(quantity: Int, title: String): Scroll = Scroll(Some(quantity), Some(title), None)
 
+  implicit def usesKnowledge: UsesKnowledge[Scroll] = (self: Scroll, fact: Fact) => (fact, self.title, self.power) match {
+    case (Fact.ScrollKnowledge(_t, _p), Some(t), Some(p)) if (t == _t && p != _p) || (t != _t && p == _p) =>
+      Left(s"Incompatible information: $t -> $p and ${_t} -> ${_p}")
+    case (Fact.ScrollKnowledge(_t, _p), Some(t), None) if t == _t => Right(Scroll(self.quantity, Some(t), Some(_p)))
+    case (Fact.ScrollKnowledge(_t, _p), None, Some(p)) if p == _p => Right(Scroll(self.quantity, Some(_t), Some(p)))
+    case _ => Right(self)
+  }
+
   implicit def scrollDomain: Domain[Scroll] = (x: Scroll, y: Scroll) => x.merge(y)
+
+  def apply(title: String, power: ScrollPower): Scroll = Scroll(None, Some(title), Some(power))
 }

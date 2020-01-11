@@ -3,7 +3,6 @@ package gamedata
 import domain.Domain
 import domain.Domain._
 import gamedata.items.Item
-import gamestate.{PotionKnowledge, ScrollKnowledge}
 
 import scala.util.matching.UnanchoredRegex
 
@@ -17,46 +16,22 @@ import scala.util.matching.UnanchoredRegex
  *  - If ! items.keys.contains(s) then it is unknown whether slot s is empty or not */
 case class pInventory(items: Map[Slot, Option[Item]],
                       wearing: pOption[Slot],
-                      wielding: pOption[Slot]) extends ProvidesKnowledge {
-  override def potionKnowledge: Either[String, PotionKnowledge] = items.foldLeft[Either[String, PotionKnowledge]](Right(PotionKnowledge()))({
-    case (Left(s), _) => Left(s)
-    case (Right(pk), (_: Slot, None)) => Right(pk)
-    case (Right(pk), (_: Slot, Some(item))) => for {
-      pk2 <- item.potionKnowledge
-      pk3 <- pk.merge(pk2)
-    } yield pk3
-  })
-
-  override def scrollKnowledge: Either[String, ScrollKnowledge] = items.foldLeft[Either[String, ScrollKnowledge]](Right(ScrollKnowledge()))({
-    case (Left(s), _) => Left(s)
-    case (Right(pk), (_: Slot, None)) => Right(pk)
-    case (Right(pk), (_: Slot, Some(item))) => for {
-      sk2 <- item.scrollKnowledge
-      sk3 <- pk.merge(sk2)
-    } yield sk3 // TODO Fix variable names
-  })
-
-  def infer(item: ProvidesKnowledge): Either[String, pInventory] = {
-    def step2(x: Option[Item]): Either[String, Option[Item]] = x match {
-      case None => Right(None)
-      case Some(y) => for (z <- y.infer(item)) yield Some(z)
-    }
-
-    def step3(items: Map[Slot, Option[Item]]): Either[String, Map[Slot, Option[Item]]] = items.foldLeft[Either[String, Map[Slot, Option[Item]]]](
-      Right(Map())
-    )({
-      case (e: Either[String, Map[Slot, Option[Item]]], (s: Slot, oi: Option[Item])) =>
-        for {
-          m <- e
-          z <- step2(oi)
-        } yield m.updated(s, z)
-    })
-
-    for (ii <- step3(items)) yield new pInventory(ii, wearing, wielding)
-  }
-}
+                      wielding: pOption[Slot])
 
 object pInventory {
+  implicit def providesKnowledge: ProvidesKnowledge[pInventory] = (self: pInventory) => self.items.values.flatMap((oi: Option[Item]) => oi.toSet.flatMap((i: Item) => i.implications)).toSet
+
+  implicit def usesKnowledge: UsesKnowledge[pInventory] = (self: pInventory, fact: Fact) => {
+    val _items: Either[String, Map[Slot, Option[Item]]] = self.items.foldLeft[Either[String, Map[Slot, Option[Item]]]](
+      Right(Map())
+    )({
+      case (Left(err), _) => Left(err)
+      case (Right(_items), (slot, None)) => Right(_items + (slot -> None))
+      case (Right(_items), (slot, Some(i))) => for (j <- i.infer(fact)) yield _items + (slot -> Some(j))
+    })
+    for (__items <- _items) yield pInventory(__items, self.wearing, self.wielding)
+  }
+
   def apply(): pInventory = new pInventory(Map(), pOption.UNKNOWN, pOption.UNKNOWN)
 
   def apply(items: Map[Slot, Item], wearing: Option[Slot], wielding: Option[Slot]): pInventory =
@@ -112,5 +87,4 @@ object pInventory {
     wearing <- x.wearing.merge(y.wearing)
     wielding <- x.wielding.merge(y.wielding)
   } yield new pInventory(items, wearing, wielding)
-
 }

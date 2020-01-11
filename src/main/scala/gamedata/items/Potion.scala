@@ -2,10 +2,9 @@ package gamedata.items
 
 import domain.Domain
 import domain.Domain._
-import gamedata.ProvidesKnowledge
 import gamedata.items.Colour.Colour
 import gamedata.items.PotionPower.PotionPower
-import gamestate.PotionKnowledge
+import gamedata.{Fact, UsesKnowledge}
 
 /** A stack of potions
  *
@@ -17,20 +16,9 @@ import gamestate.PotionKnowledge
 case class Potion(quantity: Option[Int] = None,
                   colour: Option[Colour] = None,
                   power: Option[PotionPower] = None) extends Item {
-  override def potionKnowledge: Either[String, PotionKnowledge] = Right((colour, power) match {
-    case (Some(c), Some(p)) => PotionKnowledge(Map(c -> p))
-    case _ => PotionKnowledge()
-  })
-
-  override def infer(that: ProvidesKnowledge): Either[String, Potion] = for {
-    pk <- that.potionKnowledge
-    potion <- infer(pk)
-  } yield potion
-
-  def infer(potionKnowledge: PotionKnowledge): Either[String, Potion] = (colour, power) match {
-    case (Some(c), power) => for (_power <- potionKnowledge.getPower(c).merge(power)) yield Potion(quantity, colour, _power)
-    case (None, Some(p)) => Right(Potion(quantity, potionKnowledge.getColour(p), Some(p)))
-    case _ => Right(this)
+  override def implications: Set[Fact] = (colour, power) match {
+    case (Some(c), Some(p)) => Set(Fact.PotionKnowledge(c, p))
+    case _ => Set()
   }
 
   override def toString: String =
@@ -66,4 +54,12 @@ object Potion {
   def apply(quantity: Int, colour: Colour): Potion = Potion(Some(quantity), Some(colour), None)
 
   implicit def domain: Domain[Potion] = (x: Potion, y: Potion) => x.merge(y)
+
+  implicit def usesKnowledge: UsesKnowledge[Potion] = (self: Potion, fact: Fact) => (fact, self.colour, self.power) match {
+    case (Fact.PotionKnowledge(_c, _p), Some(c), Some(p)) if (c == _c && p != _p) || (c != _c && p == _p) =>
+      Left(s"Incompatible information: $c -> $p and ${_c} -> ${_p}")
+    case (Fact.PotionKnowledge(_c, _p), Some(c), None) if c == _c => Right(Potion(self.quantity, Some(c), Some(_p)))
+    case (Fact.PotionKnowledge(_c, _p), None, Some(p)) if p == _p => Right(Potion(self.quantity, Some(_c), Some(p)))
+    case _ => Right(self)
+  }
 }

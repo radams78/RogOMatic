@@ -1,10 +1,9 @@
 package unit
 
 import expert.{Transparent, pGameState}
+import gamedata.Fact.ScrollKnowledge
 import gamedata.items.ScrollPower
-import gamedata.items.ScrollPower.ScrollPower
 import gamedata.{pInventory, pOption}
-import gamestate.ScrollKnowledge
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import rogue.Command
@@ -13,7 +12,7 @@ import view.IView
 class TransparentTest extends AnyFlatSpec with Matchers {
   "A transparent game of Rogue" should "report the known scroll powers to the user" in {
     val transparent: Transparent = new Transparent(MockView)
-    transparent.displayAll(pGameState(Some(""), pInventory(), ScrollKnowledge(Map("abcde" -> ScrollPower.AGGRAVATE_MONSTER)), pOption.UNKNOWN))
+    transparent.displayAll(pGameState(Some(""), pInventory(), Set(ScrollKnowledge("abcde", ScrollPower.AGGRAVATE_MONSTER)), pOption.UNKNOWN))
     assert(MockView.displayedPower)
   }
 
@@ -32,9 +31,8 @@ class TransparentTest extends AnyFlatSpec with Matchers {
 
     override def displayGameOver(finalScore: Int): Unit = ()
 
-    override def displayScrollPower(title: String, power: ScrollPower): Unit = {
-      title should be("abcde")
-      power should be(ScrollPower.AGGRAVATE_MONSTER) // TODO Duplication
+    override def displayScrollKnowledge(sk: ScrollKnowledge): Unit = {
+      sk should be(ScrollKnowledge("abcde", ScrollPower.AGGRAVATE_MONSTER))
       _displayedPower = true
     }
   }
