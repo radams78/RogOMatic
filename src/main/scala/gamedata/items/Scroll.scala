@@ -10,17 +10,6 @@ import gamedata.{Fact, UsesKnowledge}
  * Invariant:
  * - scroll.infer(scroll.scrollKnowledge) == Right(scroll) */
 case class Scroll(quantity: Option[Int], title: Option[String], power: Option[ScrollPower]) extends MagicItem[String, ScrollPower] {
-  override def implications: Set[Fact] = (title, power) match {
-    case (Some(t), Some(p)) => Set(Fact.ScrollKnowledge(t, p))
-    case _ => Set()
-  }
-
-  override def toString: String =
-    (Seq("a scroll") ++
-      (for (p <- power) yield s"of $p") ++
-      (for (t <- title) yield s"entitled: '$t'")).mkString(" ")
-
-
   override def merge[T <: Item](that: T): Either[String, T] = that match {
     case Scroll(thatQuantity, thatTitle, thatPower) => for {
       inferredQuantity <- quantity.merge(thatQuantity)
@@ -31,6 +20,10 @@ case class Scroll(quantity: Option[Int], title: Option[String], power: Option[Sc
   }
 
   override def attribute: Option[String] = title
+
+  override def singular: String = "scroll"
+
+  override def plural: String = "scrolls"
 }
 
 object Scroll {

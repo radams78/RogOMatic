@@ -13,10 +13,30 @@ trait MagicItem[A, P] extends Item {
 
   def power: Option[P]
 
+  def singular: String
+
+  def plural: String
+
   override def implications: Set[Fact] = (attribute, power) match {
     case (Some(a), Some(p)) => Set(Fact.MagicItemKnowledge(a, p))
     case _ => Set()
   }
+
+  override def toString: String =
+    (quantity match {
+      case Some(q) => q.toString
+      case None => "some"
+    }) +
+      (attribute match {
+        case Some(a) => " " + a.toString
+        case None => ""
+      }) + " " +
+      (if (quantity.contains(1)) singular else plural) +
+      (power match {
+        case Some(p) => " " + p.toString
+        case None => ""
+      })
+
 }
 
 /** A stack of potions
@@ -29,26 +49,6 @@ trait MagicItem[A, P] extends Item {
 case class Potion(quantity: Option[Int] = None,
                   colour: Option[Colour] = None,
                   power: Option[PotionPower] = None) extends MagicItem[Colour, PotionPower] {
-  override def implications: Set[Fact] = (colour, power) match {
-    case (Some(c), Some(p)) => Set(Fact.PotionKnowledge(c, p))
-    case _ => Set()
-  }
-
-  override def toString: String =
-    (quantity match {
-      case Some(q) => q.toString
-      case None => "some"
-    }) +
-      (colour match {
-        case Some(c) => " " + c.toString
-        case None => ""
-      }) +
-      (if (quantity.contains(1)) " potion" else " potions") +
-      (power match {
-        case Some(p) => " " + p.toString
-        case None => ""
-      })
-
   override def merge[T <: Item](that: T): Either[String, T] = that match {
     case Potion(thatQuantity, thatColour, thatPower) => for {
       inferredQuantity <- quantity.merge(thatQuantity)
@@ -59,6 +59,10 @@ case class Potion(quantity: Option[Int] = None,
   }
 
   override def attribute: Option[Colour] = colour
+
+  override def singular: String = "potion"
+
+  override def plural: String = "potions"
 }
 
 object Potion {
