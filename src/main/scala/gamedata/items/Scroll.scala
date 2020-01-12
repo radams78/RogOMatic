@@ -21,7 +21,7 @@ object ScrollType extends StackableMagicItemType {
 }
 
 object Scroll {
-  type Scroll = ScrollType.MagicItem
+  type Scroll = ScrollType.StackableMagicItem
 
   val UNKNOWN: Scroll = ScrollType.StackableMagicItem(None, None, None)
 
