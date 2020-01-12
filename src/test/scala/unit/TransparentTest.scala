@@ -10,7 +10,7 @@ import rogue.Command
 import view.IView
 
 class TransparentTest extends AnyFlatSpec with Matchers {
-  "A transparent game of Rogue" should "report the known scroll powers to the user" in {
+  "The transparent expert" should "report the known scroll powers to the user" in {
     val transparent: Transparent = new Transparent(MockView)
     transparent.displayAll(pGameState(Some(""), pInventory(), Set(ScrollKnowledge("abcde", ScrollPower.AGGRAVATE_MONSTER)), pOption.UNKNOWN))
     assert(MockView.displayedPower)
