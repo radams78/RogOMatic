@@ -5,7 +5,10 @@ import gamedata.{Fact, ProvidesKnowledge}
 
 import scala.util.matching.Regex
 
-/** An item that the PC can pick up */
+/** An item that the PC can pick up 
+ *
+ * Contract:
+ * - implications is monotone */
 trait Item { // TODO
   def infer(fact: Fact): Either[String, Item] = Right(this) // TODO
 
