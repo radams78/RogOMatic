@@ -19,6 +19,8 @@ trait MagicItemType {
 
   def plural: String
 
+  /** Contract: 
+   * - implications is monotone */
   case class MagicItem(quantity: Option[Int], attribute: Option[Attribute], power: Option[Power]) extends Item {
     def merge(that: MagicItem): Either[String, MagicItem] = that match {
       case MagicItem(thatQuantity, thatAttribute, thatPower) => for {
