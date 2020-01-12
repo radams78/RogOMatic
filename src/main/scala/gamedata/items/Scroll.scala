@@ -3,7 +3,10 @@ package gamedata.items
 import domain.Domain
 import gamedata.items.ScrollPower.ScrollPower
 
+/** The magic scrolls */
+
 object ScrollType extends MagicItemType {
+  /** For a scroll, the attribute is the title, which is just a string */
   override type Attribute = String
 
   override implicit def attributeDomain: Domain[String] = Domain.stringDomain
@@ -20,14 +23,14 @@ object ScrollType extends MagicItemType {
 object Scroll {
   type Scroll = ScrollType.MagicItem
 
-  def apply(quantity: Int, title: String, power: ScrollPower): Scroll =
-    ScrollType.MagicItem(Some(quantity), Some(title), Some(power))
-
-  def apply(quantity: Int, title: String): Scroll = ScrollType.MagicItem(Some(quantity), Some(title), None)
+  val UNKNOWN: Scroll = ScrollType.MagicItem(None, None, None)
 
   def apply(power: ScrollPower): Scroll = ScrollType.MagicItem(None, None, Some(power))
 
-  val UNKNOWN: Scroll = ScrollType.MagicItem(None, None, None) // TODO Duplication
+  def apply(quantity: Int, title: String): Scroll = ScrollType.MagicItem(Some(quantity), Some(title), None)
+
+  def apply(quantity: Int, title: String, power: ScrollPower): Scroll =
+    ScrollType.MagicItem(Some(quantity), Some(title), Some(power))
 
   type ScrollKnowledge = ScrollType.MagicItemKnowledge
 
