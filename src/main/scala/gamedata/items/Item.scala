@@ -9,7 +9,7 @@ import scala.util.matching.Regex
 trait Item { // TODO
   def infer(fact: Fact): Either[String, Item] = Right(this) // TODO
 
-  def merge[T <: Item](that: T): Either[String, T]
+  def merge(that: Item): Either[String, Item]
 
   def implications: Set[Fact] = Set() // TODO
 }
@@ -20,7 +20,7 @@ object Item {
 
   // TODO For every other object: merging with UNKNOWN should not change object
   case object UNKNOWN extends Item {
-    override def merge[T <: Item](that: T): Either[String, T] = Right(that)
+    override def merge(that: Item): Either[String, Item] = Right(that)
 
     override def implications: Set[Fact] = Set()
   }

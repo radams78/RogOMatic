@@ -11,14 +11,14 @@ trait Armor extends Item
 case class IdentifiedArmor(armorType: ArmorType, bonus: Bonus) extends Armor {
   override def toString: String = s"$bonus $armorType"
 
-  override def merge[T <: Item](that: T): Either[String, T] = that match {
+  override def merge(that: Item): Either[String, Item] = that match {
     case IdentifiedArmor(thatArmorType, thatBonus) => for {
       inferredArmorType <- armorType.merge(thatArmorType)
       inferredBonus <- bonus.merge(thatBonus)
-    } yield IdentifiedArmor(inferredArmorType, inferredBonus).asInstanceOf[T]
+    } yield IdentifiedArmor(inferredArmorType, inferredBonus)
     case UnidentifiedArmor(thatArmorType) => for {
       inferredAmorType <- armorType.merge(thatArmorType)
-    } yield IdentifiedArmor(inferredAmorType, bonus).asInstanceOf[T]
+    } yield IdentifiedArmor(inferredAmorType, bonus)
     case _ => Left(s"Incompatible items: $this and $that")
   }
 }
@@ -27,13 +27,13 @@ case class IdentifiedArmor(armorType: ArmorType, bonus: Bonus) extends Armor {
 case class UnidentifiedArmor(armorType: ArmorType) extends Armor {
   override def toString: String = armorType.toString
 
-  override def merge[T <: Item](that: T): Either[String, T] = that match {
+  override def merge(that: Item): Either[String, Item] = that match {
     case IdentifiedArmor(thatArmorType, thatBonus) => for {
       inferredArmorType <- armorType.merge(thatArmorType)
-    } yield items.IdentifiedArmor(inferredArmorType, thatBonus).asInstanceOf[T]
+    } yield items.IdentifiedArmor(inferredArmorType, thatBonus)
     case UnidentifiedArmor(thatArmorType) => for {
       inferredArmorType <- armorType.merge(thatArmorType)
-    } yield UnidentifiedArmor(inferredArmorType).asInstanceOf[T]
+    } yield UnidentifiedArmor(inferredArmorType)
     case _ => Left(s"Incompatible items: $this and $that")
   }
 }

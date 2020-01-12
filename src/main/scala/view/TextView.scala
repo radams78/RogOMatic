@@ -1,6 +1,6 @@
 package view
 
-import gamedata.Fact.ScrollKnowledge
+import gamedata.items.Scroll.{ScrollKnowledge, _}
 import gamedata.{Direction, Slot, pInventory}
 import rogue.Command
 

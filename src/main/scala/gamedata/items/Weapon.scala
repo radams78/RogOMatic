@@ -23,12 +23,12 @@ case class Wieldable(wieldableType: WieldableType, plusToHit: Bonus, plusDamage:
   override def toString: String =
     s"$plusToHit,$plusDamage $wieldableType"
 
-  override def merge[T <: Item](that: T): Either[String, T] = that match {
+  override def merge(that: Item): Either[String, Item] = that match {
     case Wieldable(thatWieldableType, thatPlusToHit, thatPlusDamage) => for {
       inferredWieldableType <- wieldableType.merge(thatWieldableType)
       inferredPlusToHit <- plusToHit.merge(thatPlusToHit)
       inferredPlusDamage <- plusDamage.merge(thatPlusDamage)
-    } yield Wieldable(inferredWieldableType, inferredPlusToHit, inferredPlusDamage).asInstanceOf[T]
+    } yield Wieldable(inferredWieldableType, inferredPlusToHit, inferredPlusDamage)
     case _ => Left(s"Incompatible items: $this and $that")
   }
 }
@@ -49,31 +49,31 @@ object Missile {
     override def toString: String =
       s"$quantity $plusToHit,$plusDamage ${if (quantity > 1) missileType.plural else missileType.singular}"
 
-    override def merge[T <: Item](that: T): Either[String, T] = that match {
+    override def merge(that: Item): Either[String, Item] = that match {
       case Identified(thatQuantity, thatMissileType, thatPlusToHit, thatPlusDamage) => for {
         inferredQuantity <- quantity.merge(thatQuantity)
         inferredMissileType <- missileType.merge(thatMissileType)
         inferredPlusToHit <- plusToHit.merge(thatPlusToHit)
         inferredPlusDamage <- plusDamage.merge(thatPlusDamage)
-      } yield Identified(inferredQuantity, inferredMissileType, inferredPlusToHit, inferredPlusDamage).asInstanceOf[T]
+      } yield Identified(inferredQuantity, inferredMissileType, inferredPlusToHit, inferredPlusDamage)
       case Unidentified(thatQuantity, thatMissileType) => for {
         inferredQuantity <- quantity.merge(thatQuantity)
         inferredMissileType <- missileType.merge(thatMissileType)
-      } yield Identified(inferredQuantity, inferredMissileType, plusToHit, plusDamage).asInstanceOf[T]
+      } yield Identified(inferredQuantity, inferredMissileType, plusToHit, plusDamage)
       case _ => Left(s"Incompatible items: $this and $that")
     }
   }
 
   case class Unidentified(quantity: Int, missileType: MissileType) extends Missile {
-    override def merge[T <: Item](that: T): Either[String, T] = that match {
+    override def merge(that: Item): Either[String, Item] = that match {
       case Identified(thatQuantity, thatMissileType, thatPlusToHit, thatPlusDamage) => for {
         inferredQuantity <- quantity.merge(thatQuantity)
         inferredMissileType <- missileType.merge(thatMissileType)
-      } yield Identified(inferredQuantity, inferredMissileType, thatPlusToHit, thatPlusDamage).asInstanceOf[T]
+      } yield Identified(inferredQuantity, inferredMissileType, thatPlusToHit, thatPlusDamage)
       case Unidentified(thatQuantity, thatMissileType) => for {
         inferredQuantity <- quantity.merge(thatQuantity)
         inferredMissileType <- missileType.merge(thatMissileType)
-      } yield Unidentified(inferredQuantity, inferredMissileType).asInstanceOf[T]
+      } yield Unidentified(inferredQuantity, inferredMissileType)
       case _ => Left(s"Incompatible items: $this and $that")
     }
   }

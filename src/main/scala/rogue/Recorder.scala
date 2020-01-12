@@ -2,7 +2,7 @@ package rogue
 
 import domain.Domain._
 import expert.pGameState
-import gamedata.Fact.ScrollKnowledge
+import gamedata.items.Scroll.ScrollKnowledge
 import gamedata.pInventory
 import rogue.Event.Event
 

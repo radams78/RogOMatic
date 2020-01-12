@@ -1,7 +1,7 @@
 package unit
 
-import gamedata.Fact.ScrollKnowledge
 import gamedata._
+import gamedata.items.Scroll._
 import gamedata.items.{Item, Scroll, ScrollPower}
 import mock._
 import org.scalatest.flatspec.AnyFlatSpec

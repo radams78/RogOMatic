@@ -1,6 +1,7 @@
 package acceptance
 
 import gamedata._
+import gamedata.items.Scroll.{ScrollKnowledge, _}
 import gamedata.items.ScrollPower
 import gamedata.items.ScrollPower.ScrollPower
 import mock._
@@ -12,7 +13,7 @@ import rogue._
 import view.IView
 
 class MockUser extends IView with Assertions {
-  override def displayScrollKnowledge(sk: Fact.ScrollKnowledge): Unit = state = state.displayPower(sk.title, sk.power) // TODO Tidy up
+  override def displayScrollKnowledge(sk: ScrollKnowledge): Unit = state = state.displayPower(sk.title, sk.power) // TODO Tidy up
 
   private var state: MockUserState = Initial()
 

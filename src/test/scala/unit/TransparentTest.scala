@@ -1,7 +1,7 @@
 package unit
 
 import expert.{Transparent, pGameState}
-import gamedata.Fact.ScrollKnowledge
+import gamedata.items.Scroll._
 import gamedata.items.ScrollPower
 import gamedata.{pInventory, pOption}
 import org.scalatest.flatspec.AnyFlatSpec

@@ -2,9 +2,9 @@ package expert
 
 import domain.Domain
 import domain.Domain._
-import gamedata.Fact.ScrollKnowledge
 import gamedata.ProvidesKnowledge._
 import gamedata.UsesKnowledge._
+import gamedata.items.Scroll.ScrollKnowledge
 import gamedata.{Fact, pInventory, pOption}
 import rogue.Command
 import rogue.Command._

@@ -6,59 +6,79 @@ import gamedata.items.Colour.Colour
 import gamedata.items.PotionPower.PotionPower
 import gamedata.{Fact, UsesKnowledge}
 
-trait MagicItem[A, P] extends Item {
-  def quantity: Option[Int]
+trait MagicItemType {
+  type Attribute
 
-  def attribute: Option[A]
+  implicit def attributeDomain: Domain[Attribute]
 
-  def power: Option[P]
+  type Power
+
+  implicit def powerDomain: Domain[Power]
 
   def singular: String
 
   def plural: String
 
-  override def implications: Set[Fact] = (attribute, power) match {
-    case (Some(a), Some(p)) => Set(Fact.MagicItemKnowledge(a, p))
-    case _ => Set()
+  case class MagicItem(quantity: Option[Int], attribute: Option[Attribute], power: Option[Power]) extends Item {
+    def merge(that: MagicItem): Either[String, MagicItem] = that match {
+      case MagicItem(thatQuantity, thatAttribute, thatPower) => for {
+        inferredQuantity <- quantity.merge(thatQuantity)
+        inferredAttribute <- attribute.merge(thatAttribute)
+        inferredPower <- power.merge(thatPower)
+      } yield MagicItem(inferredQuantity, inferredAttribute, inferredPower)
+    }
+
+    override def merge(that: Item): Either[String, Item] = that match {
+      case magicItem: MagicItem => merge(magicItem)
+      case Item.UNKNOWN => Right(this)
+      case _ => Left(s"Incompatible information: $this and $that")
+    }
+
+    override def implications: Set[Fact] = (attribute, power) match {
+      case (Some(a), Some(p)) => Set(MagicItemKnowledge(a, p))
+      case _ => Set()
+    }
+
+    override def toString: String =
+      (quantity match {
+        case Some(q) => q.toString
+        case None => "some"
+      }) +
+        (attribute match {
+          case Some(a) => " " + a.toString
+          case None => ""
+        }) + " " +
+        (if (quantity.contains(1)) singular else plural) +
+        (power match {
+          case Some(p) => " " + p.toString
+          case None => ""
+        })
   }
 
-  override def toString: String =
-    (quantity match {
-      case Some(q) => q.toString
-      case None => "some"
-    }) +
-      (attribute match {
-        case Some(a) => " " + a.toString
-        case None => ""
-      }) + " " +
-      (if (quantity.contains(1)) singular else plural) +
-      (power match {
-        case Some(p) => " " + p.toString
-        case None => ""
-      })
+  object MagicItem {
+    implicit def domain: Domain[MagicItem] = (x: MagicItem, y: MagicItem) => x.merge(y)
+
+    implicit def usesKnowledge: UsesKnowledge[MagicItem] = (self: MagicItem, fact: Fact) => (fact, self.attribute, self.power) match {
+      case (MagicItemKnowledge(_a, _p), Some(a), Some(p)) if (a == _a && p != _p) || (a != _a && p == _p) =>
+        Left(s"Incompatible information: $a -> $p and ${_a} -> ${_p}")
+      case (MagicItemKnowledge(_a, _p: Power), Some(a), None) if a == _a => Right(MagicItem(self.quantity, Some(a), Some(_p)))
+      case (MagicItemKnowledge(_a: Attribute, _p), None, Some(p)) if p == _p => Right(MagicItem(self.quantity, Some(_a), Some(p)))
+      case _ => Right(self)
+    }
+  }
+
+  case class MagicItemKnowledge(attribute: Attribute, power: Power) extends Fact
 
 }
 
-/** A stack of potions
- *
- * Invariants:
- *   - implications is monotone
- *   - potion.infer(potion.potionKnowledge) == Right(potion) 
- *   - potion.infer(PotionKnowledge()) == Right(potion) */
-// TODO Duplication with Scroll
-case class Potion(quantity: Option[Int] = None,
-                  colour: Option[Colour] = None,
-                  power: Option[PotionPower] = None) extends MagicItem[Colour, PotionPower] {
-  override def merge[T <: Item](that: T): Either[String, T] = that match {
-    case Potion(thatQuantity, thatColour, thatPower) => for {
-      inferredQuantity <- quantity.merge(thatQuantity)
-      inferredColour <- colour.merge(thatColour)
-      inferredPower <- power.merge(thatPower)
-    } yield Potion(inferredQuantity, inferredColour, inferredPower).asInstanceOf[T]
-    case _ => Left(s"Incompatible items: $this and $that")
-  }
+object PotionType extends MagicItemType {
+  override type Attribute = Colour
 
-  override def attribute: Option[Colour] = colour
+  override implicit def attributeDomain: Domain[Attribute] = Colour.domain
+
+  override type Power = PotionPower
+
+  override implicit def powerDomain: Domain[Power] = PotionPower.domain
 
   override def singular: String = "potion"
 
@@ -66,19 +86,14 @@ case class Potion(quantity: Option[Int] = None,
 }
 
 object Potion {
-  val UNKNOWN: Potion = Potion()
+  type Potion = PotionType.MagicItem
+  type PotionKnowledge = PotionType.MagicItemKnowledge
 
-  def apply(power: PotionPower): Potion = Potion(None, None, Some(power))
+  implicit def domain: Domain[Potion] = PotionType.MagicItem.domain
 
-  def apply(quantity: Int, colour: Colour): Potion = Potion(Some(quantity), Some(colour), None)
+  def apply(quantity: Int, colour: Colour): Potion = PotionType.MagicItem(Some(quantity), Some(colour), None)
 
-  implicit def domain: Domain[Potion] = (x: Potion, y: Potion) => x.merge(y)
+  def apply(power: PotionPower): Potion = PotionType.MagicItem(None, None, Some(power))
 
-  implicit def usesKnowledge: UsesKnowledge[Potion] = (self: Potion, fact: Fact) => (fact, self.colour, self.power) match {
-    case (Fact.MagicItemKnowledge(_c, _p), Some(c), Some(p)) if (c == _c && p != _p) || (c != _c && p == _p) =>
-      Left(s"Incompatible information: $c -> $p and ${_c} -> ${_p}")
-    case (Fact.MagicItemKnowledge(_c, _p: PotionPower), Some(c), None) if c == _c => Right(Potion(self.quantity, Some(c), Some(_p)))
-    case (Fact.MagicItemKnowledge(_c: Colour, _p), None, Some(p)) if p == _p => Right(Potion(self.quantity, Some(_c), Some(p)))
-    case _ => Right(self)
-  }
+  val UNKNOWN: Potion = PotionType.MagicItem(None, None, None)
 }

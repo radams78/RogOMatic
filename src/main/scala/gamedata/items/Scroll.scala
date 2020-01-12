@@ -1,25 +1,16 @@
 package gamedata.items
 
 import domain.Domain
-import domain.Domain._
 import gamedata.items.ScrollPower.ScrollPower
-import gamedata.{Fact, UsesKnowledge}
 
-/** A stack of scrolls 
- *
- * Invariant:
- * - scroll.infer(scroll.scrollKnowledge) == Right(scroll) */
-case class Scroll(quantity: Option[Int], title: Option[String], power: Option[ScrollPower]) extends MagicItem[String, ScrollPower] {
-  override def merge[T <: Item](that: T): Either[String, T] = that match {
-    case Scroll(thatQuantity, thatTitle, thatPower) => for {
-      inferredQuantity <- quantity.merge(thatQuantity)
-      inferredTitle <- title.merge(thatTitle)
-      inferredPower <- power.merge(thatPower)
-    } yield Scroll(inferredQuantity, inferredTitle, inferredPower).asInstanceOf[T]
-    case _ => Left(s"Incompatible items: $this and $that")
-  }
+object ScrollType extends MagicItemType {
+  override type Attribute = String
 
-  override def attribute: Option[String] = title
+  override implicit def attributeDomain: Domain[String] = Domain.stringDomain
+
+  override type Power = ScrollPower
+
+  override implicit def powerDomain: Domain[ScrollPower] = ScrollPower.scrollPowerDomain
 
   override def singular: String = "scroll"
 
@@ -27,21 +18,22 @@ case class Scroll(quantity: Option[Int], title: Option[String], power: Option[Sc
 }
 
 object Scroll {
-  val UNKNOWN: Scroll = Scroll(None, None, None)
+  type Scroll = ScrollType.MagicItem
 
-  def apply(power: ScrollPower): Scroll = Scroll(None, None, Some(power))
+  def apply(quantity: Int, title: String, power: ScrollPower): Scroll =
+    ScrollType.MagicItem(Some(quantity), Some(title), Some(power))
 
-  def apply(quantity: Int, title: String): Scroll = Scroll(Some(quantity), Some(title), None)
+  def apply(quantity: Int, title: String): Scroll = ScrollType.MagicItem(Some(quantity), Some(title), None)
 
-  implicit def usesKnowledge: UsesKnowledge[Scroll] = (self: Scroll, fact: Fact) => (fact, self.title, self.power) match {
-    case (Fact.MagicItemKnowledge(_t, _p), Some(t), Some(p)) if (t == _t && p != _p) || (t != _t && p == _p) =>
-      Left(s"Incompatible information: $t -> $p and ${_t} -> ${_p}")
-    case (Fact.MagicItemKnowledge(_t, _p: ScrollPower), Some(t), None) if t == _t => Right(Scroll(self.quantity, Some(t), Some(_p)))
-    case (Fact.MagicItemKnowledge(_t: String, _p), None, Some(p)) if p == _p => Right(Scroll(self.quantity, Some(_t), Some(p)))
-    case _ => Right(self)
+  def apply(power: ScrollPower): Scroll = ScrollType.MagicItem(None, None, Some(power))
+
+  val UNKNOWN: Scroll = ScrollType.MagicItem(None, None, None) // TODO Duplication
+
+  type ScrollKnowledge = ScrollType.MagicItemKnowledge
+
+  implicit class IsScrollKnowledge(self: ScrollKnowledge) {
+    def title: String = self.attribute
   }
 
-  implicit def scrollDomain: Domain[Scroll] = (x: Scroll, y: Scroll) => x.merge(y)
-
-  def apply(title: String, power: ScrollPower): Scroll = Scroll(None, Some(title), Some(power))
+  def ScrollKnowledge(title: String, power: ScrollPower): ScrollKnowledge = ScrollType.MagicItemKnowledge(title, power)
 }
