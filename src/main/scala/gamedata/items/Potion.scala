@@ -6,6 +6,19 @@ import gamedata.items.Colour.Colour
 import gamedata.items.PotionPower.PotionPower
 import gamedata.{Fact, UsesKnowledge}
 
+trait MagicItem[A, P] extends Item {
+  def quantity: Option[Int]
+
+  def attribute: Option[A]
+
+  def power: Option[P]
+
+  override def implications: Set[Fact] = (attribute, power) match {
+    case (Some(a), Some(p)) => Set(Fact.MagicItemKnowledge(a, p))
+    case _ => Set()
+  }
+}
+
 /** A stack of potions
  *
  * Invariants:
@@ -15,7 +28,7 @@ import gamedata.{Fact, UsesKnowledge}
 // TODO Duplication with Scroll
 case class Potion(quantity: Option[Int] = None,
                   colour: Option[Colour] = None,
-                  power: Option[PotionPower] = None) extends Item {
+                  power: Option[PotionPower] = None) extends MagicItem[Colour, PotionPower] {
   override def implications: Set[Fact] = (colour, power) match {
     case (Some(c), Some(p)) => Set(Fact.PotionKnowledge(c, p))
     case _ => Set()
@@ -44,6 +57,8 @@ case class Potion(quantity: Option[Int] = None,
     } yield Potion(inferredQuantity, inferredColour, inferredPower).asInstanceOf[T]
     case _ => Left(s"Incompatible items: $this and $that")
   }
+
+  override def attribute: Option[Colour] = colour
 }
 
 object Potion {
@@ -56,10 +71,10 @@ object Potion {
   implicit def domain: Domain[Potion] = (x: Potion, y: Potion) => x.merge(y)
 
   implicit def usesKnowledge: UsesKnowledge[Potion] = (self: Potion, fact: Fact) => (fact, self.colour, self.power) match {
-    case (Fact.PotionKnowledge(_c, _p), Some(c), Some(p)) if (c == _c && p != _p) || (c != _c && p == _p) =>
+    case (Fact.MagicItemKnowledge(_c, _p), Some(c), Some(p)) if (c == _c && p != _p) || (c != _c && p == _p) =>
       Left(s"Incompatible information: $c -> $p and ${_c} -> ${_p}")
-    case (Fact.PotionKnowledge(_c, _p), Some(c), None) if c == _c => Right(Potion(self.quantity, Some(c), Some(_p)))
-    case (Fact.PotionKnowledge(_c, _p), None, Some(p)) if p == _p => Right(Potion(self.quantity, Some(_c), Some(p)))
+    case (Fact.MagicItemKnowledge(_c, _p: PotionPower), Some(c), None) if c == _c => Right(Potion(self.quantity, Some(c), Some(_p)))
+    case (Fact.MagicItemKnowledge(_c: Colour, _p), None, Some(p)) if p == _p => Right(Potion(self.quantity, Some(_c), Some(p)))
     case _ => Right(self)
   }
 }

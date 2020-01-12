@@ -8,9 +8,23 @@ trait Fact
 
 object Fact {
 
-  case class PotionKnowledge(colour: Colour, power: PotionPower) extends Fact
+  case class MagicItemKnowledge[A, P](attribute: A, power: P) extends Fact
 
-  case class ScrollKnowledge(title: String, power: ScrollPower) extends Fact
+  type PotionKnowledge = MagicItemKnowledge[Colour, PotionPower]
+
+  def PotionKnowledge(colour: Colour, power: PotionPower): PotionKnowledge = MagicItemKnowledge(colour, power)
+
+  implicit class IsPotionKnowledge(self: PotionKnowledge) {
+    def colour: Colour = self.attribute
+  }
+
+  type ScrollKnowledge = MagicItemKnowledge[String, ScrollPower]
+
+  def ScrollKnowledge(title: String, power: ScrollPower): ScrollKnowledge = MagicItemKnowledge(title, power)
+
+  implicit class IsScrollKnowledge(self: ScrollKnowledge) {
+    def title: String = self.attribute
+  }
 
 }
 
