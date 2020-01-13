@@ -16,7 +16,7 @@ class RogueActuatorTest extends AnyFlatSpec with Matchers {
     val recorder: Recorder = new Recorder
   }
 
-  trait ZeroMoveGameF extends Fixture {
+  trait ZeroMoveGame extends Fixture {
     val game: MockRogue = mock.ZeroMoveGame.zeroMoveGame
     val player: RogueActuator = new RogueActuator(game, recorder)
   }
@@ -45,7 +45,7 @@ class RogueActuatorTest extends AnyFlatSpec with Matchers {
     )
   }
 
-  it should "display the first screen of the game" in new ZeroMoveGameF {
+  it should "display the first screen of the game" in new ZeroMoveGame {
     player.start()
     recorder.getScreen should be(ZeroMoveGame.firstScreen)
   }
