@@ -1,6 +1,5 @@
 package gamedata.item.magic.ring
 
-import domain.Domain
 import gamedata.ParsableEnum
 
 /** The set of powers that a ring can have */
@@ -23,8 +22,6 @@ object RingPower extends ParsableEnum {
   val SUSTAIN_STRENGTH: RingPower = Val("sustain strength")
   val TELEPORTATION: RingPower = Val("teleportation")
 
-  implicit def domain: Domain[RingPower] = Domain.flatDomain
-
-  protected case class Val(effect: String) extends super.Val
+  protected case class Val(override val name: String) extends super.Val(name)
 
 }

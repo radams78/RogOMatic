@@ -5,7 +5,7 @@ import gamedata.item.magic.potion.{Colour, Potion}
 import gamedata.item.magic.ring.{Gem, Ring}
 import gamedata.item.magic.scroll.Scroll
 import gamedata.item.magic.wand.{Material, Wand, WandType}
-import gamedata.item.weapon.{Weapon, WeaponType}
+import gamedata.item.weapon.{Weapon, WeaponType, WieldableType}
 import gamedata.item.{weapon, _}
 import org.scalatest.EitherValues
 import org.scalatest.flatspec.AnyFlatSpec
@@ -25,7 +25,7 @@ class ItemTest extends AnyFlatSpec with Matchers with EitherValues {
   }
 
   "a long sword" should "be recognised as a long sword" in {
-    Item.parse("a +1,+0 long sword") should be(Right(Weapon(WeaponType.LONG_SWORD, +1, +0)))
+    Item.parse("a +1,+0 long sword") should be(Right(Weapon(WieldableType.LONG_SWORD, +1, +0)))
   }
 
   "identified arrows" should "be recognised as identified arrows" in {

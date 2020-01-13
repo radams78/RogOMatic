@@ -1,7 +1,5 @@
 package gamedata
 
-import domain.Domain
-
 object MonsterType extends ParsableEnum {
 
   type MonsterType = Value
@@ -33,9 +31,7 @@ object MonsterType extends ParsableEnum {
   val YETI: MonsterType = Val("yeti")
   val ZOMBIE: MonsterType = Val("zombie")
 
-  protected case class Val(name: String) extends super.Val
+  protected case class Val(override val name: String) extends super.Val(name)
 
   implicit def toVal(x: Value): Val = x.asInstanceOf[Val]
-
-  implicit def domain: Domain[MonsterType] = Domain.flatDomain
 }

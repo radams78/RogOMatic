@@ -2,7 +2,7 @@ package mock
 
 import gamedata._
 import gamedata.item.armor.{Armor, ArmorType}
-import gamedata.item.weapon.{Weapon, WeaponType}
+import gamedata.item.weapon.{WeaponType, WieldableType}
 import gamedata.item.{weapon, _}
 
 object ZeroMoveGame {
@@ -92,7 +92,7 @@ object ZeroMoveGame {
     items = Map(
       Slot.A -> Food(1),
       Slot.B -> Armor(ArmorType.RING_MAIL, +1),
-      Slot.C -> Weapon(WeaponType.MACE, +1, +1),
+      Slot.C -> weapon.Weapon(WieldableType.MACE, +1, +1),
       Slot.D -> weapon.Weapon(WeaponType.SHORT_BOW, +1, +0),
       Slot.E -> weapon.Weapon(31, WeaponType.ARROW, +0, +0)
     ),

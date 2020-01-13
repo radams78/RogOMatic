@@ -1,26 +1,26 @@
 package gamedata.item.magic.ring
 
-import domain.Domain
 import gamedata.ParsableEnum
 
 /** The gems that a ring can have */
 object Gem extends ParsableEnum {
   type Gem = Value
   override val name: String = "gem"
-  val DIAMOND: Gem = Value("diamond")
-  val STIBOTANTALITE: Gem = Value("stibotantalite")
-  val LAPI_LAZULI: Gem = Value("lapi-lazuli")
-  val RUBY: Gem = Value("ruby")
-  val EMERALD: Gem = Value("emerald")
-  val SAPPHIRE: Gem = Value("sapphire")
-  val AMETHYST: Gem = Value("amethyst")
-  val QUARTZ: Gem = Value("quartz")
-  val TIGER_EYE: Gem = Value("tiger-eye")
-  val OPAL: Gem = Value("opal")
-  val AGATE: Gem = Value("agate")
-  val TURQUOISE: Gem = Value("turquoise")
-  val PEARL: Gem = Value("pearl")
-  val GARNET: Gem = Value("garnet")
+  val DIAMOND: Gem = Val("diamond")
+  val STIBOTANTALITE: Gem = Val("stibotantalite")
+  val LAPI_LAZULI: Gem = Val("lapi-lazuli")
+  val RUBY: Gem = Val("ruby")
+  val EMERALD: Gem = Val("emerald")
+  val SAPPHIRE: Gem = Val("sapphire")
+  val AMETHYST: Gem = Val("amethyst")
+  val QUARTZ: Gem = Val("quartz")
+  val TIGER_EYE: Gem = Val("tiger-eye")
+  val OPAL: Gem = Val("opal")
+  val AGATE: Gem = Val("agate")
+  val TURQUOISE: Gem = Val("turquoise")
+  val PEARL: Gem = Val("pearl")
+  val GARNET: Gem = Val("garnet")
 
-  implicit def domain: Domain[Gem] = Domain.flatDomain
+  protected case class Val(override val name: String) extends super.Val(name)
+
 }

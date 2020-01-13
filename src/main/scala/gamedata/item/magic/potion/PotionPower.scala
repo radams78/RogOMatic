@@ -1,32 +1,23 @@
 package gamedata.item.magic.potion
 
-import domain.Domain
 import gamedata.ParsableEnum
 
 object PotionPower extends ParsableEnum {
-
   type PotionPower = Value
 
-  implicit def valueToPotionPowertVal(x: Value): Val = x.asInstanceOf[Val]
-
   override val name: String = "potion power"
-  val BLINDNESS: PotionPower = Val("blindness")
-  val CONFUSION: PotionPower = Val("confusion")
-  val DETECT_MONSTER: PotionPower = Val("detect monster")
-  val DETECT_THINGS: PotionPower = Val("detect things")
-  val EXTRA_HEALING: PotionPower = Val("extra healing")
-  val HALLUCINATION: PotionPower = Val("hallucination")
-  val HASTE_SELF: PotionPower = Val("haste self")
-  val HEALING: PotionPower = Val("healing")
-  val INCREASE_STRENGTH: PotionPower = Val("increase strength")
-  val LEVITATION: PotionPower = Val("levitation")
-  val POISON: PotionPower = Val("poison")
-  val RAISE_LEVEL: PotionPower = Val("raise level")
-  val RESTORE_STRENGTH: PotionPower = Val("restore strength")
-  val SEE_INVISIBLE: PotionPower = Val("see invisible")
-
-  implicit def domain: Domain[Value] = Domain.flatDomain
-
-  protected case class Val(effect: String) extends super.Val
-
+  val BLINDNESS: PotionPower = Value("blindness")
+  val CONFUSION: PotionPower = Value("confusion")
+  val DETECT_MONSTER: PotionPower = Value("detect monster")
+  val DETECT_THINGS: PotionPower = Value("detect things")
+  val EXTRA_HEALING: PotionPower = Value("extra healing")
+  val HALLUCINATION: PotionPower = Value("hallucination")
+  val HASTE_SELF: PotionPower = Value("haste self")
+  val HEALING: PotionPower = Value("healing")
+  val INCREASE_STRENGTH: PotionPower = Value("increase strength")
+  val LEVITATION: PotionPower = Value("levitation")
+  val POISON: PotionPower = Value("poison")
+  val RAISE_LEVEL: PotionPower = Value("raise level")
+  val RESTORE_STRENGTH: PotionPower = Value("restore strength")
+  val SEE_INVISIBLE: PotionPower = Value("see invisible")
 }

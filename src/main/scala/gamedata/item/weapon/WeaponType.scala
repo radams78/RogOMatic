@@ -1,19 +1,38 @@
 package gamedata.item.weapon
 
 import domain.Domain
+import gamedata.ParsableEnum
+import gamedata.item.weapon.WieldableType.WieldableType
 
 /** An enum for the set of weapon types in the game of Rogue */
 sealed trait WeaponType
 
 /** The melee weapons and bows. These weapons cannot be stacked. */
-sealed trait WieldableType extends WeaponType {
-  val name: String
+object WieldableType extends ParsableEnum {
+  type WieldableType = Value
 
-  override def toString: String = name
+  val MACE: WieldableType = Val("mace")
+  val LONG_SWORD: WieldableType = Val("long sword")
+  val TWO_HANDED_SWORD: WieldableType = Val("two-handed sword")
+
+  protected case class Val(override val name: String) extends super.Val(name) with WeaponType
+
+  override implicit def valueToVal(x: WieldableType): Val = x.asInstanceOf[Val]
+
+  override val name: String = "wieldable type"
 }
 
-object WieldableType {
-  implicit def domain: Domain[WieldableType] = Domain.flatDomain
+object Missiletype extends Enumeration {
+  type MissileType = Value
+
+  val DART: MissileType = Val("dart", "darts")
+  val ARROW: MissileType = Val("arrow", "arrows")
+  val DAGGER: MissileType = Val("dagger", "daggers")
+  val SHURIKEN: MissileType = Val("shuriken", "shurikens")
+
+  protected case class Val(singular: String, plural: String) extends super.Val with WeaponType
+
+  implicit def valueToVal(x: MissileType): Val = x.asInstanceOf[Val]
 }
 
 /** The types of missile */
@@ -30,6 +49,8 @@ object MissileType {
 }
 
 object WeaponType {
+  val MACE: WieldableType = WieldableType.MACE
+
   /** Given the name of a weapon, return the appropriate [[WeaponType]], or an error message if weapon type could not
    * be recognised */
   def parse(description: String): Either[String, WeaponType] = description match {
@@ -38,14 +59,10 @@ object WeaponType {
     case "arrow" | "arrows" => Right(ARROW)
     case "dagger" | "daggers" => Right(DAGGER)
     case "shuriken" | "shurikens" => Right(SHURIKEN)
-    case "mace" => Right(MACE)
-    case "long sword" => Right(LONG_SWORD)
-    case "two-handed sword" => Right(TWO_HANDED_SWORD)
+    case "mace" => Right(WieldableType.MACE)
+    case "long sword" => Right(WieldableType.LONG_SWORD)
+    case "two-handed sword" => Right(WieldableType.TWO_HANDED_SWORD)
     case _ => Left(s"Unrecognised weapon type: $description")
-  }
-
-  case object SHORT_BOW extends WieldableType {
-    override val name: String = "short bow"
   }
 
   case object DART extends MissileType {
@@ -72,16 +89,6 @@ object WeaponType {
     override val plural: String = "shurikens"
   }
 
-  case object MACE extends WieldableType {
-    override val name: String = "mace"
-  }
-
-  case object LONG_SWORD extends WieldableType {
-    override val name: String = "long sword"
-  }
-
-  case object TWO_HANDED_SWORD extends WieldableType {
-    override val name: String = "two-handed sword"
-  }
-
+  case object SHORT_BOW extends WeaponType
 }
+

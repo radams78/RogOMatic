@@ -2,6 +2,7 @@ package gamedata.item.weapon
 
 import domain.Domain._
 import gamedata.item._
+import gamedata.item.weapon.WieldableType.WieldableType
 
 /** A weapon in the game of Rogue */
 trait Weapon extends Item
@@ -11,6 +12,7 @@ object Weapon {
   def apply(weaponType: WeaponType, plusToHit: Int, plusDamage: Int): Weapon = weaponType match {
     case wt: WieldableType => Wieldable(wt, Bonus(plusToHit), Bonus(plusDamage))
     case wt: MissileType => Missile(1, wt, Bonus(plusToHit), Bonus(plusDamage))
+    case WeaponType.SHORT_BOW => SHORT_BOW
   }
 
   def apply(quantity: Int, missileType: MissileType, plusToHit: Int, plusDamage: Int): Missile =
@@ -79,4 +81,12 @@ object Missile {
     }
   }
 
+}
+
+case object SHORT_BOW extends Weapon {
+  override def merge(that: Item): Either[String, Item] = that match {
+    case SHORT_BOW => Right(SHORT_BOW)
+    case Item.UNKNOWN => Right(SHORT_BOW)
+    case _ => Left(s"Incompatible information: $this and $that")
+  }
 }

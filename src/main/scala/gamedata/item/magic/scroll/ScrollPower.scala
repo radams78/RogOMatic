@@ -27,6 +27,6 @@ object ScrollPower extends ParsableEnum {
 
   implicit def scrollPowerDomain: Domain[ScrollPower] = Domain.flatDomain
 
-  protected case class Val(effect: String) extends super.Val
+  protected case class Val(override val name: String) extends super.Val(name)
 
 }
