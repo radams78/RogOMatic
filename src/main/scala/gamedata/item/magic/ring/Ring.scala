@@ -2,14 +2,13 @@ package gamedata.item.magic.ring
 
 import domain.Domain
 import domain.Domain._
+import gamedata.item.MagicItemType
 import gamedata.item.magic.ring.Gem.Gem
 import gamedata.item.magic.ring.RingPower.RingPower
-import gamedata.item.{Item, UnstackableMagicItemType}
+import gamedata.{Fact, UsesKnowledge}
 
 /** A ring */
-object RingType extends UnstackableMagicItemType {
-  override def name: String = "ring"
-
+object RingType extends MagicItemType {
   override type Attribute = Gem
 
   override implicit def attributeDomain: Domain[Gem] = Gem.domain
@@ -19,9 +18,46 @@ object RingType extends UnstackableMagicItemType {
   override implicit def powerDomain: Domain[RingPower] = RingPower.domain
 }
 
-case class Ring(gem: Gem) extends Item {
-  override def merge(that: Item): Either[String, Item] = that match {
-    case Ring(thatGem) => for {inferredGem <- gem.merge(thatGem)} yield Ring(inferredGem)
-    case _ => Left(s"Incompatible item: $this and $that")
+/** Contract: 
+ * - implications is monotone */
+case class Ring(gem: Option[Gem], power: Option[RingPower]) extends RingType.MagicItem {
+  override def merge(that: RingType.MagicItem): Either[String, Ring] = that match {
+    case Ring(thatGem, thatPower) => for {
+      inferredGem <- attribute.merge(thatGem)
+      inferredPower <- power.merge(thatPower)
+    } yield Ring(inferredGem, inferredPower)
+  }
+
+  override def toString: String =
+    (quantity match {
+      case Some(q) => q.toString
+      case None => "some"
+    }) +
+      (attribute match {
+        case Some(a) => " " + a.toString
+        case None => ""
+      }) + " " +
+      "ring" +
+      (power match {
+        case Some(p) => " of " + p.toString
+        case None => ""
+      })
+
+  override def quantity: Option[Int] = Some(1)
+
+  override def attribute: Option[Gem] = gem
+}
+
+object Ring {
+  def apply(gem: Gem): Ring = new Ring(Some(gem), None)
+
+  implicit def domain: Domain[Ring] = (x: Ring, y: Ring) => x.merge(y)
+
+  implicit def usesKnowledge: UsesKnowledge[Ring] = (self: Ring, fact: Fact) => (fact, self.attribute, self.power) match {
+    case (RingType.MagicItemKnowledge(_a, _p), Some(a), Some(p)) if (a == _a && p != _p) || (a != _a && p == _p) =>
+      Left(s"Incompatible information: $a -> $p and ${_a} -> ${_p}")
+    case (RingType.MagicItemKnowledge(_a, _p: RingPower), Some(a), None) if a == _a => Right(Ring(Some(a), Some(_p)))
+    case (RingType.MagicItemKnowledge(_a: Gem, _p), None, Some(p)) if p == _p => Right(Ring(Some(_a), Some(p)))
+    case _ => Right(self)
   }
 }
