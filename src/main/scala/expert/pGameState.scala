@@ -4,7 +4,7 @@ import domain.Domain
 import domain.Domain._
 import gamedata.ProvidesKnowledge._
 import gamedata.UsesKnowledge._
-import gamedata.items.Scroll.ScrollKnowledge
+import gamedata.item.magic.scroll.Scroll.ScrollKnowledge
 import gamedata.{Fact, pInventory, pOption}
 import rogue.Command
 import rogue.Command._

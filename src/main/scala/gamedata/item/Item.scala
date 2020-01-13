@@ -1,6 +1,12 @@
-package gamedata.items
+package gamedata.item
 
 import domain.Domain
+import gamedata.item.armor.{Armor, ArmorType}
+import gamedata.item.magic.potion.{Colour, Potion}
+import gamedata.item.magic.ring.{Gem, Ring}
+import gamedata.item.magic.scroll.Scroll
+import gamedata.item.magic.wand.{Material, Wand, WandType}
+import gamedata.item.weapon.{Missile, MissileType, Weapon, WeaponType}
 import gamedata.{Fact, ProvidesKnowledge}
 
 import scala.util.matching.Regex
@@ -52,7 +58,7 @@ object Item {
       }
     case identifiedWeaponsRegex(quantity, plusToHit, plusDamage, weaponType) =>
       for (wt <- WeaponType.parse(weaponType)) yield wt match {
-        case wt: MissileType => Missile(quantity.toInt, wt, plusToHit.toInt, plusDamage.toInt)
+        case wt: MissileType => weapon.Missile(quantity.toInt, wt, plusToHit.toInt, plusDamage.toInt)
         case _ => return Left(s"Expected missile type but received $wt in $description")
       }
     case ringRegex(gem) => for (g <- Gem.parse(gem)) yield Ring(g)

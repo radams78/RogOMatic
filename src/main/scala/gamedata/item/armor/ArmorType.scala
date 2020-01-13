@@ -1,4 +1,4 @@
-package gamedata.items
+package gamedata.item.armor
 
 import domain.Domain
 import gamedata.ParsableEnum

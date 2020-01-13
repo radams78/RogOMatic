@@ -1,4 +1,4 @@
-package gamedata.items
+package gamedata.item
 
 import domain.Domain._
 
@@ -9,6 +9,6 @@ case class Food(quantity: Int) extends Item {
   override def merge(that: Item): Either[String, Item] = that match {
     case Food(thatQuantity) =>
       for {inferredQuantity <- quantity.merge(thatQuantity)} yield Food(inferredQuantity)
-    case _ => Left(s"Incompatible items: $this and $that")
+    case _ => Left(s"Incompatible item: $this and $that")
   }
 }

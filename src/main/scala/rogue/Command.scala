@@ -3,9 +3,11 @@ package rogue
 import domain.Domain
 import domain.Domain._
 import gamedata._
-import gamedata.items.Potion._
-import gamedata.items.Scroll.Scroll
-import gamedata.items.{Item, Potion, Scroll}
+import gamedata.item.Item
+import gamedata.item.magic.potion.Potion
+import gamedata.item.magic.potion.Potion._
+import gamedata.item.magic.scroll.Scroll
+import gamedata.item.magic.scroll.Scroll.Scroll
 
 /** Partial information about a move that can be made by the player in Rogue.
  *

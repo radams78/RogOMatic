@@ -1,6 +1,7 @@
-package gamedata.items
+package gamedata.item.weapon
 
 import domain.Domain._
+import gamedata.item._
 
 /** A weapon in the game of Rogue */
 trait Weapon extends Item
@@ -29,7 +30,7 @@ case class Wieldable(wieldableType: WieldableType, plusToHit: Bonus, plusDamage:
       inferredPlusToHit <- plusToHit.merge(thatPlusToHit)
       inferredPlusDamage <- plusDamage.merge(thatPlusDamage)
     } yield Wieldable(inferredWieldableType, inferredPlusToHit, inferredPlusDamage)
-    case _ => Left(s"Incompatible items: $this and $that")
+    case _ => Left(s"Incompatible item: $this and $that")
   }
 }
 
@@ -60,7 +61,7 @@ object Missile {
         inferredQuantity <- quantity.merge(thatQuantity)
         inferredMissileType <- missileType.merge(thatMissileType)
       } yield Identified(inferredQuantity, inferredMissileType, plusToHit, plusDamage)
-      case _ => Left(s"Incompatible items: $this and $that")
+      case _ => Left(s"Incompatible item: $this and $that")
     }
   }
 
@@ -74,7 +75,7 @@ object Missile {
         inferredQuantity <- quantity.merge(thatQuantity)
         inferredMissileType <- missileType.merge(thatMissileType)
       } yield Unidentified(inferredQuantity, inferredMissileType)
-      case _ => Left(s"Incompatible items: $this and $that")
+      case _ => Left(s"Incompatible item: $this and $that")
     }
   }
 

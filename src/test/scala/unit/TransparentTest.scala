@@ -1,8 +1,8 @@
 package unit
 
 import expert.{Transparent, pGameState}
-import gamedata.items.Scroll._
-import gamedata.items.ScrollPower
+import gamedata.item.magic.scroll.Scroll._
+import gamedata.item.magic.scroll.ScrollPower
 import gamedata.{pInventory, pOption}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers

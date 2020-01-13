@@ -1,9 +1,9 @@
 package acceptance
 
 import gamedata._
-import gamedata.items.Scroll.{ScrollKnowledge, _}
-import gamedata.items.ScrollPower
-import gamedata.items.ScrollPower.ScrollPower
+import gamedata.item.magic.scroll.Scroll.{ScrollKnowledge, _}
+import gamedata.item.magic.scroll.ScrollPower
+import gamedata.item.magic.scroll.ScrollPower.ScrollPower
 import mock._
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers

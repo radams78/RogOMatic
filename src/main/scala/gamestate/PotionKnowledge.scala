@@ -2,8 +2,8 @@ package gamestate
 
 import domain.Domain
 import domain.Domain._
-import gamedata.items.Colour.Colour
-import gamedata.items.PotionPower.PotionPower
+import gamedata.item.magic.potion.Colour.Colour
+import gamedata.item.magic.potion.PotionPower.PotionPower
 
 /** Memory of which potion colours correspond to which powers */
 case class PotionKnowledge(private val powers: Map[Colour, PotionPower]) {

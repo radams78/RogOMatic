@@ -1,8 +1,9 @@
 package unit
 
 import gamedata._
-import gamedata.items.Scroll._
-import gamedata.items.{Item, Scroll, ScrollPower}
+import gamedata.item.Item
+import gamedata.item.magic.scroll.Scroll._
+import gamedata.item.magic.scroll.{Scroll, ScrollPower}
 import mock._
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers

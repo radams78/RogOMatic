@@ -1,6 +1,12 @@
 package unit
 
-import gamedata.items._
+import gamedata.item.armor.{Armor, ArmorType}
+import gamedata.item.magic.potion.{Colour, Potion}
+import gamedata.item.magic.ring.{Gem, Ring}
+import gamedata.item.magic.scroll.Scroll
+import gamedata.item.magic.wand.{Material, Wand, WandType}
+import gamedata.item.weapon.{Weapon, WeaponType}
+import gamedata.item.{weapon, _}
 import org.scalatest.EitherValues
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
@@ -23,11 +29,11 @@ class ItemTest extends AnyFlatSpec with Matchers with EitherValues {
   }
 
   "identified arrows" should "be recognised as identified arrows" in {
-    Item.parse("31 +0,+0 arrows") should be(Right(Weapon(31, WeaponType.ARROW, +0, +0)))
+    Item.parse("31 +0,+0 arrows") should be(Right(weapon.Weapon(31, WeaponType.ARROW, +0, +0)))
   }
 
   "unidentified arrows" should "be recognised as unidentified arrows" in {
-    Item.parse("31 arrows") should be(Right(Weapon(31, WeaponType.ARROW)))
+    Item.parse("31 arrows") should be(Right(weapon.Weapon(31, WeaponType.ARROW)))
   }
 
   "a stibotantalite ring" should "be recognised as a stibotantalite ring" in {

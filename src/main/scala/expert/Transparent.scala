@@ -23,20 +23,20 @@ class Transparent(view: IView) extends Expert {
                case 'n' => Right(Command.DOWNRIGHT)
                case 'q' => for {
                  slot <- getItem
-               } yield inventory.items.get(slot) match {
+               } yield inventory.item.get(slot) match {
                  case Some(p: Potion) => Command.Quaff(slot, p)
                  case _ => return Left(s"Invalid potion: $slot")
                }
                case 'r' => for {
                  slot <- getItem
-               } yield inventory.items.get(slot) match {
+               } yield inventory.item.get(slot) match {
                  case Some(s: Scroll) => Command.Read(slot, s)
                  case _ => return Left(s"Invalid scroll: $slot")
                }
                case 't' => for {
                  dir <- getDirection
                  slot <- getItem
-               } yield Command.Throw(dir, slot, inventory.items(slot))
+               } yield Command.Throw(dir, slot, inventory.item(slot))
                case 'u' => Right(Command.UPRIGHT)
                case 'w' => for (slot <- getItem) yield Command.Wield(slot)
                case 'y' => Right(Command.UPLEFT)

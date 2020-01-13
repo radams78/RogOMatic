@@ -1,7 +1,9 @@
 package mock
 
 import gamedata._
-import gamedata.items._
+import gamedata.item.armor.{Armor, ArmorType}
+import gamedata.item.weapon.{Weapon, WeaponType}
+import gamedata.item.{weapon, _}
 
 object ZeroMoveGame {
   val firstScreen: String =
@@ -91,8 +93,8 @@ object ZeroMoveGame {
       Slot.A -> Food(1),
       Slot.B -> Armor(ArmorType.RING_MAIL, +1),
       Slot.C -> Weapon(WeaponType.MACE, +1, +1),
-      Slot.D -> Weapon(WeaponType.SHORT_BOW, +1, +0),
-      Slot.E -> Weapon(31, WeaponType.ARROW, +0, +0)
+      Slot.D -> weapon.Weapon(WeaponType.SHORT_BOW, +1, +0),
+      Slot.E -> weapon.Weapon(31, WeaponType.ARROW, +0, +0)
     ),
     wearing = Some(Slot.B),
     wielding = Some(Slot.C)

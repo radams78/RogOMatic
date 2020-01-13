@@ -1,9 +1,9 @@
-package gamedata.items
+package gamedata.item.magic.potion
 
 import domain.Domain
-import gamedata.items.Colour.Colour
-import gamedata.items.PotionPower.PotionPower
-
+import gamedata.item.StackableMagicItemType
+import gamedata.item.magic.potion.Colour.Colour
+import gamedata.item.magic.potion.PotionPower.PotionPower
 
 
 object PotionType extends StackableMagicItemType {

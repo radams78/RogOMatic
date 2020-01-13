@@ -1,7 +1,9 @@
 package unit
 
 import gamedata._
-import gamedata.items._
+import gamedata.item.armor.{Armor, ArmorType}
+import gamedata.item.weapon.{Weapon, WeaponType}
+import gamedata.item.{weapon, _}
 import org.scalatest.EitherValues
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
@@ -41,8 +43,8 @@ class pInventoryTest extends AnyFlatSpec with Matchers with EitherValues {
         Slot.A -> Food(1),
         Slot.B -> Armor(ArmorType.RING_MAIL, +1),
         Slot.C -> Weapon(WeaponType.MACE, +1, +1),
-        Slot.D -> Weapon(WeaponType.SHORT_BOW, +1, +0),
-        Slot.E -> Weapon(31, WeaponType.ARROW, +0, +0)
+        Slot.D -> weapon.Weapon(WeaponType.SHORT_BOW, +1, +0),
+        Slot.E -> weapon.Weapon(31, WeaponType.ARROW, +0, +0)
       ),
       wearing = Some(Slot.B),
       wielding = Some(Slot.C)

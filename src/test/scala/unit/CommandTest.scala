@@ -1,7 +1,7 @@
 package unit
 
-import gamedata.items.Scroll._
-import gamedata.items.{Scroll, ScrollPower}
+import gamedata.item.magic.scroll.Scroll._
+import gamedata.item.magic.scroll.{Scroll, ScrollPower}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import rogue.Command

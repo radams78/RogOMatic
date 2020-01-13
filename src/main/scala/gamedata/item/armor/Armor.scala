@@ -1,8 +1,8 @@
-package gamedata.items
+package gamedata.item.armor
 
 import domain.Domain._
-import gamedata.items
-import gamedata.items.ArmorType.ArmorType
+import gamedata.item.armor.ArmorType.ArmorType
+import gamedata.item.{Bonus, Item, armor}
 
 /** A suit of armor */
 trait Armor extends Item
@@ -19,7 +19,7 @@ case class IdentifiedArmor(armorType: ArmorType, bonus: Bonus) extends Armor {
     case UnidentifiedArmor(thatArmorType) => for {
       inferredAmorType <- armorType.merge(thatArmorType)
     } yield IdentifiedArmor(inferredAmorType, bonus)
-    case _ => Left(s"Incompatible items: $this and $that")
+    case _ => Left(s"Incompatible item: $this and $that")
   }
 }
 
@@ -30,11 +30,11 @@ case class UnidentifiedArmor(armorType: ArmorType) extends Armor {
   override def merge(that: Item): Either[String, Item] = that match {
     case IdentifiedArmor(thatArmorType, thatBonus) => for {
       inferredArmorType <- armorType.merge(thatArmorType)
-    } yield items.IdentifiedArmor(inferredArmorType, thatBonus)
+    } yield armor.IdentifiedArmor(inferredArmorType, thatBonus)
     case UnidentifiedArmor(thatArmorType) => for {
       inferredArmorType <- armorType.merge(thatArmorType)
     } yield UnidentifiedArmor(inferredArmorType)
-    case _ => Left(s"Incompatible items: $this and $that")
+    case _ => Left(s"Incompatible item: $this and $that")
   }
 }
 

@@ -1,4 +1,4 @@
-package gamedata.items
+package gamedata.item.magic.wand
 
 import domain.Domain
 import gamedata.ParsableEnum

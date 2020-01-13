@@ -1,7 +1,8 @@
 package rogue
 
 import expert.pGameState
-import gamedata.items.{Potion, PotionPower, Scroll, ScrollPower}
+import gamedata.item.magic.potion.{Potion, PotionPower}
+import gamedata.item.magic.scroll.{Scroll, ScrollPower}
 
 import scala.util.matching.Regex
 

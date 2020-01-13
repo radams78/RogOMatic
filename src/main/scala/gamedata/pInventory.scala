@@ -2,7 +2,7 @@ package gamedata
 
 import domain.Domain
 import domain.Domain._
-import gamedata.items.Item
+import gamedata.item.Item
 
 import scala.util.matching.UnanchoredRegex
 
@@ -10,10 +10,10 @@ import scala.util.matching.UnanchoredRegex
 /** Partial information about the PC's inventory 
  *
  * @param items - Map giving the contents of each inventory slot
- *              If items(s) is:
+ *              If item(s) is:
  *  - None then slot s is empty
  *  - Some(i) then slot s contains i
- *  - If ! items.keys.contains(s) then it is unknown whether slot s is empty or not */
+ *  - If ! item.keys.contains(s) then it is unknown whether slot s is empty or not */
 case class pInventory(items: Map[Slot, Option[Item]],
                       wearing: pOption[Slot],
                       wielding: pOption[Slot])

@@ -1,4 +1,4 @@
-package gamedata.items
+package gamedata.item.magic.scroll
 
 import domain.Domain
 import gamedata.ParsableEnum
