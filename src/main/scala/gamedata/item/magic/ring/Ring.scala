@@ -3,6 +3,7 @@ package gamedata.item.magic.ring
 import domain.Domain
 import domain.Domain._
 import gamedata.item.magic.ring.Gem.Gem
+import gamedata.item.magic.ring.RingPower.RingPower
 import gamedata.item.{Item, UnstackableMagicItemType}
 
 /** A ring */
