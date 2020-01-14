@@ -4,10 +4,10 @@ import gamedata.ParsableEnum
 
 /** The two types of wand-like object in Rogue */
 object WandShape extends ParsableEnum {
-  type WandType = Value
+  type WandShape = Value
   override val name: String = "wand type"
-  val STAFF: WandType = Val("staff")
-  val WAND: WandType = Val("wand")
+  val STAFF: WandShape = Val("staff")
+  val WAND: WandShape = Val("wand")
 
   protected case class Val(override val name: String) extends super.Val(name)
 

@@ -4,7 +4,7 @@ import domain.Domain
 import domain.Domain._
 import gamedata.item.magic.wand.Material.Material
 import gamedata.item.magic.wand.WandPower.WandPower
-import gamedata.item.magic.wand.WandShape.WandType
+import gamedata.item.magic.wand.WandShape.WandShape
 import gamedata.item.{Item, MagicItemType}
 
 /** A wand or staff */
@@ -18,7 +18,7 @@ object WandType extends MagicItemType {
   override implicit def powerDomain: Domain[WandPower] = WandPower.domain
 }
 
-case class Wand(wandShape: WandType, material: Material) extends Item {
+case class Wand(wandShape: WandShape, material: Material) extends Item {
   override def merge(that: Item): Either[String, Item] = that match {
     case Wand(thatWandType, thatMaterial) => for {
       inferredWandType <- wandShape.merge(thatWandType)
