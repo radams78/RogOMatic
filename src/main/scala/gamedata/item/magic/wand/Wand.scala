@@ -18,14 +18,14 @@ object WandType extends MagicItemType {
   override implicit def powerDomain: Domain[WandPower] = WandPower.domain
 }
 
-case class Wand(wandType: WandType, material: Material) extends Item {
+case class Wand(wandShape: WandType, material: Material) extends Item {
   override def merge(that: Item): Either[String, Item] = that match {
     case Wand(thatWandType, thatMaterial) => for {
-      inferredWandType <- wandType.merge(thatWandType)
+      inferredWandType <- wandShape.merge(thatWandType)
       inferredMaterial <- material.merge(thatMaterial)
     } yield Wand(inferredWandType, inferredMaterial)
     case _ => Left(s"Incompatible item: $this and $that")
   }
 
-  override def toString: String = s"a $material $wandType"
+  override def toString: String = s"a $material $wandShape"
 }
