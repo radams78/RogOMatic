@@ -19,6 +19,16 @@ object WandType extends MagicItemType {
 }
 
 case class Wand(wandShape: Option[WandShape], material: Option[Material], power: Option[WandPower]) extends WandType.MagicItem {
+  override def toString: String = "a " +
+    (material match {
+      case Some(m) => s"$m "
+      case None => ""
+    }) + wandShape.toString +
+    (power match {
+      case Some(p) => s" of $p"
+      case None => ""
+    })
+  
   override def quantity: Option[Int] = Some(1)
 
   override def attribute: Option[Material] = material
