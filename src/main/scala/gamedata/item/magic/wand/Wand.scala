@@ -2,10 +2,10 @@ package gamedata.item.magic.wand
 
 import domain.Domain
 import domain.Domain._
+import gamedata.item.MagicItemType
 import gamedata.item.magic.wand.Material.Material
 import gamedata.item.magic.wand.WandPower.WandPower
 import gamedata.item.magic.wand.WandShape.WandShape
-import gamedata.item.{Item, MagicItemType}
 
 /** A wand or staff */
 object WandType extends MagicItemType {
@@ -18,14 +18,20 @@ object WandType extends MagicItemType {
   override implicit def powerDomain: Domain[WandPower] = WandPower.domain
 }
 
-case class Wand(wandShape: WandShape, material: Material) extends Item {
-  override def merge(that: Item): Either[String, Item] = that match {
-    case Wand(thatWandType, thatMaterial) => for {
-      inferredWandType <- wandShape.merge(thatWandType)
-      inferredMaterial <- material.merge(thatMaterial)
-    } yield Wand(inferredWandType, inferredMaterial)
-    case _ => Left(s"Incompatible item: $this and $that")
-  }
+case class Wand(wandShape: Option[WandShape], material: Option[Material], power: Option[WandPower]) extends WandType.MagicItem {
+  override def quantity: Option[Int] = Some(1)
 
-  override def toString: String = s"a $material $wandShape"
+  override def attribute: Option[Material] = material
+
+  override def merge(that: WandType.MagicItem): Either[String, WandType.MagicItem] = that match {
+    case Wand(thatWandShape, thatMaterial, thatPower) => for {
+      inferredWandType <- wandShape.merge(thatWandShape)
+      inferredMaterial <- material.merge(thatMaterial)
+      inferredPower <- power.merge(thatPower)
+    } yield Wand(inferredWandType, inferredMaterial, inferredPower)
+  }
+}
+
+object Wand {
+  def apply(wandShape: WandShape, material: Material): Wand = Wand(Some(wandShape), Some(material), None)
 }
