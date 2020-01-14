@@ -4,7 +4,7 @@ import gamedata._
 import gamedata.item.armor.{Armor, ArmorType}
 import gamedata.item.magic.scroll.Scroll
 import gamedata.item.magic.wand
-import gamedata.item.magic.wand.{Material, Wand, WandType}
+import gamedata.item.magic.wand.{Material, Wand, WandShape}
 import gamedata.item.weapon.{Missile, Weapon, WeaponType, WieldableType}
 import gamedata.item.{weapon, _}
 
@@ -72,7 +72,7 @@ object TestGame {
       Slot.E -> Missile(35, WeaponType.ARROW, +0, +0),
       Slot.F -> Scroll(1, "coph rech"),
       Slot.G -> Armor(ArmorType.SCALE_MAIL),
-      Slot.H -> wand.Wand(WandType.STAFF, Material.REDWOOD),
+      Slot.H -> wand.Wand(WandShape.STAFF, Material.REDWOOD),
       Slot.I -> weapon.Missile(7, WeaponType.ARROW)
     ),
     wearing = Some(Slot.B),
@@ -222,7 +222,7 @@ object TestGame {
       Slot.D -> weapon.Weapon(WeaponType.SHORT_BOW, +1, +0),
       Slot.E -> weapon.Missile(35, WeaponType.ARROW, +0, +0),
       Slot.G -> Armor(ArmorType.SCALE_MAIL),
-      Slot.H -> Wand(WandType.STAFF, Material.REDWOOD),
+      Slot.H -> Wand(WandShape.STAFF, Material.REDWOOD),
       Slot.I -> weapon.Missile(7, WeaponType.ARROW)
     ),
     wearing = Some(Slot.B),

@@ -5,7 +5,7 @@ import gamedata.item.armor.{Armor, ArmorType}
 import gamedata.item.magic.potion.{Colour, Potion}
 import gamedata.item.magic.ring.{Gem, Ring}
 import gamedata.item.magic.scroll.Scroll
-import gamedata.item.magic.wand.{Material, Wand, WandType}
+import gamedata.item.magic.wand.{Material, Wand, WandShape}
 import gamedata.item.weapon.{Missile, MissileType, Weapon, WeaponType}
 import gamedata.{Fact, ProvidesKnowledge}
 
@@ -65,7 +65,7 @@ object Item {
     case potionRegex(colour) => for (c <- Colour.parse(colour)) yield Potion(1, c)
     case scrollRegex(title) => Right(Scroll(1, title))
     case wandRegex(material, wandType) => for {
-      wt <- WandType.parse(wandType)
+      wt <- WandShape.parse(wandType)
       m <- Material.parse(material)
     } yield Wand(wt, m)
     case description => for (at <- ArmorType.parse(description)) yield Armor(at)

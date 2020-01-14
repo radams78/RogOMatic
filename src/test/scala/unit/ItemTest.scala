@@ -4,7 +4,7 @@ import gamedata.item.armor.{Armor, ArmorType}
 import gamedata.item.magic.potion.{Colour, Potion}
 import gamedata.item.magic.ring.{Gem, Ring}
 import gamedata.item.magic.scroll.Scroll
-import gamedata.item.magic.wand.{Material, Wand, WandType}
+import gamedata.item.magic.wand.{Material, Wand, WandShape}
 import gamedata.item.weapon.{Weapon, WeaponType, WieldableType}
 import gamedata.item.{weapon, _}
 import org.scalatest.EitherValues
@@ -49,7 +49,7 @@ class ItemTest extends AnyFlatSpec with Matchers with EitherValues {
   }
 
   "a redwood staff" should "be recognised as a redwood staff" in {
-    Item.parse("a redwood staff") should be(Right(Wand(WandType.STAFF, Material.REDWOOD)))
+    Item.parse("a redwood staff") should be(Right(Wand(WandShape.STAFF, Material.REDWOOD)))
   }
 
 
