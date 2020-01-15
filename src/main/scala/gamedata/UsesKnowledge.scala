@@ -2,13 +2,17 @@ package gamedata
 
 import gamedata.ProvidesKnowledge._
 
+/** Trait for domains for which we can take a [[Fact]] and use it to infer more information about the object */
 trait UsesKnowledge[T] {
+  /** Returns either the object with the information from fact incorporated, or an error message if the information
+   * in self and the information in fact are contradictory. */
   def infer(self: T, fact: Fact): Either[String, T]
 }
 
 object UsesKnowledge {
 
   implicit final class UsesKnowledgeOps[T](self: T)(implicit s: UsesKnowledge[T]) {
+    /** Infer all the information from all the facts provided by the object providesKnowledge */
     def infer[S: ProvidesKnowledge](providesKnowledge: S): Either[String, T] =
       providesKnowledge.implications.foldLeft[Either[String, T]](
         Right(self)
