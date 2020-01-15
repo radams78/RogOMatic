@@ -4,7 +4,7 @@ import domain.pLift
 import expert.{Transparent, pGameState}
 import gamedata.item.magic.scroll.Scroll._
 import gamedata.item.magic.scroll.ScrollPower
-import gamedata.pInventory
+import gamedata.{Fact, pInventory}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import rogue.Command
@@ -32,8 +32,8 @@ class TransparentTest extends AnyFlatSpec with Matchers {
 
     override def displayGameOver(finalScore: Int): Unit = ()
 
-    override def displayScrollKnowledge(sk: ScrollKnowledge): Unit = {
-      sk should be(ScrollKnowledge("abcde", ScrollPower.AGGRAVATE_MONSTER))
+    override def displayFact(fact: Fact): Unit = {
+      fact should be(ScrollKnowledge("abcde", ScrollPower.AGGRAVATE_MONSTER))
       _displayedPower = true
     }
   }

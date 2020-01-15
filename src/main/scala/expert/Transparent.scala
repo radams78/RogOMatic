@@ -1,5 +1,6 @@
 package expert
 
+import gamedata.ProvidesKnowledge._
 import gamedata._
 import rogue._
 import view.IView
@@ -88,6 +89,6 @@ class Transparent(view: IView) extends Expert {
     }
     val inventory: pInventory = gameState.inventory
     view.displayInventory(inventory)
-    for (sk <- gameState.scrollKnowledge) view.displayScrollKnowledge(sk)
+    for (fact <- gameState.implications) view.displayFact(fact)
   }
 }

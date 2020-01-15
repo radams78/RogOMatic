@@ -1,7 +1,6 @@
 package acceptance
 
 import gamedata._
-import gamedata.item.magic.scroll.Scroll.{ScrollKnowledge, _}
 import gamedata.item.magic.scroll.ScrollPower
 import gamedata.item.magic.scroll.ScrollPower.ScrollPower
 import mock._
@@ -13,7 +12,7 @@ import rogue._
 import view.IView
 
 class MockUser extends IView with Assertions {
-  override def displayScrollKnowledge(sk: ScrollKnowledge): Unit = state = state.displayPower(sk.title, sk.power) // TODO Tidy up
+  override def displayFact(fact: Fact): Unit = state = state.displayFact(fact)
 
   private var state: MockUserState = Initial()
 
@@ -34,6 +33,8 @@ class MockUser extends IView with Assertions {
   }
 
   private trait MockUserState {
+    def displayFact(fact: Fact): MockUserState = fail(s"Unexpected fact: $fact")
+
     val finished: Boolean = false
 
     def displayError(err: String): MockUserState = fail(s"ERROR: $err")

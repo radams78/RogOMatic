@@ -4,16 +4,11 @@ import domain.Domain._
 import domain.{Domain, pLift}
 import gamedata.ProvidesKnowledge._
 import gamedata.UsesKnowledge._
-import gamedata.item.magic.scroll.Scroll.ScrollKnowledge
-import gamedata.{Fact, pInventory}
+import gamedata.{Fact, ProvidesKnowledge, pInventory}
 import rogue.Command
 import rogue.Command._
 
 case class pGameState(screen: Option[String], inventory: pInventory, knowledge: Set[Fact], lastCommand: pLift[Option[Command]]) {
-  def scrollKnowledge: Set[ScrollKnowledge] = knowledge.collect({
-    case sk: ScrollKnowledge => sk
-  })
-
   def complete: Either[String, pGameState] = for {
     inferredInventory <- knowledge.foldLeft[Either[String, pInventory]](Right(inventory))({
       case (Left(err), _) => Left(err)
@@ -63,4 +58,15 @@ object pGameState {
     lastCommand <- x.lastCommand.merge(y.lastCommand)
     gs <- pGameState(screen, inventory, x.knowledge.union(y.knowledge), lastCommand).complete
   } yield gs
+
+  implicit def providesKnowledge: ProvidesKnowledge[pGameState] = {
+    case pGameState(screen, inventory, knowledge, lastCommand) =>
+      inventory.implications union
+        knowledge union
+        (lastCommand match {
+          case pLift.UNKNOWN => Set()
+          case pLift.Known(None) => Set()
+          case pLift.Known(Some(command)) => command.implications
+        })
+  }
 }

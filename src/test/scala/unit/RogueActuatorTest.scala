@@ -82,6 +82,6 @@ class RogueActuatorTest extends AnyFlatSpec with Matchers {
 
   it should "remember scroll powers" in new ReadScroll {
     player.sendCommand(Command.Read(Slot.F, Scroll(1, "coph rech")))
-    recorder.getScrollKnowledge should contain(ScrollKnowledge("coph rech", ScrollPower.REMOVE_CURSE))
+    recorder.knowledge should contain(ScrollKnowledge("coph rech", ScrollPower.REMOVE_CURSE))
   }
 }

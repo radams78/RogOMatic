@@ -1,12 +1,11 @@
 package view
 
-import gamedata.item.magic.scroll.Scroll.ScrollKnowledge
-import gamedata.pInventory
+import gamedata.{Fact, pInventory}
 import rogue.Command
 
 /** Interface for the IO view. The implementations should be Humble Object */
 trait IView {
-  def displayScrollKnowledge(sk: ScrollKnowledge): Unit
+  def displayFact(fact: Fact): Unit
 
   /** Get a command from the user */
   def getCommand: Command

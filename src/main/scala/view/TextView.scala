@@ -1,8 +1,7 @@
 package view
 
 import domain.pLift
-import gamedata.item.magic.scroll.Scroll.{ScrollKnowledge, _}
-import gamedata.{Direction, Slot, pInventory}
+import gamedata.{Direction, Fact, Slot, pInventory}
 import rogue.Command
 
 import scala.io.StdIn
@@ -105,5 +104,5 @@ class TextView extends IView {
     }
   }
 
-  override def displayScrollKnowledge(sk: ScrollKnowledge): Unit = println(s"Scroll ${sk.title}: ${sk.power}")
+  override def displayFact(fact: Fact): Unit = println(fact)
 }

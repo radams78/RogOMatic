@@ -2,8 +2,7 @@ package rogue
 
 import domain.Domain._
 import expert.pGameState
-import gamedata.item.magic.scroll.Scroll.ScrollKnowledge
-import gamedata.pInventory
+import gamedata.{Fact, pInventory}
 import rogue.Event.Event
 
 trait IRecorder {
@@ -14,9 +13,13 @@ trait IRecorder {
   def getScore: Int
 
   def gameOver: Boolean
+
+  def knowledge: Set[Fact]
 }
 
 class Recorder extends IRecorder {
+  def knowledge: Set[Fact] = _gameState.knowledge
+
   private var _gameOver: Boolean = false
   private var _gameState: pGameState = pGameState()
   private var inventory: pInventory = _
@@ -24,8 +27,6 @@ class Recorder extends IRecorder {
   private var screen: String = ""
 
   def gameState: pGameState = _gameState
-
-  def getScrollKnowledge: Set[ScrollKnowledge] = gameState.scrollKnowledge
 
   def getInventory: pInventory = inventory
 
