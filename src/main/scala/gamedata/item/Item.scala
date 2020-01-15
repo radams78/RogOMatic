@@ -14,13 +14,15 @@ import scala.util.matching.Regex
 /** An item that the PC can pick up 
  *
  * Contract:
- * - implications is monotone */
-trait Item { // TODO
-  def infer(fact: Fact): Either[String, Item] = Right(this) // TODO
+ * - implications is monotone
+ * - x <= x.infer(fact)
+ * - if x.impliciations contains fact then x.infer(fact) == x */
+trait Item {
+  def infer(fact: Fact): Either[String, Item] = Right(this)
 
   def merge(that: Item): Either[String, Item]
 
-  def implications: Set[Fact] = Set() // TODO
+  def implications: Set[Fact] = Set()
 }
 
 object Item {

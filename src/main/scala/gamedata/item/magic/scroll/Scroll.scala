@@ -1,7 +1,7 @@
 package gamedata.item.magic.scroll
 
 import domain.Domain
-import gamedata.item.StackableMagicItemType
+import gamedata.item.magic.StackableMagicItemType
 import gamedata.item.magic.scroll.ScrollPower.ScrollPower
 
 /** The magic scrolls */

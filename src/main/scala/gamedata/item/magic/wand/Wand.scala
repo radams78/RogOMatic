@@ -2,7 +2,7 @@ package gamedata.item.magic.wand
 
 import domain.Domain
 import domain.Domain._
-import gamedata.item.MagicItemType
+import gamedata.item.magic.MagicItemType
 import gamedata.item.magic.wand.Material.Material
 import gamedata.item.magic.wand.WandPower.WandPower
 import gamedata.item.magic.wand.WandShape.WandShape
@@ -40,6 +40,8 @@ case class Wand(wandShape: Option[WandShape], material: Option[Material], power:
       inferredPower <- power.merge(thatPower)
     } yield Wand(inferredWandType, inferredMaterial, inferredPower)
   }
+
+  override def build(attribute: Material, power: WandPower): Wand = Wand(None, Some(attribute), Some(power))
 }
 
 object Wand {

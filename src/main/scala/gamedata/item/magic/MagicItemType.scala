@@ -1,7 +1,8 @@
-package gamedata.item
+package gamedata.item.magic
 
 import domain.Domain
 import domain.Domain._
+import gamedata.item.Item
 import gamedata.{Fact, UsesKnowledge}
 
 trait MagicItemType {
@@ -13,6 +14,12 @@ trait MagicItemType {
 
   implicit def powerDomain: Domain[Power]
 
+  /** Contract:
+   * - implications is monotone
+   * - x <= x.infer(fact)
+   * - if x.implications contains fact then x.infer(fact) == x 
+   * - build(a, p).attribute == Some(a) 
+   * - build(a, p).power == Some(p) */
   trait MagicItem extends Item {
     def quantity: Option[Int]
 
@@ -21,6 +28,8 @@ trait MagicItemType {
     def power: Option[Power]
 
     def merge(that: MagicItem): Either[String, MagicItem]
+
+    def build(attribute: Attribute, power: Power): MagicItem
 
     override def merge(that: Item): Either[String, Item] = that match {
       case magicItem: MagicItem => merge(magicItem)
@@ -31,6 +40,12 @@ trait MagicItemType {
     override def implications: Set[Fact] = (attribute, power) match {
       case (Some(a), Some(p)) => Set(MagicItemKnowledge(a, p))
       case _ => Set()
+    }
+
+    override def infer(fact: Fact): Either[String, Item] = fact match {
+      case MagicItemKnowledge(_attribute, _power) if attribute.contains(_attribute) || power.contains(_power) =>
+        merge(build(_attribute, _power))
+      case _ => Right(this)
     }
   }
 
@@ -43,8 +58,6 @@ trait StackableMagicItemType extends MagicItemType {
 
   def plural: String
 
-  /** Contract: 
-   * - implications is monotone */
   case class StackableMagicItem(quantity: Option[Int], attribute: Option[Attribute], power: Option[Power]) extends MagicItem {
     override def merge(that: MagicItem): Either[String, StackableMagicItem] = that match {
       case StackableMagicItem(thatQuantity, thatAttribute, thatPower) => for {
@@ -68,6 +81,9 @@ trait StackableMagicItemType extends MagicItemType {
           case Some(p) => " " + p.toString
           case None => ""
         })
+
+    override def build(attribute: Attribute, power: Power): MagicItem =
+      StackableMagicItem(None, Some(attribute), Some(power))
   }
 
   object StackableMagicItem {

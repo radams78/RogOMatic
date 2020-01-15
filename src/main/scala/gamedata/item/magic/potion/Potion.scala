@@ -1,7 +1,7 @@
 package gamedata.item.magic.potion
 
 import domain.Domain
-import gamedata.item.StackableMagicItemType
+import gamedata.item.magic.StackableMagicItemType
 import gamedata.item.magic.potion.Colour.Colour
 import gamedata.item.magic.potion.PotionPower.PotionPower
 

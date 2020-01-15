@@ -2,7 +2,7 @@ package gamedata.item.magic.ring
 
 import domain.Domain
 import domain.Domain._
-import gamedata.item.MagicItemType
+import gamedata.item.magic.MagicItemType
 import gamedata.item.magic.ring.Gem.Gem
 import gamedata.item.magic.ring.RingPower.RingPower
 import gamedata.{Fact, UsesKnowledge}
@@ -46,6 +46,8 @@ case class Ring(gem: Option[Gem], power: Option[RingPower]) extends RingType.Mag
   override def quantity: Option[Int] = Some(1)
 
   override def attribute: Option[Gem] = gem
+
+  override def build(attribute: Gem, power: RingPower): Ring = Ring(Some(attribute), Some(power))
 }
 
 object Ring {
