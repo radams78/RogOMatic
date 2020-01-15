@@ -1,5 +1,6 @@
 package view
 
+import domain.pLift
 import gamedata.item.magic.scroll.Scroll.{ScrollKnowledge, _}
 import gamedata.{Direction, Slot, pInventory}
 import rogue.Command
@@ -12,8 +13,16 @@ class TextView extends IView {
 
   override def displayInventory(inventory: pInventory): Unit = {
     for ((slot, item) <- inventory.items.toList.sortBy(_._1)) println(s"$slot) $item")
-    for (slot <- inventory.wielding) println(s"WEAPON: $slot) ${inventory.items(slot)}")
-    for (slot <- inventory.wearing) println(s"ARMOR: $slot) ${inventory.items(slot)}")
+    inventory.wielding match {
+      case pLift.UNKNOWN => println("Weapon: UNKNOWN")
+      case pLift.Known(None) => ()
+      case pLift.Known(Some(weapon)) => println(s"Weapon: $weapon")
+    }
+    inventory.wearing match {
+      case pLift.UNKNOWN => println("Armor: UNKNOWN")
+      case pLift.Known(None) => ()
+      case pLift.Known(Some(armor)) => println(s"Armor: $armor")
+    }
   }
 
   override def displayError(s: String): Unit = println(s"ERROR: $s")

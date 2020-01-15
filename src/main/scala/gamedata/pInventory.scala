@@ -1,7 +1,7 @@
 package gamedata
 
-import domain.Domain
 import domain.Domain._
+import domain.{Domain, pLift}
 import gamedata.item.Item
 
 import scala.util.matching.UnanchoredRegex
@@ -15,8 +15,8 @@ import scala.util.matching.UnanchoredRegex
  *  - Some(i) then slot s contains i
  *  - If ! item.keys.contains(s) then it is unknown whether slot s is empty or not */
 case class pInventory(items: Map[Slot, Option[Item]],
-                      wearing: pOption[Slot],
-                      wielding: pOption[Slot])
+                      wearing: pLift[Option[Slot]],
+                      wielding: pLift[Option[Slot]])
 
 object pInventory {
   implicit def providesKnowledge: ProvidesKnowledge[pInventory] = (self: pInventory) => self.items.values.flatMap((oi: Option[Item]) => oi.toSet.flatMap((i: Item) => i.implications)).toSet
@@ -32,13 +32,13 @@ object pInventory {
     for (__items <- _items) yield pInventory(__items, self.wearing, self.wielding)
   }
 
-  def apply(): pInventory = new pInventory(Map(), pOption.UNKNOWN, pOption.UNKNOWN)
+  def apply(): pInventory = new pInventory(Map(), pLift.UNKNOWN, pLift.UNKNOWN)
 
   def apply(items: Map[Slot, Item], wearing: Option[Slot], wielding: Option[Slot]): pInventory =
     new pInventory(
       items.view.mapValues(Some(_)).toMap ++ (for (s <- Slot.ALL if !items.contains(s)) yield s -> None),
-      pOption.known(wearing),
-      pOption.known(wielding)
+      pLift.Known(wearing),
+      pLift.Known(wielding)
     )
 
   private val wearingRegex: UnanchoredRegex = """(\w)\) (.*) being worn""".r.unanchored
@@ -69,12 +69,12 @@ object pInventory {
     for (ii <- items) yield
       new pInventory(
         (for (slot <- Slot.ALL) yield slot -> ii.get(slot)).toMap,
-        pOption.known(lines.collectFirst({ case wearingRegex(slot, _) => Slot.parse(slot) match {
+        pLift.Known(lines.collectFirst({ case wearingRegex(slot, _) => Slot.parse(slot) match {
           case Left(err) => return Left(err)
           case Right(s) => s
         }
         })),
-        pOption.known(lines.collectFirst({ case wieldingRegex(slot, _) => Slot.parse(slot) match {
+        pLift.Known(lines.collectFirst({ case wieldingRegex(slot, _) => Slot.parse(slot) match {
           case Left(err) => return Left(err)
           case Right(s) => s
         }

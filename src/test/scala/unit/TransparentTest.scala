@@ -1,9 +1,10 @@
 package unit
 
+import domain.pLift
 import expert.{Transparent, pGameState}
 import gamedata.item.magic.scroll.Scroll._
 import gamedata.item.magic.scroll.ScrollPower
-import gamedata.{pInventory, pOption}
+import gamedata.pInventory
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import rogue.Command
@@ -12,7 +13,7 @@ import view.IView
 class TransparentTest extends AnyFlatSpec with Matchers {
   "The transparent expert" should "report the known scroll powers to the user" in {
     val transparent: Transparent = new Transparent(MockView)
-    transparent.displayAll(pGameState(Some(""), pInventory(), Set(ScrollKnowledge("abcde", ScrollPower.AGGRAVATE_MONSTER)), pOption.UNKNOWN))
+    transparent.displayAll(pGameState(Some(""), pInventory(), Set(ScrollKnowledge("abcde", ScrollPower.AGGRAVATE_MONSTER)), pLift.UNKNOWN))
     assert(MockView.displayedPower)
   }
 

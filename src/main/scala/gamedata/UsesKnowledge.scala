@@ -18,9 +18,8 @@ object UsesKnowledge {
       })
   }
 
-  implicit def pOptionUsesKnowledge[T](implicit s: UsesKnowledge[T]): UsesKnowledge[pOption[T]] = (self: pOption[T], fact: Fact) => self match {
-    case pOption.UNKNOWN => Right(pOption.UNKNOWN)
-    case pOption.NONE => Right(pOption.NONE)
-    case pOption.Some(t) => for (tt <- t.infer(fact)) yield pOption.Some(tt)
+  implicit def optionUsesKnowledge[T](implicit s: UsesKnowledge[T]): UsesKnowledge[Option[T]] = (self: Option[T], fact: Fact) => self match {
+    case None => Right(None)
+    case Some(t) => for (newT <- t.infer(fact)) yield Some(newT)
   }
 }

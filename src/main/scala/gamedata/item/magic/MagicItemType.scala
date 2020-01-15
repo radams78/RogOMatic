@@ -5,24 +5,33 @@ import domain.Domain._
 import gamedata.item.Item
 import gamedata.{Fact, UsesKnowledge}
 
+/** A type of item that has a magic power, and an attribute (e.g. colour, gem, material). When the item is first found,
+ * we see only its attribute. When we learn what its power is, we record this [[Fact]] that that attribute is mapped to
+ * that power. */
 trait MagicItemType {
+  /** The type of attributes for these magic items */
   type Attribute
 
   implicit def attributeDomain: Domain[Attribute]
 
+  /** The type of powers that these magic items can have */
   type Power
 
   implicit def powerDomain: Domain[Power]
 
-  /** Contract:
+  /** There should be a class whose objects represent the stacks of magic items of this type. 
+   * This class should extend this trait.
+   *
+   * Contract:
    * - implications is monotone
    * - x <= x.infer(fact)
    * - if x.implications contains fact then x.infer(fact) == x 
    * - build(a, p).attribute == Some(a) 
    * - build(a, p).power == Some(p) */
   trait MagicItem extends Item {
+    /** Quantity of items in the stack, if known */
     def quantity: Option[Int]
-
+    
     def attribute: Option[Attribute]
 
     def power: Option[Power]
