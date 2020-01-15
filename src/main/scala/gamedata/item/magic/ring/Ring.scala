@@ -53,11 +53,12 @@ object Ring {
 
   implicit def domain: Domain[Ring] = (x: Ring, y: Ring) => x.merge(y)
 
-  implicit def usesKnowledge: UsesKnowledge[Ring] = (self: Ring, fact: Fact) => (fact, self.attribute, self.power) match {
-    case (RingType.MagicItemKnowledge(_a, _p), Some(a), Some(p)) if (a == _a && p != _p) || (a != _a && p == _p) =>
-      Left(s"Incompatible information: $a -> $p and ${_a} -> ${_p}")
-    case (RingType.MagicItemKnowledge(_a, _p: RingPower), Some(a), None) if a == _a => Right(Ring(Some(a), Some(_p)))
-    case (RingType.MagicItemKnowledge(_a: Gem, _p), None, Some(p)) if p == _p => Right(Ring(Some(_a), Some(p)))
-    case _ => Right(self)
-  }
+  implicit def usesKnowledge: UsesKnowledge[Ring] =
+    (self: Ring, fact: Fact) => (fact, self.attribute, self.power) match {
+      case (RingType.MagicItemKnowledge(_a, _p), Some(a), Some(p)) if (a == _a && p != _p) || (a != _a && p == _p) =>
+        Left(s"Incompatible information: $a -> $p and ${_a} -> ${_p}")
+      case (RingType.MagicItemKnowledge(_a, _p: RingPower), Some(a), None) if a == _a => Right(Ring(Some(a), Some(_p)))
+      case (RingType.MagicItemKnowledge(_a: Gem, _p), None, Some(p)) if p == _p => Right(Ring(Some(_a), Some(p)))
+      case _ => Right(self)
+    }
 }
