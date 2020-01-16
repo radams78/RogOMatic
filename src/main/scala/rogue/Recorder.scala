@@ -5,6 +5,7 @@ import expert.pGameState
 import gamedata.{Fact, pInventory}
 import rogue.Event.Event
 
+/** Interface for recorder that keeps track of current [[pGameState]] */
 trait IRecorder {
   def getInventory: pInventory
 
