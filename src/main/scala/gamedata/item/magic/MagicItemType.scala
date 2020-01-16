@@ -101,8 +101,8 @@ trait StackableMagicItemType extends MagicItemType {
     implicit def usesKnowledge: UsesKnowledge[StackableMagicItem] = (self: StackableMagicItem, fact: Fact) => (fact, self.attribute, self.power) match {
       case (MagicItemKnowledge(_a, _p), Some(a), Some(p)) if (a == _a && p != _p) || (a != _a && p == _p) =>
         Left(s"Incompatible information: $a -> $p and ${_a} -> ${_p}")
-      case (MagicItemKnowledge(_a, _p: Power), Some(a), None) if a == _a => Right(StackableMagicItem(self.quantity, Some(a), Some(_p)))
-      case (MagicItemKnowledge(_a: Attribute, _p), None, Some(p)) if p == _p => Right(StackableMagicItem(self.quantity, Some(_a), Some(p)))
+      case (MagicItemKnowledge(_a, _p), Some(a), None) if a == _a => Right(StackableMagicItem(self.quantity, Some(a), Some(_p)))
+      case (MagicItemKnowledge(_a, _p), None, Some(p)) if p == _p => Right(StackableMagicItem(self.quantity, Some(_a), Some(p)))
       case _ => Right(self)
     }
   }

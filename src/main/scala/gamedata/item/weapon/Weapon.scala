@@ -2,6 +2,7 @@ package gamedata.item.weapon
 
 import domain.Domain._
 import gamedata.item._
+import gamedata.item.weapon.Missiletype.MissileType
 import gamedata.item.weapon.WieldableType.WieldableType
 
 /** A weapon in the game of Rogue */

@@ -157,18 +157,19 @@ trait MockRogueBuilder {
   def build(mockRogueState: MockRogueState): MockRogueState
 
   /** Display screen and inventoryScreen until command is received, then switch to state (hole) */
-  final case class WaitForCommand(name: String, screen: String, inventoryScreen: String, command: Char) extends MockRogueBuilder {
+  case class WaitForCommand(name: String, screen: String, inventoryScreen: String, command: Char) extends MockRogueBuilder {
     override def build(mockRogueState: MockRogueState): MockRogueState =
       outer.build(MockRogueState.WaitForCommand(name, screen, inventoryScreen, command, mockRogueState).Screen)
   }
 
-  final case class Wait(screen: String, command: Char) extends MockRogueBuilder {
+  case class Wait(screen: String, command: Char) extends MockRogueBuilder {
     override def build(mockRogueState: MockRogueState): MockRogueState =
       outer.build(MockRogueState.Wait(screen, command, mockRogueState))
   }
 
   /** Fill in the hole with a state that displays screen and inventoryScreen */
-  final case class End(name: String, screen: String, inventoryScreen: String)
+  case class Terminal(name: String, screen: String, inventoryScreen: String)
     extends MockRogue(build(MockRogueState.Terminal(name, screen, inventoryScreen).Screen))
 
+  final case object End extends MockRogue(build(MockRogueState.Ended))
 }

@@ -6,7 +6,8 @@ import gamedata.item.magic.potion.{Colour, Potion}
 import gamedata.item.magic.ring.{Gem, Ring}
 import gamedata.item.magic.scroll.Scroll
 import gamedata.item.magic.wand.{Material, Wand, WandShape}
-import gamedata.item.weapon.{Missile, MissileType, Weapon, WeaponType}
+import gamedata.item.weapon.Missiletype.MissileType
+import gamedata.item.weapon.{Missile, Weapon, WeaponType}
 import gamedata.{Fact, ProvidesKnowledge}
 
 import scala.util.matching.Regex

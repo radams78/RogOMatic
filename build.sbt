@@ -13,4 +13,5 @@ libraryDependencies += "org.scalatest" %% "scalatest" % "3.1.0" % "test"
 
 scalacOptions += "-deprecation"
 scalacOptions += "-feature"
+scalacOptions += "-language:implicitConversions"
 scalacOptions += "-unchecked"

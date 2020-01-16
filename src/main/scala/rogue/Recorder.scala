@@ -7,7 +7,6 @@ import gamestate.IRecorder
 import rogue.Event.Event
 
 
-
 class Recorder extends IRecorder {
   def knowledge: Set[Fact] = _gameState.knowledge
 

@@ -29,11 +29,11 @@ object TestGame {
       |                                                      ------------+-
       |                                                      |...*..).....|
       |                                                      +............|
-      |                                                      |.........@..|
+      |                                                      |........H@..|
       |                                                      |............|
       |                                                      --------------
       |
-      |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
+      |Level: 1  Gold: 0      Hp: 2(12)    Str: 16(16) Arm: 4  Exp: 1/0
       |""".stripMargin)
 
   val firstInventoryScreen: String = MockRogue.makeScreen(
@@ -56,11 +56,11 @@ object TestGame {
       |                                                      ------------+-
       |                                                      |...*..).....|
       |                                                      +............|
-      |                                                      |.........@..|
+      |                                                      |........H@..|
       |                                                      |............|
       |                                                      --------------
       |
-      |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
+      |Level: 1  Gold: 0      Hp: 2(12)    Str: 16(16) Arm: 4  Exp: 1/0
       |""".stripMargin)
 
   val firstInventory: pInventory = pInventory(
@@ -99,11 +99,11 @@ object TestGame {
       |                                                      ------------+-
       |                                                      |...*..).....|
       |                                                      +............|
-      |                                                      |..........@.|
+      |                                                      |.........H@.|
       |                                                      |............|
       |                                                      --------------
       |
-      |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
+      |Level: 1  Gold: 0      Hp: 2(12)    Str: 16(16) Arm: 4  Exp: 1/0
       |""".stripMargin)
 
   val secondInventoryScreen: String = MockRogue.makeScreen(
@@ -126,11 +126,11 @@ object TestGame {
       |                                                      ------------+-
       |                                                      |...*..).....|
       |                                                      +............|
-      |                                                      |..........@.|
+      |                                                      |.........H@.|
       |                                                      |............|
       |                                                      --------------
       |
-      |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
+      |Level: 1  Gold: 0      Hp: 2(12)    Str: 16(16) Arm: 4  Exp: 1/0
       |""".stripMargin)
 
   val thirdScreen: String = MockRogue.makeScreen(
@@ -153,11 +153,11 @@ object TestGame {
       |                                                      ------------+-
       |                                                      |...*..).....|
       |                                                      +............|
-      |                                                      |..........@.|
+      |                                                      |.........H@.|
       |                                                      |............|
       |                                                      --------------
       |
-      |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
+      |Level: 1  Gold: 0      Hp: 2(12)   Str: 16(16) Arm: 4  Exp: 1/0
       |""".stripMargin)
 
   val fourthScreen: String = MockRogue.makeScreen(
@@ -180,11 +180,11 @@ object TestGame {
       |                                                      ------------+-
       |                                                      |...*..).....|
       |                                                      +............|
-      |                                                      |..........@.|
+      |                                                      |.........H@.|
       |                                                      |............|
       |                                                      --------------
       |
-      |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
+      |Level: 1  Gold: 0      Hp: 2(12)    Str: 16(16) Arm: 4  Exp: 1/0
       |""".stripMargin)
 
   val fourthInventoryScreen: String = MockRogue.makeScreen(
@@ -207,11 +207,11 @@ object TestGame {
       |                                                      ------------+-
       |                                                      |...*..).....|
       |                                                      +............|
-      |                                                      |..........@.|
+      |                                                      |.........H@.|
       |                                                      |............|
       |                                                      --------------
       |
-      |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
+      |Level: 1  Gold: 0      Hp: 2(12)    Str: 16(16) Arm: 4  Exp: 1/0
       |""".stripMargin)
 
   val fourthInventory: pInventory = pInventory(
@@ -229,10 +229,69 @@ object TestGame {
     wielding = Some(Slot.C)
   )
 
+  val deathScreen: String = MockRogue.makeScreen(
+    """             -more-
+      |
+      |
+      |
+      |                                __---------__
+      |                              _~             ~_
+      |                             /                 \
+      |                            ~                   ~
+      |                           /                     \
+      |                           |    XXXX     XXXX    |
+      |                           |    XXXX     XXXX    |
+      |                           |    XXX       XXX    |
+      |                            \         @         /
+      |                             --\     @@@     /--
+      |                              | |    @@@    | |
+      |                              | |           | |
+      |                              | vvVvvvvvvvVvv |
+      |                              |  ^^^^^^^^^^^  |
+      |                               \_           _/
+      |                                 ~---------~
+      |
+      |                                     robin
+      |                         Killed by a hobgoblin with 0 gold
+      |
+      |""".stripMargin
+  )
+
+  val finalScreen: String = MockRogue.makeScreen(
+    """-more-
+      |
+      |
+      |                              Top  Ten  Rogueists
+      |
+      |
+      |
+      |
+      |Rank   Score   Name
+      |
+      | 1      1224   robin: died of starvation on level 11
+      |
+      |
+      |
+      |
+      |
+      |
+      |
+      |
+      |
+      |
+      |
+      |
+      |
+      |""".stripMargin
+  )
+
   def testGame: MockRogue =
     MockRogue.Start
       .WaitForCommand("testGame state 1", firstScreen, firstInventoryScreen, 'l')
       .WaitForCommand("testGame state 2", secondScreen, secondInventoryScreen, 'r')
       .Wait(thirdScreen, 'f')
-      .End("testGame state 4", fourthScreen, fourthInventoryScreen)
+      .WaitForCommand("testGame state 4", fourthScreen, fourthInventoryScreen, 'h')
+      .Wait(deathScreen, ' ')
+      .Wait(deathScreen, ' ')
+      .End
 }

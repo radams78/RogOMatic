@@ -23,7 +23,7 @@ object Domain {
 
   implicit def stringDomain: Domain[String] = flatDomain
 
-  implicit def mapDomain[K, V](implicit s: Domain[V]): Domain[Map[K, V]] = (x: Map[K, V], y: Map[K, V]) => y.foldLeft[Either[String, Map[K, V]]](Right(x))({ case (maybeMap: Either[String, Map[K, V]], (k: K, v: V)) =>
+  implicit def mapDomain[K, V](implicit s: Domain[V]): Domain[Map[K, V]] = (x: Map[K, V], y: Map[K, V]) => y.foldLeft[Either[String, Map[K, V]]](Right(x))({ case (maybeMap: Either[String, Map[K, V]], (k, v)) =>
     for {
       map <- maybeMap
       vvv <- map.get(k) match {

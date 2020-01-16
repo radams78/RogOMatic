@@ -142,5 +142,5 @@ object MoreGame {
     MockRogue.Build
       .WaitForCommand("moreGame state 1", firstScreen, firstInventoryScreen, 'l')
       .Wait(secondScreen, ' ')
-      .End("moreGame state 3", thirdScreen, thirdInventoryScreen)
+      .Terminal("moreGame state 3", thirdScreen, thirdInventoryScreen)
 }

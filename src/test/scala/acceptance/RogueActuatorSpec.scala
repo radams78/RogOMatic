@@ -117,11 +117,39 @@ class MockUser extends IView with Assertions {
     def apply(): FourthScreen = new FourthScreen(false, false, false)
 
     def apply(displayedScreen: Boolean, displayedInventory: Boolean, displayedPower: Boolean): MockUserState =
-      if (displayedScreen && displayedInventory && displayedPower) {
-        succeed
-        Initial()
-      } else new FourthScreen(displayedScreen, displayedInventory, displayedPower)
+      if (displayedScreen && displayedInventory && displayedPower) THIRD_COMMAND
+      else new FourthScreen(displayedScreen, displayedInventory, displayedPower)
   }
+
+  private object THIRD_COMMAND extends MockUserState {
+    override def getCommand: (Command, MockUserState) = (Command.LEFT, FifthScreen)
+  }
+
+  private class FifthScreen(displayedScreen: Boolean, displayedInventory: Boolean) extends MockUserState {
+    override def getCommand: (Command, MockUserState) = fail(s"Asked for command while\n"
+      + (if (displayedScreen) "" else "screen not displayed")
+      + (if (displayedInventory) "" else "inventory not displayed"))
+
+    override def displayScreen(screen: String): MockUserState =
+      if (screen != TestGame.secondScreen) fail(s"Unexpected screen: $screen")
+      else SecondScreen(displayedScreen = true, displayedInventory = displayedInventory)
+
+    override def displayInventory(inventory: pInventory): MockUserState =
+      if (inventory != TestGame.firstInventory) fail(s"Unexpected inventory: $inventory")
+      else SecondScreen(displayedScreen, displayedInventory = true)
+  }
+
+  private object FifthScreen extends MockUserState {
+    override def displayGameOver(finalScore: Int): MockUserState = {
+      assert(finalScore == 0)
+      FinalState
+    }
+  }
+
+  private object FinalState extends MockUserState {
+    override val finished: Boolean = true
+  }
+
 }
 
 /** Acceptance tests for playing Rogue in transparent mode */
@@ -145,6 +173,7 @@ class RogueActuatorSpec extends AnyFeatureSpec with GivenWhenThen with Matchers 
       Then("the final screen should be displayed")
       And("the final inventory should be displayed")
       And("the scroll power should be remembered")
+      assert(user.finished)
     }
 
     Scenario("User plays a game of Rogue in transparent mode and is killed") {
