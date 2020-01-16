@@ -7,8 +7,6 @@ import org.scalatest.matchers.should.Matchers
 import rogomatic.RogOMatic
 import rogue._
 
-
-
 /** Acceptance tests for playing Rogue in transparent mode */
 class RogueActuatorSpec extends AnyFeatureSpec with GivenWhenThen with Matchers {
 
