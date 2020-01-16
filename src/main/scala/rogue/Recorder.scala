@@ -3,20 +3,10 @@ package rogue
 import domain.Domain._
 import expert.pGameState
 import gamedata.{Fact, pInventory}
+import gamestate.IRecorder
 import rogue.Event.Event
 
-/** Interface for recorder that keeps track of current [[pGameState]] */
-trait IRecorder {
-  def getInventory: pInventory
 
-  def getScreen: String
-
-  def getScore: Int
-
-  def gameOver: Boolean
-
-  def knowledge: Set[Fact]
-}
 
 class Recorder extends IRecorder {
   def knowledge: Set[Fact] = _gameState.knowledge
