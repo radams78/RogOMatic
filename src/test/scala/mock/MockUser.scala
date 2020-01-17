@@ -7,10 +7,10 @@ import org.scalatest.Assertions
 import rogue.Command
 import view.IView
 
-class MockUser extends IView with Assertions {
+class MockUser(initial: MockUserState) extends IView with Assertions {
   override def displayFact(fact: Fact): Unit = state = state.displayFact(fact)
 
-  private var state: MockUserState = Initial()
+  private var state: MockUserState = initial
 
   def finished: Boolean = state.finished
 
@@ -27,40 +27,102 @@ class MockUser extends IView with Assertions {
       state = newState
       cmd
   }
+}
 
-  private trait MockUserState {
-    def displayFact(fact: Fact): MockUserState = fail(s"Unexpected fact: $fact")
+private trait MockUserState extends Assertions {
+  def displayFact(fact: Fact): MockUserState = fail(s"Unexpected fact: $fact")
 
-    val finished: Boolean = false
+  val finished: Boolean = false
 
-    def displayError(err: String): MockUserState = fail(s"ERROR: $err")
+  def displayError(err: String): MockUserState = fail(s"ERROR: $err")
 
-    def displayGameOver(finalScore: Int): MockUserState = fail("Displayed game over")
+  def displayGameOver(finalScore: Int): MockUserState = fail("Displayed game over")
 
-    def getCommand: (Command, MockUserState) = fail(s"Asked for command in state $state")
+  def getCommand: (Command, MockUserState) = fail(s"Asked for command in state $this")
 
-    def displayScreen(screen: String): MockUserState = fail(s"Unexpected screen: $screen")
+  def displayScreen(screen: String): MockUserState = fail(s"Unexpected screen: $screen")
 
-    def displayInventory(inventory: pInventory): MockUserState = fail(s"Unexpected inventory: $inventory")
+  def displayInventory(inventory: pInventory): MockUserState = fail(s"Unexpected inventory: $inventory")
 
-    def displayPower(title: String, power: ScrollPower): MockUserState = fail(s"Unexpected scroll power: $title and $power")
+  def displayPower(title: String, power: ScrollPower): MockUserState = fail(s"Unexpected scroll power: $title and $power")
+}
+
+private object MockUserState {
+
+  class Command(expectedScreen: String,
+                expectedInventory: pInventory,
+                command: rogue.Command,
+                displayedScreen: Boolean,
+                displayedInventory: Boolean,
+                next: MockUserState) extends MockUserState {
+    override def displayScreen(screen: String): MockUserState =
+      if (screen == expectedScreen) new Command(expectedScreen, expectedInventory, command, true, displayedInventory, next)
+      else fail(s"Unexpected screen:\n$screen\nExpected screen:$expectedScreen")
+
+    override def displayInventory(inventory: pInventory): MockUserState =
+      if (inventory == expectedInventory) new Command(expectedScreen, expectedInventory, command, displayedScreen, true, next)
+      else fail(s"Unexpected inventory:\n$inventory\nExpected inventory:\n$expectedInventory")
+
+    override def getCommand: (rogue.Command, MockUserState) = {
+      if (!displayedScreen) fail(s"Screen never displayed: $expectedScreen")
+      if (!displayedInventory) fail(s"Inventory never displayed: $expectedInventory")
+      (command, next)
+    }
   }
 
-  private class Initial(displayedScreen: Boolean, displayedInventory: Boolean) extends MockUserState {
-    override def displayScreen(screen: String): MockUserState = {
-      if (screen != TestGame.firstScreen) fail(s"Unexpected screen: $screen")
-      else Initial(displayedScreen = true, displayedInventory = displayedInventory)
-    }
+  object Command {
+    def apply(expectedScreen: String, expectedInventory: pInventory, command: rogue.Command, next: MockUserState): Command =
+      new Command(expectedScreen, expectedInventory, command, false, false, next)
+  }
 
-    override def displayInventory(inventory: pInventory): MockUserState = {
-      if (inventory != TestGame.firstInventory) fail(s"Unexpected inventory: $inventory")
-      else Initial(displayedScreen, displayedInventory = true)
+  case class GameOver(expectedScore: Int) extends MockUserState {
+    override def displayGameOver(finalScore: Int): MockUserState = {
+      assert(finalScore == expectedScore)
+      TERMINAL
     }
   }
 
-  private class SecondScreen(displayedScreen: Boolean, displayedInventory: Boolean) extends MockUserState {
-    override def getCommand: (Command, MockUserState) = fail(s"Asked for command while\n"
-      + (if (displayedScreen) "" else "screen not displayed")
+  case object TERMINAL extends MockUserState {
+    override val finished: Boolean = true
+  }
+
+}
+
+trait MockUserBuilder {
+  def build(mockUserState: MockUserState): MockUser
+
+  case class Command(expectedScreen: String, expectedInventory: pInventory, command: rogue.Command) extends MockUserBuilder {
+    outer =>
+    override def build(mockUserState: MockUserState): MockUser = outer.build(MockUserState.Command(expectedScreen, expectedInventory, command, mockUserState))
+  }
+
+  def GameOver(expectedScore: Int): MockUser = build(MockUserState.GameOver(expectedScore))
+}
+
+object MockUser {
+
+  object Start extends MockUserBuilder {
+    override def build(mockUserState: MockUserState): MockUser = new MockUser(mockUserState)
+  }
+
+}
+
+
+private class Initial(displayedScreen: Boolean, displayedInventory: Boolean) extends MockUserState {
+  override def displayScreen(screen: String): MockUserState = {
+    if (screen != TestGame.firstScreen) fail(s"Unexpected screen: $screen")
+    else Initial(displayedScreen = true, displayedInventory = displayedInventory)
+  }
+
+  override def displayInventory(inventory: pInventory): MockUserState = {
+    if (inventory != TestGame.firstInventory) fail(s"Unexpected inventory: $inventory")
+    else Initial(displayedScreen, displayedInventory = true)
+  }
+}
+
+private class SecondScreen(displayedScreen: Boolean, displayedInventory: Boolean) extends MockUserState {
+  override def getCommand: (Command, MockUserState) = fail(s"Asked for command while\n"
+    + (if (displayedScreen) "" else "screen not displayed")
       + (if (displayedInventory) "" else "inventory not displayed"))
 
     override def displayScreen(screen: String): MockUserState =
@@ -146,4 +208,3 @@ class MockUser extends IView with Assertions {
     override val finished: Boolean = true
   }
 
-}
