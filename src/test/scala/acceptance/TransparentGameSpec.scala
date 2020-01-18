@@ -19,6 +19,7 @@ class TransparentGameSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
         .Command(TestGame.secondScreen, TestGame.firstInventory, Command.Read(TestGame.firstInventory, Slot.F))
         .Command(TestGame.fourthScreen, TestGame.fourthInventory, Command.LEFT)
         .GameOver(0)
+        .End
 
       When("the user starts the game in transparent mode")
       RogOMatic.playTransparentGame(rogue, user)
