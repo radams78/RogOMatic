@@ -2,7 +2,7 @@ package gamedata
 
 import domain.Domain._
 import domain.{Domain, pLift}
-import gamedata.item.Item
+import gamedata.item.pItem
 
 import scala.util.matching.UnanchoredRegex
 
@@ -14,15 +14,15 @@ import scala.util.matching.UnanchoredRegex
  *  - None then slot s is empty
  *  - Some(i) then slot s contains i
  *  - If ! item.keys.contains(s) then it is unknown whether slot s is empty or not */
-case class pInventory(items: Map[Slot, Option[Item]],
+case class pInventory(items: Map[Slot, Option[pItem]],
                       wearing: pLift[Option[Slot]],
                       wielding: pLift[Option[Slot]])
 
 object pInventory {
-  implicit def providesKnowledge: ProvidesKnowledge[pInventory] = (self: pInventory) => self.items.values.flatMap((oi: Option[Item]) => oi.toSet.flatMap((i: Item) => i.implications)).toSet
+  implicit def providesKnowledge: ProvidesKnowledge[pInventory] = (self: pInventory) => self.items.values.flatMap((oi: Option[pItem]) => oi.toSet.flatMap((i: pItem) => i.implications)).toSet
 
   implicit def usesKnowledge: UsesKnowledge[pInventory] = (self: pInventory, fact: Fact) => {
-    val _items: Either[String, Map[Slot, Option[Item]]] = self.items.foldLeft[Either[String, Map[Slot, Option[Item]]]](
+    val _items: Either[String, Map[Slot, Option[pItem]]] = self.items.foldLeft[Either[String, Map[Slot, Option[pItem]]]](
       Right(Map())
     )({
       case (Left(err), _) => Left(err)
@@ -34,7 +34,7 @@ object pInventory {
 
   def apply(): pInventory = new pInventory(Map(), pLift.UNKNOWN, pLift.UNKNOWN)
 
-  def apply(items: Map[Slot, Item], wearing: Option[Slot], wielding: Option[Slot]): pInventory =
+  def apply(items: Map[Slot, pItem], wearing: Option[Slot], wielding: Option[Slot]): pInventory =
     new pInventory(
       items.view.mapValues(Some(_)).toMap ++ (for (s <- Slot.ALL if !items.contains(s)) yield s -> None),
       pLift.Known(wearing),
@@ -50,19 +50,19 @@ object pInventory {
     val lines: Array[String] = screen
       .split("\n")
       .takeWhile((s: String) => !s.contains("--press space to continue--"))
-    val items: Either[String, Map[Slot, Item]] = lines.foldLeft[Either[String, Seq[(Slot, Item)]]](Right(Seq()))({
+    val items: Either[String, Map[Slot, pItem]] = lines.foldLeft[Either[String, Seq[(Slot, pItem)]]](Right(Seq()))({
       case (Left(s), _) => Left(s)
       case (Right(l), wearingRegex(slot, armor)) => for {
-        i <- Item.parse(armor)
+        i <- pItem.parse(armor)
         s <- Slot.parse(slot)
       } yield l :+ (s, i)
       case (Right(l), wieldingRegex(slot, weapon)) => for {
         s <- Slot.parse(slot)
-        i <- Item.parse(weapon)
+        i <- pItem.parse(weapon)
       } yield l :+ (s, i)
       case (Right(l), inventoryLineRegex(slot, item)) => for {
         s <- Slot.parse(slot)
-        i <- Item.parse(item)
+        i <- pItem.parse(item)
       } yield l :+ (s, i)
     }).map(_.toMap)
 

@@ -3,11 +3,11 @@ package rogue
 import domain.Domain
 import domain.Domain._
 import gamedata._
-import gamedata.item.Item
 import gamedata.item.magic.potion.Potion
 import gamedata.item.magic.potion.Potion._
 import gamedata.item.magic.scroll.Scroll
 import gamedata.item.magic.scroll.Scroll.Scroll
+import gamedata.item.pItem
 
 /** Partial information about a move that can be made by the player in Rogue.
  *
@@ -84,7 +84,7 @@ object Command {
   }
 
   /** Throw an item */
-  case class Throw(dir: Direction, slot: Slot, item: Item) extends Command {
+  case class Throw(dir: Direction, slot: Slot, item: pItem) extends Command {
     override val keypresses: Either[String, Seq[Char]] = Right(Seq('t', dir.keypress, slot.label))
 
     override def merge(that: Command): Either[String, Command] = that match {
@@ -100,7 +100,7 @@ object Command {
   }
 
   object Throw {
-    def apply(dir: Direction, slot: Slot): Throw = Throw(dir, slot, Item.UNKNOWN)
+    def apply(dir: Direction, slot: Slot): Throw = Throw(dir, slot, pItem.UNKNOWN)
   }
 
   /** Wield a weapon */

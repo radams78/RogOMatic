@@ -6,7 +6,7 @@ import gamedata.item.weapon.Missiletype.MissileType
 import gamedata.item.weapon.WieldableType.WieldableType
 
 /** Partial information about a weapon in the game of Rogue */
-trait pWeapon extends Item
+trait pWeapon extends pItem
 
 /** Factory methods for [[pWeapon]] */
 object pWeapon {
@@ -27,7 +27,7 @@ case class Wieldable(wieldableType: WieldableType, plusToHit: Bonus, plusDamage:
   override def toString: String =
     s"$plusToHit,$plusDamage $wieldableType"
 
-  override def merge(that: Item): Either[String, Item] = that match {
+  override def merge(that: pItem): Either[String, pItem] = that match {
     case Wieldable(thatWieldableType, thatPlusToHit, thatPlusDamage) => for {
       inferredWieldableType <- wieldableType.merge(thatWieldableType)
       inferredPlusToHit <- plusToHit.merge(thatPlusToHit)
@@ -53,7 +53,7 @@ object Missile {
     override def toString: String =
       s"$quantity $plusToHit,$plusDamage ${if (quantity > 1) missileType.plural else missileType.singular}"
 
-    override def merge(that: Item): Either[String, Item] = that match {
+    override def merge(that: pItem): Either[String, pItem] = that match {
       case Identified(thatQuantity, thatMissileType, thatPlusToHit, thatPlusDamage) => for {
         inferredQuantity <- quantity.merge(thatQuantity)
         inferredMissileType <- missileType.merge(thatMissileType)
@@ -69,7 +69,7 @@ object Missile {
   }
 
   case class Unidentified(quantity: Int, missileType: MissileType) extends Missile {
-    override def merge(that: Item): Either[String, Item] = that match {
+    override def merge(that: pItem): Either[String, pItem] = that match {
       case Identified(thatQuantity, thatMissileType, thatPlusToHit, thatPlusDamage) => for {
         inferredQuantity <- quantity.merge(thatQuantity)
         inferredMissileType <- missileType.merge(thatMissileType)
@@ -85,9 +85,9 @@ object Missile {
 }
 
 case object SHORT_BOW extends pWeapon {
-  override def merge(that: Item): Either[String, Item] = that match {
+  override def merge(that: pItem): Either[String, pItem] = that match {
     case SHORT_BOW => Right(SHORT_BOW)
-    case Item.UNKNOWN => Right(SHORT_BOW)
+    case pItem.UNKNOWN => Right(SHORT_BOW)
     case _ => Left(s"Incompatible information: $this and $that")
   }
 }

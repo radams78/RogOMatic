@@ -1,9 +1,9 @@
 package unit
 
 import gamedata._
-import gamedata.item.Item
 import gamedata.item.magic.scroll.Scroll._
 import gamedata.item.magic.scroll.{Scroll, ScrollPower}
+import gamedata.item.pItem
 import mock._
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
@@ -52,7 +52,7 @@ class RogueActuatorTest extends AnyFlatSpec with Matchers {
 
   it should "display the first inventory of the game" in new EmptyInventoryGame {
     player.start() match {
-      case Right(_) => recorder.getInventory should be(pInventory(Map[Slot, Item](), None, None))
+      case Right(_) => recorder.getInventory should be(pInventory(Map[Slot, pItem](), None, None))
       case Left(err) => fail(err)
     }
   }

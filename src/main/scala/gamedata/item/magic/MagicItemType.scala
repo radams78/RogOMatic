@@ -2,7 +2,7 @@ package gamedata.item.magic
 
 import domain.Domain
 import domain.Domain._
-import gamedata.item.Item
+import gamedata.item.pItem
 import gamedata.{Fact, UsesKnowledge}
 
 /** A type of item that has a magic power, and an attribute (e.g. colour, gem, material). When the item is first found,
@@ -28,10 +28,10 @@ trait MagicItemType {
    * - if x.implications contains fact then x.infer(fact) == x 
    * - build(a, p).attribute == Some(a) 
    * - build(a, p).power == Some(p) */
-  trait MagicItem extends Item {
+  trait MagicItem extends pItem {
     /** Quantity of items in the stack, if known */
     def quantity: Option[Int]
-    
+
     def attribute: Option[Attribute]
 
     def power: Option[Power]
@@ -40,9 +40,9 @@ trait MagicItemType {
 
     def build(attribute: Attribute, power: Power): MagicItem
 
-    override def merge(that: Item): Either[String, Item] = that match {
+    override def merge(that: pItem): Either[String, pItem] = that match {
       case magicItem: MagicItem => merge(magicItem)
-      case Item.UNKNOWN => Right(this)
+      case pItem.UNKNOWN => Right(this)
       case _ => Left(s"Incompatible information: $this and $that")
     }
 
@@ -51,7 +51,7 @@ trait MagicItemType {
       case _ => Set()
     }
 
-    override def infer(fact: Fact): Either[String, Item] = fact match {
+    override def infer(fact: Fact): Either[String, pItem] = fact match {
       case MagicItemKnowledge(_attribute, _power) if attribute.contains(_attribute) || power.contains(_power) =>
         merge(build(_attribute, _power))
       case _ => Right(this)

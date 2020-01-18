@@ -18,21 +18,21 @@ import scala.util.matching.Regex
  * - implications is monotone
  * - x <= x.infer(fact)
  * - if x.impliciations contains fact then x.infer(fact) == x */
-trait Item {
-  def infer(fact: Fact): Either[String, Item] = Right(this)
+trait pItem {
+  def infer(fact: Fact): Either[String, pItem] = Right(this)
 
-  def merge(that: Item): Either[String, Item]
+  def merge(that: pItem): Either[String, pItem]
 
   def implications: Set[Fact] = Set()
 }
 
-object Item {
+object pItem {
 
-  implicit def providesKnowledge: ProvidesKnowledge[Item] = (self: Item) => self.implications
+  implicit def providesKnowledge: ProvidesKnowledge[pItem] = (self: pItem) => self.implications
 
   // TODO For every other object: merging with UNKNOWN should not change object
-  case object UNKNOWN extends Item {
-    override def merge(that: Item): Either[String, Item] = Right(that)
+  case object UNKNOWN extends pItem {
+    override def merge(that: pItem): Either[String, pItem] = Right(that)
 
     override def implications: Set[Fact] = Set()
   }
@@ -47,8 +47,8 @@ object Item {
   private val scrollRegex: Regex = """a scroll entitled: '(\w+(?: \w+)*)'""".r
   private val wandRegex: Regex = """a(?:n?) (\w+) (wand|staff)""".r
 
-  /** Given a description from a displayed inventory, return the corresponding [[Item]] */
-  def parse(description: String): Either[String, Item] = description match {
+  /** Given a description from a displayed inventory, return the corresponding [[pItem]] */
+  def parse(description: String): Either[String, pItem] = description match {
     case "some food" => Right(Food(1))
     case rationsRegex(quantity) => Right(Food(quantity.toInt))
     case identifiedArmorRegex(bonus, armorType) => for (at <- ArmorType.parse(armorType)) yield Armor(at, Bonus(bonus.toInt))
@@ -74,5 +74,5 @@ object Item {
     case description => for (at <- ArmorType.parse(description)) yield Armor(at)
   }
 
-  implicit def domain: Domain[Item] = (x: Item, y: Item) => x.merge(y)
+  implicit def domain: Domain[pItem] = (x: pItem, y: pItem) => x.merge(y)
 }
