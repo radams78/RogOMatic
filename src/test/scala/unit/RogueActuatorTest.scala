@@ -53,7 +53,7 @@ class RogueActuatorTest extends AnyFlatSpec with Matchers {
 
   it should "display the first inventory of the game" in new EmptyInventoryGame {
     player.start()
-    recorder.getInventory should be(pInventory(Map[Slot, pItem](), None, None))
+    recorder.gameState.inventory should be(pInventory(Map[Slot, pItem](), None, None))
   }
 
   it should "display the new screen after sending the command" in new TestGame {
@@ -65,7 +65,7 @@ class RogueActuatorTest extends AnyFlatSpec with Matchers {
   it should "display the inventory after sending the command" in new TestGame {
     player.start()
     player.sendCommand(Command.RIGHT)
-    recorder.getInventory should be(TestGame.firstInventory)
+    recorder.gameState.inventory should be(TestGame.firstInventory)
   }
 
   it should "know when the game is over" in new DeathGame {
@@ -81,6 +81,6 @@ class RogueActuatorTest extends AnyFlatSpec with Matchers {
 
   it should "remember scroll powers" in new ReadScroll {
     player.sendCommand(Command.Read(Slot.F, Scroll(1, "coph rech")))
-    recorder.knowledge should contain(ScrollKnowledge("coph rech", ScrollPower.REMOVE_CURSE))
+    recorder.gameState.knowledge should contain(ScrollKnowledge("coph rech", ScrollPower.REMOVE_CURSE))
   }
 }
