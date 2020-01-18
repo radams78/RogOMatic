@@ -1,52 +1,35 @@
 package gamedata.item.weapon
 
+import _root_.domain.pLift
 import domain.Domain._
 import gamedata.item.weapon.Missiletype._
 import gamedata.item.{Bonus, pItem}
 
 /** A stack of missiles */
-trait pMissile extends pWeapon
+case class pMissile(quantity: pLift[Int], missiletype: pLift[MissileType], plusToHit: pLift[Bonus], plusDamage: pLift[Bonus]) extends pWeapon {
+  def _merge(that: pMissile): Either[String, pMissile] = that match {
+    case pMissile(thatQuantity, thatMissileType, thatPlusToHit, thatPlusDamage) => for {
+      inferredQuantity <- quantity.merge(thatQuantity)
+      inferredMissileType <- missiletype.merge(thatMissileType)
+      inferredPlusToHit <- plusToHit.merge(thatPlusToHit)
+      inferredPlusDamage <- plusDamage.merge(thatPlusDamage)
+    } yield pMissile(inferredQuantity, inferredMissileType, inferredPlusToHit, inferredPlusDamage)
+  }
+
+  override def merge(that: pItem): Either[String, pItem] = that match {
+    case missile: pMissile => _merge(missile)
+    case pItem.UNKNOWN => Right(this)
+    case _ => Left(s"Incompatible information: $this and $that")
+  }
+}
 
 object pMissile {
   def apply(quantity: Int, missileType: MissileType, plusToHit: Bonus, plusDamage: Bonus): pMissile =
-    Identified(quantity, missileType, plusToHit, plusDamage)
+    pMissile(pLift.Known(quantity), pLift.Known(missileType), pLift.Known(plusToHit), pLift.Known(plusDamage))
 
   def apply(quantity: Int, missileType: MissileType, plusToHit: Int, plusDamage: Int): pMissile =
-    Identified(quantity, missileType, Bonus(plusToHit), Bonus(plusDamage))
+    apply(quantity, missileType, Bonus(plusToHit), Bonus(plusDamage))
 
-  def apply(quantity: Int, missileType: MissileType): pMissile = Unidentified(quantity, missileType)
-
-  case class Identified(quantity: Int, missileType: MissileType, plusToHit: Bonus, plusDamage: Bonus) extends pMissile {
-    override def toString: String =
-      s"$quantity $plusToHit,$plusDamage ${if (quantity > 1) missileType.plural else missileType.singular}"
-
-    override def merge(that: pItem): Either[String, pItem] = that match {
-      case Identified(thatQuantity, thatMissileType, thatPlusToHit, thatPlusDamage) => for {
-        inferredQuantity <- quantity.merge(thatQuantity)
-        inferredMissileType <- missileType.merge(thatMissileType)
-        inferredPlusToHit <- plusToHit.merge(thatPlusToHit)
-        inferredPlusDamage <- plusDamage.merge(thatPlusDamage)
-      } yield Identified(inferredQuantity, inferredMissileType, inferredPlusToHit, inferredPlusDamage)
-      case Unidentified(thatQuantity, thatMissileType) => for {
-        inferredQuantity <- quantity.merge(thatQuantity)
-        inferredMissileType <- missileType.merge(thatMissileType)
-      } yield Identified(inferredQuantity, inferredMissileType, plusToHit, plusDamage)
-      case _ => Left(s"Incompatible item: $this and $that")
-    }
-  }
-
-  case class Unidentified(quantity: Int, missileType: MissileType) extends pMissile {
-    override def merge(that: pItem): Either[String, pItem] = that match {
-      case Identified(thatQuantity, thatMissileType, thatPlusToHit, thatPlusDamage) => for {
-        inferredQuantity <- quantity.merge(thatQuantity)
-        inferredMissileType <- missileType.merge(thatMissileType)
-      } yield Identified(inferredQuantity, inferredMissileType, thatPlusToHit, thatPlusDamage)
-      case Unidentified(thatQuantity, thatMissileType) => for {
-        inferredQuantity <- quantity.merge(thatQuantity)
-        inferredMissileType <- missileType.merge(thatMissileType)
-      } yield Unidentified(inferredQuantity, inferredMissileType)
-      case _ => Left(s"Incompatible item: $this and $that")
-    }
-  }
-
+  def apply(quantity: Int, missileType: MissileType): pMissile =
+    pMissile(pLift.Known(quantity), pLift.Known(missileType), pLift.UNKNOWN, pLift.UNKNOWN)
 }
