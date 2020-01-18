@@ -1,6 +1,5 @@
 package gamedata.item.weapon
 
-import gamedata.ParsableEnum
 import gamedata.item.weapon.MeleeType.MeleeType
 import gamedata.item.weapon.Missiletype.MissileType
 
@@ -11,20 +10,7 @@ trait WeaponType
 
 
 
-object Missiletype extends ParsableEnum {
-  type MissileType = Value
 
-  val DART: MissileType = Val("dart", "darts")
-  val ARROW: MissileType = Val("arrow", "arrows")
-  val DAGGER: MissileType = Val("dagger", "daggers")
-  val SHURIKEN: MissileType = Val("shuriken", "shurikens")
-
-  protected case class Val(singular: String, plural: String) extends super.Val(singular) with WeaponType
-
-  override implicit def valueToVal(x: MissileType): Val = x.asInstanceOf[Val]
-
-  override val name: String = "missile type"
-}
 
 object WeaponType {
   val SHORT_BOW: WeaponType = ShooterType.SHORT_BOW
