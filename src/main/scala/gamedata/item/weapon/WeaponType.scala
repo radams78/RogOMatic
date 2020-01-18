@@ -5,22 +5,9 @@ import gamedata.item.weapon.MeleeType.MeleeType
 import gamedata.item.weapon.Missiletype.MissileType
 
 /** An enum for the set of weapon types in the game of Rogue */
-sealed trait WeaponType
+trait WeaponType
 
-/** The melee weapons and bows. These weapons cannot be stacked. */
-object MeleeType extends ParsableEnum {
-  type MeleeType = Value
 
-  val MACE: MeleeType = Val("mace")
-  val LONG_SWORD: MeleeType = Val("long sword")
-  val TWO_HANDED_SWORD: MeleeType = Val("two-handed sword")
-
-  protected case class Val(override val name: String) extends super.Val(name) with WeaponType
-
-  override implicit def valueToVal(x: MeleeType): Val = x.asInstanceOf[Val]
-
-  override val name: String = "wieldable type"
-}
 
 /** The melee weapons and bows. These weapons cannot be stacked. */
 object ShooterType extends ParsableEnum {
