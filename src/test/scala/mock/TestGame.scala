@@ -7,6 +7,7 @@ import gamedata.item.magic.wand
 import gamedata.item.magic.wand.{Material, Wand, WandShape}
 import gamedata.item.weapon.{Missile, Weapon, WeaponType, WieldableType}
 import gamedata.item.{weapon, _}
+import rogue.Command
 
 object TestGame {
   val firstScreen: String = MockRogue.makeScreen(
@@ -285,6 +286,7 @@ object TestGame {
       |""".stripMargin
   )
 
+  /** A mock Rogue process that goes through the above screens in order. */
   def testGame: MockRogue =
     MockRogue.Start
       .WaitForCommand("testGame state 1", firstScreen, firstInventoryScreen, 'l')
@@ -294,4 +296,12 @@ object TestGame {
       .Wait(deathScreen, ' ')
       .Wait(deathScreen, ' ')
       .End
+
+  /** A mock user who plays this game of Rogue */
+  def user: MockUser = MockUser.Start
+    .Command(TestGame.firstScreen, TestGame.firstInventory, Command.RIGHT)
+    .Command(TestGame.secondScreen, TestGame.firstInventory, Command.Read(TestGame.firstInventory, Slot.F))
+    .Command(TestGame.fourthScreen, TestGame.fourthInventory, Command.LEFT)
+    .GameOver(0)
+    .End
 }
