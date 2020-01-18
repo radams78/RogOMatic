@@ -13,7 +13,7 @@ object pWeapon {
   def apply(weaponType: WeaponType, plusToHit: Int, plusDamage: Int): pWeapon = weaponType match {
     case wt: MeleeType => Melee(wt, Bonus(plusToHit), Bonus(plusDamage))
     case wt: MissileType => pMissile(1, wt, Bonus(plusToHit), Bonus(plusDamage))
-    case wt: ShooterType => Shooter(wt, Bonus(plusToHit), Bonus(plusDamage))
+    case wt: ShooterType => pShooter(wt, Bonus(plusToHit), Bonus(plusDamage))
   }
 
   def apply(quantity: Int, missileType: MissileType, plusToHit: Int, plusDamage: Int): pMissile =

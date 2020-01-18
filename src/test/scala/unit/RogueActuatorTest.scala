@@ -51,10 +51,8 @@ class RogueActuatorTest extends AnyFlatSpec with Matchers {
   }
 
   it should "display the first inventory of the game" in new EmptyInventoryGame {
-    player.start() match {
-      case Right(_) => recorder.getInventory should be(pInventory(Map[Slot, pItem](), None, None))
-      case Left(err) => fail(err)
-    }
+    player.start()
+    recorder.getInventory should be(pInventory(Map[Slot, pItem](), None, None))
   }
 
   it should "display the new screen after sending the command" in new TestGame {
