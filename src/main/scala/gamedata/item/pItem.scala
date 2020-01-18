@@ -7,7 +7,7 @@ import gamedata.item.magic.ring.{Gem, Ring}
 import gamedata.item.magic.scroll.Scroll
 import gamedata.item.magic.wand.{Material, Wand, WandShape}
 import gamedata.item.weapon.Missiletype.MissileType
-import gamedata.item.weapon.{Missile, WeaponType, pWeapon}
+import gamedata.item.weapon.{WeaponType, pMissile, pWeapon}
 import gamedata.{Fact, ProvidesKnowledge}
 
 import scala.util.matching.Regex
@@ -56,12 +56,12 @@ object pItem {
       for (wt <- WeaponType.parse(weaponType)) yield pWeapon(wt, plusToHit.toInt, plusDamage.toInt)
     case unidentifiedWeaponsRegex(quantity, missileType) =>
       for (wt <- WeaponType.parse(missileType)) yield wt match {
-        case wt: MissileType => Missile(quantity.toInt, wt)
+        case wt: MissileType => pMissile(quantity.toInt, wt)
         case _ => return Left(s"Expected missile type but received $wt in $description")
       }
     case identifiedWeaponsRegex(quantity, plusToHit, plusDamage, weaponType) =>
       for (wt <- WeaponType.parse(weaponType)) yield wt match {
-        case wt: MissileType => weapon.Missile(quantity.toInt, wt, plusToHit.toInt, plusDamage.toInt)
+        case wt: MissileType => weapon.pMissile(quantity.toInt, wt, plusToHit.toInt, plusDamage.toInt)
         case _ => return Left(s"Expected missile type but received $wt in $description")
       }
     case ringRegex(gem) => for (g <- Gem.parse(gem)) yield Ring(g)

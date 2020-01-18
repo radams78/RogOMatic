@@ -5,18 +5,18 @@ import gamedata.item.weapon.Missiletype._
 import gamedata.item.{Bonus, pItem}
 
 /** A stack of missiles */
-trait Missile extends pWeapon
+trait pMissile extends pWeapon
 
-object Missile {
-  def apply(quantity: Int, missileType: MissileType, plusToHit: Bonus, plusDamage: Bonus): Missile =
+object pMissile {
+  def apply(quantity: Int, missileType: MissileType, plusToHit: Bonus, plusDamage: Bonus): pMissile =
     Identified(quantity, missileType, plusToHit, plusDamage)
 
-  def apply(quantity: Int, missileType: MissileType, plusToHit: Int, plusDamage: Int): Missile =
+  def apply(quantity: Int, missileType: MissileType, plusToHit: Int, plusDamage: Int): pMissile =
     Identified(quantity, missileType, Bonus(plusToHit), Bonus(plusDamage))
 
-  def apply(quantity: Int, missileType: MissileType): Missile = Unidentified(quantity, missileType)
+  def apply(quantity: Int, missileType: MissileType): pMissile = Unidentified(quantity, missileType)
 
-  case class Identified(quantity: Int, missileType: MissileType, plusToHit: Bonus, plusDamage: Bonus) extends Missile {
+  case class Identified(quantity: Int, missileType: MissileType, plusToHit: Bonus, plusDamage: Bonus) extends pMissile {
     override def toString: String =
       s"$quantity $plusToHit,$plusDamage ${if (quantity > 1) missileType.plural else missileType.singular}"
 
@@ -35,7 +35,7 @@ object Missile {
     }
   }
 
-  case class Unidentified(quantity: Int, missileType: MissileType) extends Missile {
+  case class Unidentified(quantity: Int, missileType: MissileType) extends pMissile {
     override def merge(that: pItem): Either[String, pItem] = that match {
       case Identified(thatQuantity, thatMissileType, thatPlusToHit, thatPlusDamage) => for {
         inferredQuantity <- quantity.merge(thatQuantity)

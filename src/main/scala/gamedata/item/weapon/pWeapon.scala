@@ -12,12 +12,12 @@ trait pWeapon extends pItem
 object pWeapon {
   def apply(weaponType: WeaponType, plusToHit: Int, plusDamage: Int): pWeapon = weaponType match {
     case wt: MeleeType => Melee(wt, Bonus(plusToHit), Bonus(plusDamage))
-    case wt: MissileType => Missile(1, wt, Bonus(plusToHit), Bonus(plusDamage))
+    case wt: MissileType => pMissile(1, wt, Bonus(plusToHit), Bonus(plusDamage))
     case wt: ShooterType => Shooter(wt, Bonus(plusToHit), Bonus(plusDamage))
   }
 
-  def apply(quantity: Int, missileType: MissileType, plusToHit: Int, plusDamage: Int): Missile =
-    Missile(quantity, missileType, Bonus(plusToHit), Bonus(plusDamage))
+  def apply(quantity: Int, missileType: MissileType, plusToHit: Int, plusDamage: Int): pMissile =
+    pMissile(quantity, missileType, Bonus(plusToHit), Bonus(plusDamage))
 
-  def apply(quantity: Int, missileType: MissileType): Missile = Missile(quantity, missileType)
+  def apply(quantity: Int, missileType: MissileType): pMissile = pMissile(quantity, missileType)
 }
