@@ -5,9 +5,6 @@ import domain.pLift
 import gamedata.item.weapon.MeleeType.MeleeType
 import gamedata.item.{Bonus, pItem}
 
-/** A melee weapon or bow */
-trait Wieldable extends pWeapon
-
 /** A melee weapon */
 case class Melee(meleeType: pLift[MeleeType], plusToHit: pLift[Bonus], plusDamage: pLift[Bonus]) extends Wieldable {
   private def _merge(that: Melee): Either[String, Melee] = that match {
