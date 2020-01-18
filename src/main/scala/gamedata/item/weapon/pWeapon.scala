@@ -5,12 +5,12 @@ import gamedata.item._
 import gamedata.item.weapon.Missiletype.MissileType
 import gamedata.item.weapon.WieldableType.WieldableType
 
-/** A weapon in the game of Rogue */
-trait Weapon extends Item
+/** Partial information about a weapon in the game of Rogue */
+trait pWeapon extends Item
 
-/** Factory methods for [[Weapon]] */
-object Weapon {
-  def apply(weaponType: WeaponType, plusToHit: Int, plusDamage: Int): Weapon = weaponType match {
+/** Factory methods for [[pWeapon]] */
+object pWeapon {
+  def apply(weaponType: WeaponType, plusToHit: Int, plusDamage: Int): pWeapon = weaponType match {
     case wt: WieldableType => Wieldable(wt, Bonus(plusToHit), Bonus(plusDamage))
     case wt: MissileType => Missile(1, wt, Bonus(plusToHit), Bonus(plusDamage))
     case WeaponType.SHORT_BOW => SHORT_BOW
@@ -23,7 +23,7 @@ object Weapon {
 }
 
 /** A melee weapon or bow */
-case class Wieldable(wieldableType: WieldableType, plusToHit: Bonus, plusDamage: Bonus) extends Weapon {
+case class Wieldable(wieldableType: WieldableType, plusToHit: Bonus, plusDamage: Bonus) extends pWeapon {
   override def toString: String =
     s"$plusToHit,$plusDamage $wieldableType"
 
@@ -38,7 +38,7 @@ case class Wieldable(wieldableType: WieldableType, plusToHit: Bonus, plusDamage:
 }
 
 /** A stack of missiles */
-trait Missile extends Weapon
+trait Missile extends pWeapon
 
 object Missile {
   def apply(quantity: Int, missileType: MissileType, plusToHit: Bonus, plusDamage: Bonus): Missile =
@@ -84,7 +84,7 @@ object Missile {
 
 }
 
-case object SHORT_BOW extends Weapon {
+case object SHORT_BOW extends pWeapon {
   override def merge(that: Item): Either[String, Item] = that match {
     case SHORT_BOW => Right(SHORT_BOW)
     case Item.UNKNOWN => Right(SHORT_BOW)

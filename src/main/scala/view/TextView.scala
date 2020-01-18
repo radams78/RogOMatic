@@ -13,9 +13,9 @@ class TextView extends IView {
   override def displayInventory(inventory: pInventory): Unit = {
     for ((slot, item) <- inventory.items.toList.sortBy(_._1)) println(s"$slot) $item")
     inventory.wielding match {
-      case pLift.UNKNOWN => println("Weapon: UNKNOWN")
+      case pLift.UNKNOWN => println("pWeapon: UNKNOWN")
       case pLift.Known(None) => ()
-      case pLift.Known(Some(weapon)) => println(s"Weapon: $weapon")
+      case pLift.Known(Some(weapon)) => println(s"pWeapon: $weapon")
     }
     inventory.wearing match {
       case pLift.UNKNOWN => println("Armor: UNKNOWN")

@@ -7,7 +7,7 @@ import gamedata.item.magic.ring.{Gem, Ring}
 import gamedata.item.magic.scroll.Scroll
 import gamedata.item.magic.wand.{Material, Wand, WandShape}
 import gamedata.item.weapon.Missiletype.MissileType
-import gamedata.item.weapon.{Missile, Weapon, WeaponType}
+import gamedata.item.weapon.{Missile, WeaponType, pWeapon}
 import gamedata.{Fact, ProvidesKnowledge}
 
 import scala.util.matching.Regex
@@ -53,7 +53,7 @@ object Item {
     case rationsRegex(quantity) => Right(Food(quantity.toInt))
     case identifiedArmorRegex(bonus, armorType) => for (at <- ArmorType.parse(armorType)) yield Armor(at, Bonus(bonus.toInt))
     case identifiedWeaponRegex(plusToHit, plusDamage, weaponType) =>
-      for (wt <- WeaponType.parse(weaponType)) yield Weapon(wt, plusToHit.toInt, plusDamage.toInt)
+      for (wt <- WeaponType.parse(weaponType)) yield pWeapon(wt, plusToHit.toInt, plusDamage.toInt)
     case unidentifiedWeaponsRegex(quantity, missileType) =>
       for (wt <- WeaponType.parse(missileType)) yield wt match {
         case wt: MissileType => Missile(quantity.toInt, wt)

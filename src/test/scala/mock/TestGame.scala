@@ -5,7 +5,7 @@ import gamedata.item.armor.{Armor, ArmorType}
 import gamedata.item.magic.scroll.Scroll
 import gamedata.item.magic.wand
 import gamedata.item.magic.wand.{Material, Wand, WandShape}
-import gamedata.item.weapon.{Missile, Weapon, WeaponType, WieldableType}
+import gamedata.item.weapon.{Missile, WeaponType, WieldableType, pWeapon}
 import gamedata.item.{weapon, _}
 import rogue.Command
 
@@ -70,8 +70,8 @@ object TestGame {
     items = Map(
       Slot.A -> Food(1),
       Slot.B -> Armor(ArmorType.RING_MAIL, +1),
-      Slot.C -> Weapon(WieldableType.MACE, +1, +1),
-      Slot.D -> weapon.Weapon(WeaponType.SHORT_BOW, +1, +0),
+      Slot.C -> pWeapon(WieldableType.MACE, +1, +1),
+      Slot.D -> weapon.pWeapon(WeaponType.SHORT_BOW, +1, +0),
       Slot.E -> Missile(35, WeaponType.ARROW, +0, +0),
       Slot.F -> Scroll(1, "coph rech"),
       Slot.G -> Armor(ArmorType.SCALE_MAIL),
@@ -221,8 +221,8 @@ object TestGame {
     items = Map(
       Slot.A -> Food(1),
       Slot.B -> Armor(ArmorType.RING_MAIL, +1),
-      Slot.C -> weapon.Weapon(WieldableType.MACE, +1, +1),
-      Slot.D -> weapon.Weapon(WeaponType.SHORT_BOW, +1, +0),
+      Slot.C -> weapon.pWeapon(WieldableType.MACE, +1, +1),
+      Slot.D -> weapon.pWeapon(WeaponType.SHORT_BOW, +1, +0),
       Slot.E -> weapon.Missile(35, WeaponType.ARROW, +0, +0),
       Slot.G -> Armor(ArmorType.SCALE_MAIL),
       Slot.H -> Wand(WandShape.STAFF, Material.REDWOOD),
