@@ -8,7 +8,9 @@ import gamedata.{Fact, ProvidesKnowledge, pInventory}
 import rogue.Command
 import rogue.Command._
 
-case class pGameState(screen: Option[String], inventory: pInventory, knowledge: Set[Fact], lastCommand: pLift[Option[Command]]) {
+case class pGameState(screen: pLift[String], inventory: pInventory, knowledge: Set[Fact], lastCommand: pLift[Option[Command]]) {
+  def nextTurn: pGameState = pGameState(pLift.UNKNOWN, pInventory(), knowledge, pLift.UNKNOWN)
+
   def complete: Either[String, pGameState] = for {
     inferredInventory <- knowledge.foldLeft[Either[String, pInventory]](Right(inventory))({
       case (Left(err), _) => Left(err)
@@ -48,9 +50,9 @@ case class pGameState(screen: Option[String], inventory: pInventory, knowledge: 
 }
 
 object pGameState {
-  def apply(): pGameState = new pGameState(None, pInventory(), Set(), pLift.UNKNOWN)
+  def apply(): pGameState = new pGameState(pLift.UNKNOWN, pInventory(), Set(), pLift.UNKNOWN)
 
-  def apply(lastCommand: Command): pGameState = new pGameState(None, pInventory(), Set(), pLift.Known(Some(lastCommand)))
+  def apply(lastCommand: Command): pGameState = new pGameState(pLift.UNKNOWN, pInventory(), Set(), pLift.Known(Some(lastCommand)))
 
   implicit def domain: Domain[pGameState] = (x: pGameState, y: pGameState) => for {
     screen <- x.screen.merge(y.screen)

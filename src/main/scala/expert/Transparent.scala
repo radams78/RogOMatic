@@ -1,5 +1,6 @@
 package expert
 
+import domain.pLift
 import gamedata.ProvidesKnowledge._
 import gamedata._
 import rogue._
@@ -84,8 +85,8 @@ class Transparent(view: IView) extends Expert {
 
   def displayAll(gameState: pGameState): Unit = {
     gameState.screen match {
-      case None => view.displayError("Missing screen")
-      case Some(s) => view.displayScreen(s)
+      case pLift.UNKNOWN => view.displayError("Missing screen")
+      case pLift.Known(screen) => view.displayScreen(screen)
     }
     val inventory: pInventory = gameState.inventory
     view.displayInventory(inventory)

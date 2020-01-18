@@ -1,5 +1,6 @@
 package acceptance
 
+import domain.pLift
 import mock._
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
@@ -38,7 +39,7 @@ class RogueActuatorSpec extends AnyFeatureSpec with GivenWhenThen with Matchers 
       player.sendCommand(Command.RIGHT)
 
       Then("the final screen should be displayed")
-      recorder.getScreen should be(MoreGame.thirdScreen)
+      recorder.getScreen should be(pLift.Known(MoreGame.thirdScreen))
     }
   }
 }

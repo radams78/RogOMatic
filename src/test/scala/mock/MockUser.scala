@@ -1,6 +1,5 @@
 package mock
 
-import gamedata.item.magic.scroll.ScrollPower.ScrollPower
 import gamedata.{Fact, pInventory}
 import mock.MockUserState.TERMINAL
 import org.scalatest.Assertions
@@ -57,8 +56,6 @@ private trait MockUserState extends Assertions {
   def displayScreen(screen: String): MockUserState = fail(s"Unexpected screen: $screen")
 
   def displayInventory(inventory: pInventory): MockUserState = fail(s"Unexpected inventory: $inventory")
-
-  def displayPower(title: String, power: ScrollPower): MockUserState = fail(s"Unexpected scroll power: $title and $power")
 }
 
 private object MockUserState {
@@ -70,28 +67,34 @@ private object MockUserState {
    * @param displayedInventory True if the user has seen expectedInventory */
   class Command(expectedScreen: String,
                 expectedInventory: pInventory,
+                expectedKnowledge: Set[Fact],
                 command: rogue.Command,
                 displayedScreen: Boolean,
                 displayedInventory: Boolean,
+                displayedFacts: Set[Fact],
                 next: MockUserState) extends MockUserState {
     override def displayScreen(screen: String): MockUserState =
-      if (screen == expectedScreen) new Command(expectedScreen, expectedInventory, command, true, displayedInventory, next)
+      if (screen == expectedScreen) new Command(expectedScreen, expectedInventory, expectedKnowledge, command, true, displayedInventory, displayedFacts, next)
       else fail(s"Unexpected screen:\n$screen\nExpected screen:$expectedScreen")
 
     override def displayInventory(inventory: pInventory): MockUserState =
-      if (inventory == expectedInventory) new Command(expectedScreen, expectedInventory, command, displayedScreen, true, next)
+      if (inventory == expectedInventory) new Command(expectedScreen, expectedInventory, expectedKnowledge, command, displayedScreen, true, displayedFacts, next)
       else fail(s"Unexpected inventory:\n$inventory\nExpected inventory:\n$expectedInventory")
+
+    override def displayFact(fact: Fact): MockUserState =
+      new Command(expectedScreen, expectedInventory, expectedKnowledge, command, displayedScreen, displayedInventory, displayedFacts + fact, next)
 
     override def getCommand: (rogue.Command, MockUserState) = {
       if (!displayedScreen) fail(s"Screen never displayed: $expectedScreen")
       if (!displayedInventory) fail(s"Inventory never displayed: $expectedInventory")
+      if (displayedFacts != expectedKnowledge) fail(s"Unexpected knowledge: $displayedFacts Expected: $expectedKnowledge")
       (command, next)
     }
   }
 
   object Command {
-    def apply(expectedScreen: String, expectedInventory: pInventory, command: rogue.Command, next: MockUserState): Command =
-      new Command(expectedScreen, expectedInventory, command, false, false, next)
+    def apply(expectedScreen: String, expectedInventory: pInventory, expectedKnowledge: Set[Fact], command: rogue.Command, next: MockUserState): Command =
+      new Command(expectedScreen, expectedInventory, expectedKnowledge, command, false, false, Set(), next)
   }
 
   /** A mock user that will wait until they have seen the game over message with score [[expectedScore]], then switch
@@ -135,6 +138,7 @@ private object MockUserState {
  * and then switch to state (hole)."
  * */
 trait MockUserBuilder {
+  outer =>
   /** Plug the given mockUserState into the hole and return the [[MockUser]] constructed. */
   def build(mockUserState: MockUserState): MockUser
 
@@ -142,22 +146,26 @@ trait MockUserBuilder {
    *
    * Wait until you have seen [[expectedScreen]] and [[expectedInventory]].
    * Perform the command [[command]] */
-  case class Command(expectedScreen: String, expectedInventory: pInventory, command: rogue.Command) extends MockUserBuilder {
-    outer =>
-    override def build(mockUserState: MockUserState): MockUser = outer.build(MockUserState.Command(expectedScreen, expectedInventory, command, mockUserState))
+  class Command(expectedScreen: String, expectedInventory: pInventory, expectedKnowledge: Set[Fact], command: rogue.Command) extends MockUserBuilder {
+    override def build(mockUserState: MockUserState): MockUser =
+      outer.build(MockUserState.Command(expectedScreen, expectedInventory, expectedKnowledge, command, mockUserState))
   }
+
+  def Command(expectedScreen: String, expectedInventory: pInventory, expectedKnowledge: Set[Fact], command: rogue.Command): MockUserBuilder =
+    new Command(expectedScreen, expectedInventory, expectedKnowledge, command)
 
   /** Add the following instructions to the list.
    *
    * Wait until you have seen a game over message with the score [[expectedScore]]. */
-  case class GameOver(expectedScore: Int) extends MockUserBuilder {
-    outer =>
-    override def build(mockUserState: MockUserState): MockUser = outer.build(MockUserState.GameOver(expectedScore, mockUserState))
-
-    /** Mark the list of instructions as finished, and return the corresponding [[MockUser]] object. */
-    def End: MockUser = build(TERMINAL)
+  class GameOver(expectedScore: Int) extends MockUserBuilder {
+    override def build(mockUserState: MockUserState): MockUser =
+      outer.build(MockUserState.GameOver(expectedScore, mockUserState))
   }
 
+  def GameOver(expectedScore: Int): MockUserBuilder = new GameOver(expectedScore)
+
+  /** Mark the list of instructions as finished, and return the corresponding [[MockUser]] object. */
+  def End: MockUser = build(TERMINAL)
 }
 
 object MockUser {

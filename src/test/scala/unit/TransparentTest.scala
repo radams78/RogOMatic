@@ -13,7 +13,7 @@ import view.IView
 class TransparentTest extends AnyFlatSpec with Matchers {
   "The transparent expert" should "report the known scroll powers to the user" in {
     val transparent: Transparent = new Transparent(MockView)
-    transparent.displayAll(pGameState(Some(""), pInventory(), Set(ScrollKnowledge("abcde", ScrollPower.AGGRAVATE_MONSTER)), pLift.UNKNOWN))
+    transparent.displayAll(pGameState(pLift.Known(""), pInventory(), Set(ScrollKnowledge("abcde", ScrollPower.AGGRAVATE_MONSTER)), pLift.UNKNOWN))
     assert(MockView.displayedPower)
   }
 
