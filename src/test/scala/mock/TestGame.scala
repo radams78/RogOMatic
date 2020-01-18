@@ -9,6 +9,8 @@ import gamedata.item.weapon.{Missile, Weapon, WeaponType, WieldableType}
 import gamedata.item.{weapon, _}
 import rogue.Command
 
+/** Sample data for a game of Rogue used in testing. The game lasts three turns, and involves several different
+ * inventory items, recognising the effect of a scroll when read, and recognising the end of the game. */
 object TestGame {
   val firstScreen: String = MockRogue.makeScreen(
     """
