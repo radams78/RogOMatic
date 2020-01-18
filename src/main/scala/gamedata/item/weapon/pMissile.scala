@@ -7,7 +7,7 @@ import gamedata.item.{Bonus, pItem}
 
 /** A stack of missiles */
 case class pMissile(quantity: pLift[Int], missiletype: pLift[MissileType], plusToHit: pLift[Bonus], plusDamage: pLift[Bonus]) extends pWeapon {
-  def _merge(that: pMissile): Either[String, pMissile] = that match {
+  private def _merge(that: pMissile): Either[String, pMissile] = that match {
     case pMissile(thatQuantity, thatMissileType, thatPlusToHit, thatPlusDamage) => for {
       inferredQuantity <- quantity.merge(thatQuantity)
       inferredMissileType <- missiletype.merge(thatMissileType)
