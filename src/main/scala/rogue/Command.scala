@@ -74,7 +74,11 @@ object Command {
   }
 
   object Read {
-    def apply(inventory: pInventory, slot: Slot): Read = Read(slot, inventory.items(slot).asInstanceOf[Scroll]) // TODO Better error handling
+    def apply(inventory: pInventory, slot: Slot): Read = inventory.items(slot) match {
+      case Some(scroll: Scroll) => Read(slot, scroll)
+      case Some(item) => throw new Error(s"Tried to read $item")
+      case None => throw new Error(s"Tried to read empty slot $slot")
+    }
 
     def apply(slot: Slot, scroll: Scroll): Read = Read(pSlot(slot), scroll)
 
