@@ -7,10 +7,8 @@ import gamedata.{Fact, pInventory}
 import gamestate.IRecorder
 import rogue.Event.Event
 
-
+/** Object that receives information about the current state of the game of Rogue and maintains a [[pGameState]] object. */
 class Recorder extends IRecorder {
-  def getScreen: pLift[String] = _gameState.screen
-
   def knowledge: Set[Fact] = _gameState.knowledge
 
   private var _gameOver: Boolean = false

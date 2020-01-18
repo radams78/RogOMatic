@@ -39,7 +39,7 @@ class RogueActuatorSpec extends AnyFeatureSpec with GivenWhenThen with Matchers 
       player.sendCommand(Command.RIGHT)
 
       Then("the final screen should be displayed")
-      recorder.getScreen should be(pLift.Known(MoreGame.thirdScreen))
+      recorder.gameState.screen should be(pLift.Known(MoreGame.thirdScreen))
     }
   }
 }

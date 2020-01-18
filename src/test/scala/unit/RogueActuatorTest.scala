@@ -48,7 +48,7 @@ class RogueActuatorTest extends AnyFlatSpec with Matchers {
 
   it should "display the first screen of the game" in new ZeroMoveGame {
     player.start()
-    recorder.getScreen should be(pLift.Known(ZeroMoveGame.firstScreen))
+    recorder.gameState.screen should be(pLift.Known(ZeroMoveGame.firstScreen))
   }
 
   it should "display the first inventory of the game" in new EmptyInventoryGame {
@@ -59,7 +59,7 @@ class RogueActuatorTest extends AnyFlatSpec with Matchers {
   it should "display the new screen after sending the command" in new TestGame {
     player.start()
     player.sendCommand(Command.RIGHT)
-    recorder.getScreen should be(pLift.Known(TestGame.secondScreen))
+    recorder.gameState.screen should be(pLift.Known(TestGame.secondScreen))
   }
 
   it should "display the inventory after sending the command" in new TestGame {
@@ -76,7 +76,7 @@ class RogueActuatorTest extends AnyFlatSpec with Matchers {
 
   it should "clear a more screen" in new MoreGame {
     player.sendCommand(Command.RIGHT)
-    recorder.getScreen should be(pLift.Known(MoreGame.thirdScreen))
+    recorder.gameState.screen should be(pLift.Known(MoreGame.thirdScreen))
   }
 
   it should "remember scroll powers" in new ReadScroll {
