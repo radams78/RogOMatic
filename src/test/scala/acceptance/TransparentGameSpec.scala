@@ -4,7 +4,7 @@ import mock.{MockRogue, MockUser, TestGame}
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
-import rogomatic.RogOMatic
+import rogomatic.Main
 
 class TransparentGameSpec extends AnyFeatureSpec with GivenWhenThen with Matchers {
 
@@ -15,7 +15,7 @@ class TransparentGameSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
       val user: MockUser = TestGame.user
 
       When("the user starts the game in transparent mode")
-      RogOMatic.playTransparentGame(rogue, user)
+      Main.playTransparentGame(rogue, user)
 
       Then("the first screen should be displayed")
       And("the first inventory should be displayed")

@@ -8,7 +8,7 @@ import view.{IView, TextView}
 import scala.annotation.tailrec
 
 /** Entry point for the system */
-object RogOMatic extends App {
+object Main extends App {
   def playTransparentGame(rogue: IRogue, view: IView): Unit = {
     val recorder: Recorder = new Recorder
     val player: IRogueActuator = new RogueActuator(rogue, recorder)

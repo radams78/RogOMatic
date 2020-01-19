@@ -1,4 +1,4 @@
-name := "RogOMatic"
+name := "Main"
 
 version := "0.1"
 
