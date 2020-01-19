@@ -19,27 +19,27 @@ class RogueActuatorTest extends AnyFlatSpec with Matchers {
 
   trait ZeroMoveGame extends Fixture {
     val game: MockRogue = mock.ZeroMoveGame.zeroMoveGame
-    val player: RogueActuator = new RogueActuator(game, recorder)
+    val player: IRogueActuator = new RogueActuator(game, recorder)
   }
 
   trait EmptyInventoryGame extends Fixture {
-    val player: RogueActuator = new RogueActuator(ZeroMoveGame.emptyInventoryGame, recorder)
+    val player: IRogueActuator = new RogueActuator(ZeroMoveGame.emptyInventoryGame, recorder)
   }
 
   trait TestGame extends Fixture {
-    val player: RogueActuator = new RogueActuator(TestGame.testGame, recorder)
+    val player: IRogueActuator = new RogueActuator(TestGame.testGame, recorder)
   }
 
   trait DeathGame extends Fixture {
-    val player: RogueActuator = new RogueActuator(DeathGame.deathGame, recorder)
+    val player: IRogueActuator = new RogueActuator(DeathGame.deathGame, recorder)
   }
 
   trait MoreGame extends Fixture {
-    val player: RogueActuator = new RogueActuator(MoreGame.moreGame, recorder)
+    val player: IRogueActuator = new RogueActuator(MoreGame.moreGame, recorder)
   }
 
   trait ReadScroll extends Fixture {
-    val player: RogueActuator = new RogueActuator(MockRogue.Build
+    val player: IRogueActuator = new RogueActuator(MockRogue.Build
       .WaitForCommand("readScroll state 1", TestGame.secondScreen, TestGame.secondInventoryScreen, 'r')
       .Wait(TestGame.thirdScreen, 'f')
       .Terminal("readScroll state 3", TestGame.fourthScreen, TestGame.fourthInventoryScreen), recorder

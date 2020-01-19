@@ -1,6 +1,5 @@
 package rogue
 
-
 import gamedata.pInventory
 
 import scala.annotation.tailrec
@@ -10,7 +9,7 @@ trait IRogueActuator {
   def sendCommand(getCommand: Command): Either[String, Unit]
 
   def start(): Either[String, Unit]
-} // todo
+}
 
 /** High-level communication with the game of Rogue. */
 class RogueActuator(rogue: IRogue, recorder: Recorder) extends IRogueActuator {

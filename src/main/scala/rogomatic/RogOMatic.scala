@@ -1,7 +1,7 @@
 package rogomatic
 
 import expert.{Expert, Transparent}
-import rogue.{IRogue, Recorder, Rogue, RogueActuator}
+import rogue._
 import view.{IView, TextView}
 
 import scala.annotation.tailrec
@@ -10,7 +10,7 @@ import scala.annotation.tailrec
 object RogOMatic extends App {
   def playTransparentGame(rogue: IRogue, view: IView): Unit = {
     val recorder: Recorder = new Recorder
-    val player: RogueActuator = new RogueActuator(rogue, recorder)
+    val player: IRogueActuator = new RogueActuator(rogue, recorder)
     val expert: Expert = new Transparent(view)
     player.start()
     playRogue0()
