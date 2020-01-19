@@ -1,6 +1,7 @@
 package rogomatic
 
 import expert.{Expert, Transparent}
+import gamestate.IRecorder
 import rogue._
 import view.{IView, TextView}
 
@@ -13,17 +14,17 @@ object RogOMatic extends App {
     val player: IRogueActuator = new RogueActuator(rogue, recorder)
     val expert: Expert = new Transparent(view)
     player.start()
-    playRogue0()
+    playRogue0(recorder, player, expert)
+  }
 
-    @tailrec
-    def playRogue0(): Unit = {
-      if (recorder.gameOver) {
-        view.displayGameOver(recorder.getScore)
-      } else {
-        player.sendCommand(expert.advice(recorder.gameState)) match {
-          case Left(err) => view.displayError(err)
-          case Right(_) => playRogue0()
-        }
+  @tailrec
+  private def playRogue0(recorder: IRecorder, player: IRogueActuator, expert: Expert): Unit = {
+    if (recorder.gameOver) {
+      view.displayGameOver(recorder.getScore)
+    } else {
+      player.sendCommand(expert.advice(recorder.gameState)) match {
+        case Left(err) => view.displayError(err)
+        case Right(_) => playRogue0(recorder, player, expert)
       }
     }
   }
