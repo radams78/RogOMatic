@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/RogOMatic.iml" filepath="$PROJECT_DIR$/.idea/modules/RogOMatic.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/RogOMatic-build.iml" filepath="$PROJECT_DIR$/.idea/modules/RogOMatic-build.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Main.iml" filepath="$PROJECT_DIR$/.idea/modules/Main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Main-build.iml" filepath="$PROJECT_DIR$/.idea/modules/Main-build.iml" />
     </modules>
   </component>
 </project>

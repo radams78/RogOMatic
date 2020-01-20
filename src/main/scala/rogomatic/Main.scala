@@ -1,9 +1,9 @@
 package rogomatic
 
+import _root_.view.{IView, TextView}
 import expert.{Expert, Transparent}
 import gamestate.IRecorder
 import rogue._
-import view.{IView, TextView}
 
 import scala.annotation.tailrec
 
@@ -14,7 +14,7 @@ object Main extends App {
     val player: IRogueActuator = new RogueActuator(rogue, recorder)
     val expert: Expert = new Transparent(view)
     player.start()
-    playRogue0(recorder, player, expert)
+    new RogOMatic(recorder, player, expert).playRogue(view)
   }
 
   @tailrec
@@ -37,4 +37,18 @@ object Main extends App {
     rogue.close()
   }
   System.exit(0)
+}
+
+class RogOMatic(recorder: IRecorder, player: IRogueActuator, expert: Expert) {
+  @tailrec
+  final def playRogue(view: IView): Unit = {
+    if (recorder.gameOver) {
+      view.displayGameOver(recorder.getScore)
+    } else {
+      player.sendCommand(expert.advice(recorder.gameState)) match {
+        case Left(err) => view.displayError(err)
+        case Right(_) => playRogue(view)
+      }
+    }
+  }
 }
