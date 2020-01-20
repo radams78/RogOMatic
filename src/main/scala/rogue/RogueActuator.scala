@@ -1,7 +1,7 @@
 package rogue
 
 import gamedata.pInventory
-import gamestate.IRecorder
+import gamestate.IInputRecorder
 
 import scala.annotation.tailrec
 import scala.util.matching.Regex
@@ -13,7 +13,7 @@ trait IRogueActuator {
 }
 
 /** High-level communication with the game of Rogue. */
-class RogueActuator(rogue: IRogue, recorder: IRecorder) extends IRogueActuator {
+class RogueActuator(rogue: IRogue, recorder: IInputRecorder) extends IRogueActuator {
   /** Start the game of Rogue and read the first screen and inventory */
   def start(): Either[String, Unit] = {
     rogue.start()
@@ -32,11 +32,11 @@ class RogueActuator(rogue: IRogue, recorder: IRecorder) extends IRogueActuator {
   def sendCommand(command: Command): Either[String, Unit] = {
     for {_ <- recorder.recordCommand(command)
          keys <- command.keypresses
-         _ <- {
+         gameOver <- {
            for (k <- keys) rogue.sendKeypress(k)
            update()
          }
-         _ <- if (!recorder.gameOver) {
+         _ <- if (!gameOver) {
            for (inventory <- {
              rogue.sendKeypress('i')
              val screen: String = rogue.getScreen
@@ -52,7 +52,7 @@ class RogueActuator(rogue: IRogue, recorder: IRecorder) extends IRogueActuator {
 
 
   @tailrec
-  private def update(): Either[String, Unit] = {
+  private def update(): Either[String, Boolean] = {
     val screen: String = rogue.getScreen
     val lines: Array[String] = screen.split("\n").map(_.padTo(80, ' '))
     recorder.recordScreen(screen)
@@ -60,7 +60,7 @@ class RogueActuator(rogue: IRogue, recorder: IRecorder) extends IRogueActuator {
       screen match {
         case RogueActuator.scoreRegex(score) =>
           recorder.recordFinalScore(score.toInt)
-          return Right(())
+          return Right(true)
         case _ =>
           return Left(s"Could not parse screen: $screen")
       }
@@ -71,7 +71,7 @@ class RogueActuator(rogue: IRogue, recorder: IRecorder) extends IRogueActuator {
         rogue.sendKeypress(' ')
         update()
       case message =>
-        readEvent(message)
+        readEvent(message).map((_: Unit) => false)
     }
   }
 
