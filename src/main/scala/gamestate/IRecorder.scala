@@ -7,15 +7,20 @@ import rogue.Event.Event
 
 /** Input Interface for recorder that keeps track of current [[pGameState]] */
 trait IInputRecorder {
+  /** Record that an event has occurred */
   def recordEvent(e: Event): Either[String, Unit]
 
+  /** Record final score after game is over */
   def recordFinalScore(score: Int): Either[String, Unit]
 
+  /** Record current screen displayed by Rogue */
   def recordScreen(screen: String): Either[String, Unit]
 
+  /** Record that command has just been performed */
   def recordCommand(command: Command): Either[String, Unit]
 
-  def recordInventory(inventory: pInventory): Unit
+  /** Record current inventory displayed by Rogue */
+  def recordInventory(inventory: pInventory): Either[String, Unit]
 }
 
 /** Output interface for recorder that keeps track of current [[pGameState]] */
