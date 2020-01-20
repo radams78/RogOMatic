@@ -4,11 +4,11 @@ import domain.Domain._
 import domain.pLift
 import expert.pGameState
 import gamedata.{Fact, pInventory}
-import gamestate.IRecorder
+import gamestate.{IInputRecorder, IOutputRecorder}
 import rogue.Event.Event
 
 /** Object that receives information about the current state of the game of Rogue and maintains a [[pGameState]] object. */
-class Recorder extends IRecorder {
+class Recorder extends IInputRecorder with IOutputRecorder {
   def knowledge: Set[Fact] = _gameState.knowledge
 
   private var _gameOver: Boolean = false
@@ -19,7 +19,10 @@ class Recorder extends IRecorder {
 
   def getInventory: pInventory = _gameState.inventory
 
-  def recordScreen(_screen: String): Unit = _gameState = _gameState.copy(screen = pLift.Known(_screen))
+  def recordScreen(_screen: String): Either[String, Unit] = {
+    _gameState = _gameState.copy(screen = pLift.Known(_screen))
+    Right(())
+  }
 
   def getScore: Int = score
 
@@ -30,12 +33,16 @@ class Recorder extends IRecorder {
       _gameState = gs
     }
 
-  def recordFinalScore(_score: Int): Unit = {
+  def recordFinalScore(_score: Int): Either[String, Unit] = {
     _gameOver = true
     score = _score
+    Right(())
   }
 
-  def recordInventory(_inventory: pInventory): Unit = _gameState = _gameState.copy(inventory = _inventory)
+  def recordInventory(_inventory: pInventory): Either[String, Unit] = {
+    _gameState = _gameState.copy(inventory = _inventory)
+    Right(())
+  }
 
   def recordCommand(command: Command): Either[String, Unit] = for (gs <- _gameState.nextTurn.merge(pGameState(command)))
     yield {

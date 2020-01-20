@@ -1,13 +1,13 @@
 package rogomatic
 
 import expert.{Expert, Transparent}
-import gamestate.IRecorder
+import gamestate.IOutputRecorder
 import rogue.{IRogue, IRogueActuator, Recorder, RogueActuator}
 import view.IView
 
 import scala.annotation.tailrec
 
-class RogOMatic(recorder: IRecorder, player: IRogueActuator, expert: Expert) {
+class RogOMatic(recorder: IOutputRecorder, player: IRogueActuator, expert: Expert) {
   final def playRogue(view: IView): Unit = {
     @tailrec
     def playRogue0(): Unit = {
@@ -28,7 +28,7 @@ class RogOMatic(recorder: IRecorder, player: IRogueActuator, expert: Expert) {
 
 object RogOMatic {
   def transparent(rogue: IRogue, view: IView): RogOMatic = {
-    val recorder: IRecorder = new Recorder
+    val recorder: Recorder = new Recorder
     val player: IRogueActuator = new RogueActuator(rogue, recorder)
     val expert: Expert = new Transparent(view)
     new RogOMatic(recorder, player, expert)
