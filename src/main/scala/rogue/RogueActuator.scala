@@ -1,6 +1,7 @@
 package rogue
 
 import gamedata.pInventory
+import gamestate.IRecorder
 
 import scala.annotation.tailrec
 import scala.util.matching.Regex
@@ -12,7 +13,7 @@ trait IRogueActuator {
 }
 
 /** High-level communication with the game of Rogue. */
-class RogueActuator(rogue: IRogue, recorder: Recorder) extends IRogueActuator {
+class RogueActuator(rogue: IRogue, recorder: IRecorder) extends IRogueActuator {
   /** Start the game of Rogue and read the first screen and inventory */
   def start(): Either[String, Unit] = {
     rogue.start()
