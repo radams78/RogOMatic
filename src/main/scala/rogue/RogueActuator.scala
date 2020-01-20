@@ -6,22 +6,13 @@ import gamestate.IInputRecorder
 import scala.annotation.tailrec
 import scala.util.matching.Regex
 
-
-
 /** High-level communication with the game of Rogue. */
 class RogueActuator(rogue: IRogue, recorder: IInputRecorder) extends IRogueActuator {
   override def start(): Either[String, Unit] = {
     rogue.start()
     for {
-      _ <- update()
-      inventory <- {
-        rogue.sendKeypress('i')
-        val screen: String = rogue.getScreen
-        rogue.sendKeypress(' ')
-        pInventory.parseInventoryScreen(screen)
-      }
-      _ <- recorder.recordInventory(inventory)
-    } yield ()
+      gameOver <- update()
+    } yield if (gameOver) return Left("Error: game ended before first move") else ()
   }
 
   override def sendCommand(command: Command): Either[String, Unit] = {
@@ -31,20 +22,8 @@ class RogueActuator(rogue: IRogue, recorder: IInputRecorder) extends IRogueActua
            for (k <- keys) rogue.sendKeypress(k)
            update()
          }
-         _ <- if (!gameOver) {
-           for (inventory <- {
-             rogue.sendKeypress('i')
-             val screen: String = rogue.getScreen
-             rogue.sendKeypress(' ')
-             pInventory.parseInventoryScreen(screen)
-           }) yield {
-             recorder.recordInventory(inventory)
-             ()
-           }
-         } else Right(())
          } yield ()
   }
-
 
   @tailrec
   private def update(): Either[String, Boolean] = {
@@ -67,6 +46,13 @@ class RogueActuator(rogue: IRogue, recorder: IInputRecorder) extends IRogueActua
         update()
       case message =>
         readEvent(message).map((_: Unit) => false)
+        rogue.sendKeypress('i')
+        val screen: String = rogue.getScreen
+        rogue.sendKeypress(' ')
+        for {
+          inventory <- pInventory.parseInventoryScreen(screen)
+          _ <- recorder.recordInventory(inventory)
+        } yield false
     }
   }
 
