@@ -25,7 +25,8 @@ class RogueActuator(rogue: IRogue, recorder: IInputRecorder) extends IRogueActua
         rogue.sendKeypress(' ')
         pInventory.parseInventoryScreen(screen)
       }
-    } yield recorder.recordInventory(inventory)
+      _ <- recorder.recordInventory(inventory)
+    } yield ()
   }
 
   /** Send a command to Rogue, then read all possible information from the screen and inventory */
