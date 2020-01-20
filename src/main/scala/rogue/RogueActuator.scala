@@ -31,13 +31,8 @@ class RogueActuator(rogue: IRogue, recorder: IInputRecorder) extends IRogueActua
     val lines: Array[String] = screen.split("\n").map(_.padTo(80, ' '))
     recorder.recordScreen(screen)
     if (!lines.last.exists(_ != ' ')) {
-      screen match {
-        case RogueActuator.scoreRegex(score) =>
-          recorder.recordFinalScore(score.toInt)
-          return Right(true)
-        case _ =>
-          return Left(s"Could not parse screen: $screen")
-      }
+      for (_ <- readGameOverScreen(screen))
+        yield true
     }
     lines.head match {
       case RogueActuator.moreRegex(message) =>
@@ -53,6 +48,15 @@ class RogueActuator(rogue: IRogue, recorder: IInputRecorder) extends IRogueActua
           inventory <- pInventory.parseInventoryScreen(screen)
           _ <- recorder.recordInventory(inventory)
         } yield false
+    }
+  }
+
+  private def readGameOverScreen(screen: String): Either[String, Unit] = {
+    screen match {
+      case RogueActuator.scoreRegex(score) =>
+        recorder.recordFinalScore(score.toInt)
+        Right(())
+      case _ => Left(s"Could not parse screen: $screen")
     }
   }
 
