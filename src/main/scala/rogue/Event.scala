@@ -12,6 +12,9 @@ object Event extends Enumeration {
 
   implicit def toValue(x: Value): Val = x.asInstanceOf[Val]
 
+  protected case class Val(message: Regex, inference: pGameState) extends super.Val
+
+  /** Empty message line */
   val NONE: Event = Val("^ *$".r, pGameState())
 
   /** PC picked up a pile of gold */
@@ -28,7 +31,10 @@ object Event extends Enumeration {
   val PICKED_UP: Event = Val("""(.*) \(\w\)""".r.unanchored, pGameState()) // TODO Do anything here?
 
   /** PC read a scroll of remove curse */
-  val REMOVE_CURSE: Event = Val("""you feel as though someone is watching over you""".r.unanchored, pGameState(Command.Read(Scroll(ScrollPower.REMOVE_CURSE))))
+  val REMOVE_CURSE: Event = Val(
+    """you feel as though someone is watching over you""".r.unanchored,
+    pGameState(Command.Read(Scroll(ScrollPower.REMOVE_CURSE)))
+  )
 
   /** Given the top line of a screen from Rogue, return the corresponding [[Event]] if there is one; otherwise
    * returns an error message */
@@ -41,7 +47,4 @@ object Event extends Enumeration {
       .find(_.nonEmpty)
       .flatten
       .getOrElse(Left(s"Unrecognised event: $messageLine"))
-
-  protected case class Val(message: Regex, inference: pGameState) extends super.Val
-
 }
