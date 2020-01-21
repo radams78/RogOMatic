@@ -47,7 +47,7 @@ class Rogue extends IRogue {
    * Every line is padded with spaces; thus, for example, a blank line will be represented as 80 space characters. */
   override def getScreen: String = buffer.getScreenLines
 
-  /** Send the given character to Rogue as input from the player, then pause until screen stops updating. */
+  /** Send the given character to Rogue as input from the actuator, then pause until screen stops updating. */
   override def sendKeypress(keyPress: Char): Unit = {
     starter.sendBytes(Array(keyPress.toByte))
     //noinspection ZeroIndexToHead

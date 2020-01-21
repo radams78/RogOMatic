@@ -1,6 +1,5 @@
 package acceptance
 
-import domain.pLift
 import mock._
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
@@ -14,32 +13,38 @@ class RogueActuatorSpec extends AnyFeatureSpec with GivenWhenThen with Matchers 
     Scenario("User plays a game of Rogue in transparent mode and is killed") {
       Given("an instance of Rog-O-Matic")
       val rogue: MockRogue = DeathGame.deathGame
-      val recorder: Recorder = new Recorder
       val player: IRogueActuator = new RogueActuator(rogue)
 
       When("the user starts the game in transparent mode")
-      player.start()
-      
+      player.start() match {
+        case Right(_) => ()
+        case Left(err) => fail(err)
+      }
+
       And("the PC is killed")
-      player.sendCommand(Command.REST)
+      player.sendCommand(Command.REST) match {
+        case Right(report: Report.GameOver) => report.score should be(7)
+        case Right(report) => fail(s"Unexpected report: $report")
+        case Left(err) => fail(err)
+      }
 
       Then("the game should be over")
-      recorder.gameOver should be(true)
       And("the final score should be shown")
-      recorder.getScore should be(7)
     }
 
     Scenario("Rogue displays a -more- message") {
       Given("a game of Rogue in progress")
       val rogue: MockRogue = MoreGame.moreGame
-      val recorder: Recorder = new Recorder
       val player: IRogueActuator = new RogueActuator(rogue)
 
       When("the user enters a command to which Rogue responds with -more-")
-      player.sendCommand(Command.RIGHT)
+      player.sendCommand(Command.RIGHT) match {
+        case Right(report: Report.GameOn) => report.screen should be(MoreGame.thirdScreen)
+        case Right(report) => fail(s"Unexpected report: $report")
+        case Left(err) => fail(err)
+      }
 
       Then("the final screen should be displayed")
-      recorder.gameState.screen should be(pLift.Known(MoreGame.thirdScreen))
     }
   }
 }

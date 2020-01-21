@@ -66,7 +66,7 @@ class Transparent(view: IView) extends Expert {
 
   /** Play a game of rogue */
   /*  def playRogue(): Unit = {
-      player.start()
+      actuator.start()
       playRogue0()
   
       @tailrec
@@ -75,7 +75,7 @@ class Transparent(view: IView) extends Expert {
           view.displayGameOver(recorder.getScore)
         } else {
           displayAll()
-          player.sendCommand(getCommand) match {
+          actuator.sendCommand(getCommand) match {
             case Left(err) => view.displayError(err)
             case Right(_) => playRogue0()
           }

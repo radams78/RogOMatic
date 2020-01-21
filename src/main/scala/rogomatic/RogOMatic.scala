@@ -7,7 +7,7 @@ import view.IView
 
 import scala.annotation.tailrec
 
-class RogOMatic(player: IRogueActuator, expert: Expert) {
+class RogOMatic(actuator: IRogueActuator, expert: Expert) {
   final def playRogue(view: IView): Unit = {
     @tailrec
     def playRogue0(history: History): Unit = history match {
@@ -15,14 +15,14 @@ class RogOMatic(player: IRogueActuator, expert: Expert) {
       case gameOn: History.GameOn =>
         (for {
           cmd <- expert.advice(gameOn)
-          report <- player.sendCommand(cmd)
+          report <- actuator.sendCommand(cmd)
         } yield (cmd, report)) match {
           case Left(err) => view.displayError(err)
           case Right((cmd, report)) => playRogue0(gameOn.nextMove(cmd, report))
         }
     }
 
-    player.start() match {
+    actuator.start() match {
       case Left(err) => view.displayError(err)
       case Right(report) => playRogue0(History.FirstMove(report))
     }
