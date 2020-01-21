@@ -30,7 +30,11 @@ object pItem {
 
   implicit def providesKnowledge: ProvidesKnowledge[pItem] = (self: pItem) => self.implications
 
-  // TODO For every other object: merging with UNKNOWN should not change object
+  /** Unknown item
+   *
+   * Contract: for any item x, 
+   * x.merge(UNKNOWN) == x
+   * UNKNOWN.merge(x) == x */
   case object UNKNOWN extends pItem {
     override def merge(that: pItem): Either[String, pItem] = Right(that)
 

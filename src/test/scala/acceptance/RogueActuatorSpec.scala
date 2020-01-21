@@ -33,7 +33,7 @@ class RogueActuatorSpec extends AnyFeatureSpec with GivenWhenThen with Matchers 
       Given("a game of Rogue in progress")
       val rogue: MockRogue = MoreGame.moreGame
       val recorder: Recorder = new Recorder
-      val player: IRogueActuator = new RogueActuator(rogue) // TODO Duplication
+      val player: IRogueActuator = new RogueActuator(rogue)
 
       When("the user enters a command to which Rogue responds with -more-")
       player.sendCommand(Command.RIGHT)
