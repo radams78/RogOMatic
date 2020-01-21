@@ -11,31 +11,28 @@ import rogue._
 /** Unit tests for [[RogueActuator]] class */
 class RogueActuatorTest extends AnyFlatSpec with Matchers {
 
-  trait Fixture {
-  }
-
-  trait ZeroMoveGame extends Fixture {
+  trait ZeroMoveGame {
     val game: MockRogue = mock.ZeroMoveGame.zeroMoveGame
     val player: IRogueActuator = new RogueActuator(game)
   }
 
-  trait EmptyInventoryGame extends Fixture {
+  trait EmptyInventoryGame {
     val player: IRogueActuator = new RogueActuator(ZeroMoveGame.emptyInventoryGame)
   }
 
-  trait TestGame extends Fixture {
+  trait TestGame {
     val player: IRogueActuator = new RogueActuator(TestGame.testGame)
   }
 
-  trait DeathGame extends Fixture {
+  trait DeathGame {
     val player: IRogueActuator = new RogueActuator(DeathGame.deathGame)
   }
 
-  trait MoreGame extends Fixture {
+  trait MoreGame {
     val player: IRogueActuator = new RogueActuator(MoreGame.moreGame)
   }
 
-  trait ReadScroll extends Fixture {
+  trait ReadScroll {
     val player: IRogueActuator = new RogueActuator(MockRogue.Build
       .WaitForCommand("readScroll state 1", TestGame.secondScreen, TestGame.secondInventoryScreen, 'r')
       .Wait(TestGame.thirdScreen, 'f')
