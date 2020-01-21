@@ -1,14 +1,13 @@
 package view
 
-import gamedata.{Fact, pInventory}
-import rogue.Command
+import gamedata.{Fact, pCommand, pInventory}
 
 /** Interface for the IO view. The implementations should be Humble Object */
 trait IView {
   def displayFact(fact: Fact): Unit
 
   /** Get a command from the user */
-  def getCommand: Command
+  def getCommand: pCommand
 
   /** Display an error message */
   def displayError(s: String): Unit

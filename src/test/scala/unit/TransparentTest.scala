@@ -4,10 +4,9 @@ import domain.pLift
 import expert.{Transparent, pGameState}
 import gamedata.item.magic.scroll.Scroll._
 import gamedata.item.magic.scroll.ScrollPower
-import gamedata.{Fact, pInventory}
+import gamedata.{Fact, pCommand, pInventory}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import rogue.Command
 import view.IView
 
 class TransparentTest extends AnyFlatSpec with Matchers {
@@ -22,7 +21,7 @@ class TransparentTest extends AnyFlatSpec with Matchers {
 
     def displayedPower: Boolean = _displayedPower
 
-    override def getCommand: Command = fail("User was asked for command")
+    override def getCommand: pCommand = fail("User was asked for command")
 
     override def displayError(err: String): Unit = fail(err)
 

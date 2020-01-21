@@ -1,8 +1,7 @@
 package gamestate
 
 import expert.pGameState
-import gamedata.pInventory
-import rogue.Command
+import gamedata.{pCommand, pInventory}
 import rogue.Event.Event
 
 /** Input Interface for recorder that keeps track of current [[pGameState]] */
@@ -17,7 +16,7 @@ trait IInputRecorder {
   def recordScreen(screen: String): Either[String, Unit]
 
   /** Record that command has just been performed */
-  def recordCommand(command: Command): Either[String, Unit]
+  def recordCommand(command: pCommand): Either[String, Unit]
 
   /** Record current inventory displayed by Rogue */
   def recordInventory(inventory: pInventory): Either[String, Unit]

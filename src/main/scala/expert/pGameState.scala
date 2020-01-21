@@ -4,11 +4,9 @@ import domain.Domain._
 import domain.{Domain, pLift}
 import gamedata.ProvidesKnowledge._
 import gamedata.UsesKnowledge._
-import gamedata.{Fact, ProvidesKnowledge, pInventory}
-import rogue.Command
-import rogue.Command._
+import gamedata.{Fact, ProvidesKnowledge, pCommand, pInventory}
 
-case class pGameState(screen: pLift[String], inventory: pInventory, knowledge: Set[Fact], lastCommand: pLift[Option[Command]]) {
+case class pGameState(screen: pLift[String], inventory: pInventory, knowledge: Set[Fact], lastCommand: pLift[Option[pCommand]]) {
   def nextTurn: pGameState = pGameState(pLift.UNKNOWN, pInventory(), knowledge, pLift.UNKNOWN)
 
   def complete: Either[String, pGameState] = for {
@@ -26,7 +24,7 @@ case class pGameState(screen: pLift[String], inventory: pInventory, knowledge: S
       case pLift.Known(None) => Right(pLift.Known(None))
       case pLift.Known(Some(command)) => for {
         command2 <- command.infer(inventory)
-        command3 <- knowledge.foldLeft[Either[String, Command]](Right(command2))({
+        command3 <- knowledge.foldLeft[Either[String, pCommand]](Right(command2))({
           case (Left(err), _) => Left(err)
           case (Right(cmd), fact) => cmd.infer(fact)
         })
@@ -52,7 +50,7 @@ case class pGameState(screen: pLift[String], inventory: pInventory, knowledge: S
 object pGameState {
   def apply(): pGameState = new pGameState(pLift.UNKNOWN, pInventory(), Set(), pLift.UNKNOWN)
 
-  def apply(lastCommand: Command): pGameState = new pGameState(pLift.UNKNOWN, pInventory(), Set(), pLift.Known(Some(lastCommand)))
+  def apply(lastCommand: pCommand): pGameState = new pGameState(pLift.UNKNOWN, pInventory(), Set(), pLift.Known(Some(lastCommand)))
 
   implicit def domain: Domain[pGameState] = (x: pGameState, y: pGameState) => for {
     screen <- x.screen.merge(y.screen)

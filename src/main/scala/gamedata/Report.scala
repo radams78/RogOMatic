@@ -1,9 +1,8 @@
-package rogue
+package gamedata
 
 import domain.Domain._
 import domain.pLift
 import expert.pGameState
-import gamedata.pInventory
 import rogue.Event.Event
 
 /** Report returned from parsing screens from Rogue */

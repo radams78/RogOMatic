@@ -3,6 +3,7 @@ package rogue
 import expert.pGameState
 import gamedata.item.magic.potion.{Potion, PotionPower}
 import gamedata.item.magic.scroll.{Scroll, ScrollPower}
+import gamedata.pCommand
 
 import scala.util.matching.Regex
 
@@ -22,7 +23,7 @@ object Event extends Enumeration {
 
   /** PC quaffed a potion of healing */
   val HEALING: Event =
-    Val("""you begin to feel better""".r.unanchored, pGameState(Command.Quaff(Potion(PotionPower.HEALING))))
+    Val("""you begin to feel better""".r.unanchored, pGameState(pCommand.Quaff(Potion(PotionPower.HEALING))))
 
   /** Monster attacked PC and missed */
   val MISSED_BY: Event = Val("""the (.*) misses""".r.unanchored, pGameState()) // TODO Monster is awake
@@ -33,7 +34,7 @@ object Event extends Enumeration {
   /** PC read a scroll of remove curse */
   val REMOVE_CURSE: Event = Val(
     """you feel as though someone is watching over you""".r.unanchored,
-    pGameState(Command.Read(Scroll(ScrollPower.REMOVE_CURSE)))
+    pGameState(pCommand.Read(Scroll(ScrollPower.REMOVE_CURSE)))
   )
 
   /** Given the top line of a screen from Rogue, return the corresponding [[Event]] if there is one; otherwise

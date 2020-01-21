@@ -1,8 +1,7 @@
-package rogue
+package gamedata
 
 import domain.Domain
 import domain.Domain._
-import gamedata._
 import gamedata.item.magic.potion.Potion
 import gamedata.item.magic.potion.Potion._
 import gamedata.item.magic.scroll.Scroll
@@ -18,25 +17,26 @@ import gamedata.item.pItem
  * - command.infer(fact).implications contains fact */
 // TODO Validation 
 // TODO Prove invariants
-sealed trait Command {
+sealed trait pCommand {
   /** Facts that can be deduced from this command */
   def implications: Set[Fact] = Set() // TODO
 
   /** Combine two pieces of information about a command */
-  def merge(that: Command): Either[String, Command]
+  def merge(that: pCommand): Either[String, pCommand]
 
   /** Keypresses to send to Rogue to execute command */
   def keypresses: Either[String, Seq[Char]]
 
-  private def infer(fact: Fact): Either[String, Command] = Right(this) // TODO
+  private def infer(fact: Fact): Either[String, pCommand] = Right(this) // TODO
 }
 
-object Command {
+object pCommand {
+
   /** Drink a potion */
-  case class Quaff(slot: pSlot, potion: Potion) extends Command {
+  case class Quaff(slot: pSlot, potion: Potion) extends pCommand {
     override def keypresses: Either[String, Seq[Char]] = for (k <- slot.keypress) yield Seq('q', k)
 
-    override def merge(that: Command): Either[String, Command] = that match {
+    override def merge(that: pCommand): Either[String, pCommand] = that match {
       case Quaff(thatSlot, thatPotion) => for {
         inferredSlot <- slot.merge(thatSlot)
         inferredPotion <- potion.merge(thatPotion)
@@ -59,10 +59,10 @@ object Command {
   }
 
   /** Read a scroll */
-  case class Read(slot: pSlot, scroll: Scroll) extends Command {
+  case class Read(slot: pSlot, scroll: Scroll) extends pCommand {
     override def keypresses: Either[String, Seq[Char]] = for (k <- slot.keypress) yield Seq('r', k)
 
-    override def merge(that: Command): Either[String, Command] = that match {
+    override def merge(that: pCommand): Either[String, pCommand] = that match {
       case Read(thatSlot, thatScroll) => for {
         inferredSlot <- slot.merge(thatSlot)
         inferredScroll <- scroll.merge(thatScroll)
@@ -88,10 +88,10 @@ object Command {
   }
 
   /** Throw an item */
-  case class Throw(dir: Direction, slot: Slot, item: pItem) extends Command {
+  case class Throw(dir: Direction, slot: Slot, item: pItem) extends pCommand {
     override val keypresses: Either[String, Seq[Char]] = Right(Seq('t', dir.keypress, slot.label))
 
-    override def merge(that: Command): Either[String, Command] = that match {
+    override def merge(that: pCommand): Either[String, pCommand] = that match {
       case Throw(thatDir, thatSlot, thatItem) => for {
         inferredDir <- dir.merge(thatDir)
         inferredSlot <- slot.merge(thatSlot)
@@ -108,10 +108,10 @@ object Command {
   }
 
   /** Wield a weapon */
-  case class Wield(slot: Slot) extends Command {
+  case class Wield(slot: Slot) extends pCommand {
     override val keypresses: Either[String, Seq[Char]] = Right(Seq('w', slot.label))
 
-    override def merge(that: Command): Either[String, Command] = that match {
+    override def merge(that: pCommand): Either[String, pCommand] = that match {
       case Wield(thatSlot) => for (inferredSlot <- slot.merge(thatSlot)) yield Wield(inferredSlot)
       case _ => Left(s"Incompatible commands: $this and $that")
     }
@@ -120,108 +120,108 @@ object Command {
   }
 
   /** Rest */
-  case object REST extends Command {
+  case object REST extends pCommand {
     override val keypresses: Either[String, Seq[Char]] = Right(Seq('.'))
 
-    override def merge(that: Command): Either[String, Command] = that match {
+    override def merge(that: pCommand): Either[String, pCommand] = that match {
       case REST => Right(REST)
       case _ => Left(s"Incompatible commands: $this and $that")
     }
   }
 
   /** Move up */
-  case object UP extends Command {
+  case object UP extends pCommand {
     override val keypresses: Either[String, Seq[Char]] = Right(Seq('j'))
 
-    override def merge(that: Command): Either[String, Command] = that match {
+    override def merge(that: pCommand): Either[String, pCommand] = that match {
       case UP => Right(UP)
       case _ => Left(s"Incompatible commands: $this and $that")
     }
   }
 
   /** Move down */
-  case object DOWN extends Command {
+  case object DOWN extends pCommand {
     override val keypresses: Either[String, Seq[Char]] = Right(Seq('k'))
 
-    override def merge(that: Command): Either[String, Command] = that match {
+    override def merge(that: pCommand): Either[String, pCommand] = that match {
       case DOWN => Right(DOWN)
       case _ => Left(s"Incompatible commands: $this and $that")
     }
   }
 
   /** Move left */
-  case object LEFT extends Command {
+  case object LEFT extends pCommand {
     override val keypresses: Either[String, Seq[Char]] = Right(Seq('h'))
 
-    override def merge(that: Command): Either[String, Command] = that match {
+    override def merge(that: pCommand): Either[String, pCommand] = that match {
       case LEFT => Right(LEFT)
       case _ => Left(s"Incompatible commands: $this and $that")
     }
   }
 
   /** Move right */
-  case object RIGHT extends Command {
+  case object RIGHT extends pCommand {
     override val keypresses: Either[String, Seq[Char]] = Right(Seq('l'))
 
-    override def merge(that: Command): Either[String, Command] = that match {
+    override def merge(that: pCommand): Either[String, pCommand] = that match {
       case RIGHT => Right(RIGHT)
       case _ => Left(s"Incompatible commands: $this and $that")
     }
   }
 
   /** Move up left */
-  case object UPLEFT extends Command {
+  case object UPLEFT extends pCommand {
     override val keypresses: Either[String, Seq[Char]] = Right(Seq('y'))
 
-    override def merge(that: Command): Either[String, Command] = that match {
+    override def merge(that: pCommand): Either[String, pCommand] = that match {
       case UPLEFT => Right(UPLEFT)
       case _ => Left(s"Incompatible commands: $this and $that")
     }
   }
 
   /** Move up right */
-  case object UPRIGHT extends Command {
+  case object UPRIGHT extends pCommand {
     override val keypresses: Either[String, Seq[Char]] = Right(Seq('u'))
 
-    override def merge(that: Command): Either[String, Command] = that match {
+    override def merge(that: pCommand): Either[String, pCommand] = that match {
       case UPRIGHT => Right(UPRIGHT)
       case _ => Left(s"Incompatible commands: $this and $that")
     }
   }
 
   /** Move down right */
-  case object DOWNRIGHT extends Command {
+  case object DOWNRIGHT extends pCommand {
     override val keypresses: Either[String, Seq[Char]] = Right(Seq('n'))
 
-    override def merge(that: Command): Either[String, Command] = that match {
+    override def merge(that: pCommand): Either[String, pCommand] = that match {
       case DOWNRIGHT => Right(DOWNRIGHT)
       case _ => Left(s"Incompatible commands: $this and $that")
     }
   }
 
   /** Go downstairs */
-  case object DOWNSTAIRS extends Command {
+  case object DOWNSTAIRS extends pCommand {
     override val keypresses: Either[String, Seq[Char]] = Right(Seq('>'))
 
-    override def merge(that: Command): Either[String, Command] = that match {
+    override def merge(that: pCommand): Either[String, pCommand] = that match {
       case DOWNSTAIRS => Right(DOWNSTAIRS)
       case _ => Left(s"Incompatible commands: $this and $that")
     }
   }
 
   /** Move down left */
-  case object DOWNLEFT extends Command {
+  case object DOWNLEFT extends pCommand {
     override val keypresses: Either[String, Seq[Char]] = Right(Seq('b'))
 
-    override def merge(that: Command): Either[String, Command] = that match {
+    override def merge(that: pCommand): Either[String, pCommand] = that match {
       case DOWNLEFT => Right(DOWNLEFT)
       case _ => Left(s"Incompatible commands: $this and $that")
     }
   }
 
-  implicit def domain: Domain[Command] = (x: Command, y: Command) => x.merge(y)
+  implicit def domain: Domain[pCommand] = (x: pCommand, y: pCommand) => x.merge(y)
 
-  implicit def providesKnowledge: ProvidesKnowledge[Command] = (self: Command) => self.implications
+  implicit def providesKnowledge: ProvidesKnowledge[pCommand] = (self: pCommand) => self.implications
 
-  implicit def usesKnowledge: UsesKnowledge[Command] = (self: Command, fact: Fact) => self.infer(fact)
+  implicit def usesKnowledge: UsesKnowledge[pCommand] = (self: pCommand, fact: Fact) => self.infer(fact)
 }
