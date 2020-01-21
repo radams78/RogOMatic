@@ -1,9 +1,10 @@
 package rogue
 
 import expert.pGameState
+import gamedata.ProvidesKnowledge._
 import gamedata.item.magic.potion.{Potion, PotionPower}
 import gamedata.item.magic.scroll.{Scroll, ScrollPower}
-import gamedata.pCommand
+import gamedata.{ProvidesKnowledge, pCommand}
 
 import scala.util.matching.Regex
 
@@ -14,6 +15,8 @@ object Event extends Enumeration {
   implicit def toValue(x: Value): Val = x.asInstanceOf[Val]
 
   protected case class Val(message: Regex, inference: pGameState) extends super.Val
+
+  implicit def providesKnowledge: ProvidesKnowledge[Event] = (self: Event) => self.inference.implications
 
   /** Empty message line */
   val NONE: Event = Val("^ *$".r, pGameState())

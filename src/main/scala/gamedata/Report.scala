@@ -3,6 +3,7 @@ package gamedata
 import domain.Domain._
 import domain.pLift
 import expert.pGameState
+import gamedata.ProvidesKnowledge._
 import rogue.Event.Event
 
 /** Report returned from parsing screens from Rogue */
@@ -25,6 +26,12 @@ object Report {
       }
       })
     }
+  }
+
+  object GameOn {
+    implicit def providesKnowledge: ProvidesKnowledge[GameOn] = (self: GameOn) => self.inventory.implications.union(
+      self.events.flatMap((e: Event) => e.implications)
+    )
   }
 
   case class GameOver(override val screen: String, score: Int) extends Report

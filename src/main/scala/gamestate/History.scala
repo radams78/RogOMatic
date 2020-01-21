@@ -3,6 +3,7 @@ package gamestate
 import domain.Domain._
 import expert.pGameState
 import gamedata.ProvidesKnowledge._
+import gamedata.UsesKnowledge._
 import gamedata._
 
 /** The history of the game, holding all commands sent to Rogue and all reports retrieved from Rogue */
@@ -12,7 +13,7 @@ object History {
 
   /** The history of a game that is not yet finished */
   trait GameOn extends History {
-    def inventory: Either[String, pInventory] = for (gs <- gameState) yield gs.inventory
+    def inventory: Either[String, pInventory]
 
     def screen: String
 
@@ -42,6 +43,8 @@ object History {
       } yield gs2
 
     override def screen: String = report.screen
+
+    override def inventory: Either[String, pInventory] = Right(report.inventory)
   }
 
   /** The history of a game with one or more moves that is not yet finished */
@@ -54,6 +57,13 @@ object History {
     } yield gs4
 
     override def screen: String = report.screen
+
+    override def inventory: Either[String, pInventory] = for {
+      i1 <- history.inventory
+      i2 <- i1.infer(command)
+      i3 <- i2.merge(report.inventory)
+      i4 <- i3.infer(report) // TODO Ugly?
+    } yield i4
   }
 
   /** The complete history of a finished game of Rogue */
