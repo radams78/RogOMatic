@@ -37,7 +37,7 @@ class RogueActuator(rogue: IRogue) extends IRogueActuator {
     }
     lines.head match {
       case RogueActuator.moreRegex(message) =>
-        readEvent(message) match {
+        Event.interpretMessage(message) match {
           case Left(err) => Left(err)
           case Right(event) =>
             rogue.sendKeypress(' ')
@@ -45,7 +45,7 @@ class RogueActuator(rogue: IRogue) extends IRogueActuator {
         }
       case message =>
         for {
-          event <- readEvent(message)
+          event <- Event.interpretMessage(message)
           inventory <- {
             rogue.sendKeypress('i')
             val screen: String = rogue.getScreen
@@ -63,8 +63,6 @@ class RogueActuator(rogue: IRogue) extends IRogueActuator {
       case _ => Left(s"Could not parse screen: $screen")
     }
   }
-
-  private def readEvent(message: String): Either[String, Event] = Event.interpretMessage(message) // TODO Inline?
 }
 
 object RogueActuator {
