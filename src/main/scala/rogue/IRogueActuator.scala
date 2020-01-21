@@ -9,5 +9,5 @@ trait IRogueActuator {
 
   /** Start the game of Rogue and read the first screen and inventory. Returns Right(()) if all information successfully
    * read, Left(error message) if we read information incompatible with information already known. */
-  def start(): Either[String, Report]
+  def start(): Either[String, Report.GameOn]
 }

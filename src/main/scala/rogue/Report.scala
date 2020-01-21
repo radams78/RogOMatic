@@ -1,5 +1,8 @@
 package rogue
 
+import domain.Domain._
+import domain.pLift
+import expert.pGameState
 import gamedata.pInventory
 import rogue.Event.Event
 
@@ -14,7 +17,16 @@ object Report {
   /** Game is still in progress
    *
    * @param events Set of events reported by message lines */
-  case class GameOn(override val screen: String, inventory: pInventory, events: Set[Event]) extends Report
+  case class GameOn(override val screen: String, inventory: pInventory, events: Set[Event]) extends Report {
+    def inferences: Either[String, pGameState] = {
+      val gs0: pGameState = pGameState(pLift.Known(screen), inventory, Set(), pLift.UNKNOWN)
+      events.foldLeft[Either[String, pGameState]](Right(gs0))({ case (x, event) => x match {
+        case Right(gs) => gs.merge(event.inference)
+        case Left(err) => Left(err)
+      }
+      })
+    }
+  }
 
   case class GameOver(override val screen: String, score: Int) extends Report
 

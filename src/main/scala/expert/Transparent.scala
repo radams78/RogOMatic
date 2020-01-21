@@ -3,13 +3,14 @@ package expert
 import domain.pLift
 import gamedata.ProvidesKnowledge._
 import gamedata._
+import rogomatic.History
 import rogue._
 import view.IView
 
 /** An Expert is an object that takes the current state of the game, including its full history, and chooses the
  * next command to play. */
 trait Expert {
-  def advice(gameState: pGameState): Command
+  def advice(history: History.GameOn): Either[String, Command]
 }
 
 /** Expert for playing the game in transparent mode, i.e. interactively, getting moves from the user one by one. */
@@ -55,8 +56,8 @@ class Transparent(view: IView) extends Expert {
           getCommand(inventory)
       }
     } */
-  override def advice(gameState: pGameState): Command = {
-    displayAll(gameState)
+  override def advice(history: History.GameOn): Either[String, Command] = for {gs <- history.gameState} yield {
+    displayAll(gs)
     getCommand
   }
 

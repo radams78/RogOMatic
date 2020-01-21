@@ -1,37 +1,76 @@
 package rogomatic
 
-import expert.{Expert, Transparent}
-import gamestate.IOutputRecorder
-import rogue.{IRogue, IRogueActuator, Recorder, RogueActuator}
+import domain.Domain._
+import expert.{Expert, Transparent, pGameState}
+import rogue._
 import view.IView
 
 import scala.annotation.tailrec
 
-class RogOMatic(recorder: IOutputRecorder, player: IRogueActuator, expert: Expert) {
+class RogOMatic(player: IRogueActuator, expert: Expert) {
   final def playRogue(view: IView): Unit = {
     @tailrec
-    def playRogue0(): Unit = {
-      if (recorder.gameOver) {
-        view.displayGameOver(recorder.getScore)
-      } else {
-        player.sendCommand(expert.advice(recorder.gameState)) match {
+    def playRogue0(history: History): Unit = history match {
+      case gameOver: History.GameOver => view.displayGameOver(gameOver.score)
+      case gameOn: History.GameOn =>
+        (for {
+          cmd <- expert.advice(gameOn)
+          report <- player.sendCommand(cmd)
+        } yield (cmd, report)) match {
           case Left(err) => view.displayError(err)
-          case Right(_) => playRogue0()
+          case Right((cmd, report)) => playRogue0(gameOn.nextMove(cmd, report))
         }
-      }
     }
 
-    player.start()
-    playRogue0()
+    player.start() match {
+      case Left(err) => view.displayError(err)
+      case Right(report) => playRogue0(History.FirstMove(report))
+    }
   }
 }
 
 object RogOMatic {
   def transparent(rogue: IRogue, view: IView): RogOMatic = {
-    val recorder: Recorder = new Recorder
     val player: IRogueActuator = new RogueActuator(rogue)
     val expert: Expert = new Transparent(view)
-    new RogOMatic(recorder, player, expert)
+    new RogOMatic(player, expert)
+  }
+
+}
+
+trait History
+
+object History {
+
+  trait GameOn extends History {
+    def nextMove(cmd: Command, report: Report): History = report match {
+      case report: Report.GameOn => NextMove(this, cmd, report)
+      case report: Report.GameOver => GameOver(this, cmd, report)
+    }
+
+    def gameState: Either[String, pGameState]
+  }
+
+  case class FirstMove(report: Report.GameOn) extends GameOn {
+    override def gameState: Either[String, pGameState] =
+      for {
+        gs <- report.inferences
+        gs2 <- pGameState().merge(gs)
+      } yield gs2
+  }
+
+  case class NextMove(history: GameOn, command: Command, report: Report.GameOn) extends GameOn {
+    override def gameState: Either[String, pGameState] = for {
+      gs <- history.gameState
+      gs2 <- gs.merge(pGameState(command))
+      gs3 <- report.inferences
+      gs4 <- gs2.merge(gs3)
+    } yield gs4
+  }
+
+  case class GameOver(history: GameOn, command: Command, report: Report.GameOver) extends History {
+    def score: Int = report.score
+
   }
 
 }
