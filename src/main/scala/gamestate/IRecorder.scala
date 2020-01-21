@@ -1,6 +1,5 @@
 package gamestate
 
-import expert.pGameState
 import gamedata.{pCommand, pInventory}
 import rogue.Event.Event
 

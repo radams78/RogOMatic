@@ -1,10 +1,10 @@
 package rogue
 
-import expert.pGameState
 import gamedata.ProvidesKnowledge._
 import gamedata.item.magic.potion.{Potion, PotionPower}
 import gamedata.item.magic.scroll.{Scroll, ScrollPower}
 import gamedata.{ProvidesKnowledge, pCommand}
+import gamestate.pGameState
 
 import scala.util.matching.Regex
 

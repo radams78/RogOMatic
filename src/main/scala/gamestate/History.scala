@@ -1,7 +1,6 @@
 package gamestate
 
 import domain.Domain._
-import expert.pGameState
 import gamedata.ProvidesKnowledge._
 import gamedata.UsesKnowledge._
 import gamedata._

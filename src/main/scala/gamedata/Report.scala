@@ -2,8 +2,8 @@ package gamedata
 
 import domain.Domain._
 import domain.pLift
-import expert.pGameState
 import gamedata.ProvidesKnowledge._
+import gamestate.pGameState
 import rogue.Event.Event
 
 /** Report returned from parsing screens from Rogue */
