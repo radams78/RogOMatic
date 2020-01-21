@@ -2,7 +2,8 @@ package gamestate
 
 import domain.Domain._
 import expert.pGameState
-import gamedata.{Report, pCommand, pInventory}
+import gamedata.ProvidesKnowledge._
+import gamedata._
 
 /** The history of the game, holding all commands sent to Rogue and all reports retrieved from Rogue */
 trait History
@@ -23,6 +24,13 @@ object History {
 
     /** The current stae of the game that can be inferred from the history */
     def gameState: Either[String, pGameState]
+  }
+
+  object GameOn {
+    implicit def providesKnowledge: ProvidesKnowledge[GameOn] = (self: GameOn) => self.gameState match {
+      case Left(_) => Set()
+      case Right(gs) => gs.implications
+    }
   }
 
   /** The history of a game before the first move is made */

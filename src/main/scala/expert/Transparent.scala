@@ -19,7 +19,7 @@ class Transparent(view: IView) extends Expert {
   } yield {
     view.displayScreen(history.screen)
     view.displayInventory(inventory)
-    for (fact <- gs.implications) view.displayFact(fact)
+    for (fact <- history.implications) view.displayFact(fact)
     view.getCommand
   }
 }
