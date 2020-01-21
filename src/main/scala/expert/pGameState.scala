@@ -6,7 +6,11 @@ import gamedata.ProvidesKnowledge._
 import gamedata.UsesKnowledge._
 import gamedata.{Fact, ProvidesKnowledge, pCommand, pInventory}
 
-case class pGameState(screen: pLift[String], inventory: pInventory, knowledge: Set[Fact], lastCommand: pLift[Option[pCommand]]) {
+/** Partial information about the current state of the game */
+case class pGameState(screen: pLift[String],
+                      inventory: pInventory,
+                      knowledge: Set[Fact],
+                      lastCommand: pLift[Option[pCommand]]) {
   def nextTurn: pGameState = pGameState(pLift.UNKNOWN, pInventory(), knowledge, pLift.UNKNOWN)
 
   def complete: Either[String, pGameState] = for {

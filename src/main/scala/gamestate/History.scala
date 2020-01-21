@@ -2,7 +2,7 @@ package gamestate
 
 import domain.Domain._
 import expert.pGameState
-import gamedata.{Report, pCommand}
+import gamedata.{Report, pCommand, pInventory}
 
 /** The history of the game, holding all commands sent to Rogue and all reports retrieved from Rogue */
 trait History
@@ -11,6 +11,10 @@ object History {
 
   /** The history of a game that is not yet finished */
   trait GameOn extends History {
+    def inventory: Either[String, pInventory] = for (gs <- gameState) yield gs.inventory
+
+    def screen: String
+
     /** Add a move to the history */
     def nextMove(cmd: pCommand, report: Report): History = report match {
       case report: Report.GameOn => NextMove(this, cmd, report)
@@ -28,6 +32,8 @@ object History {
         gs <- report.inferences
         gs2 <- pGameState().merge(gs)
       } yield gs2
+
+    override def screen: String = report.screen
   }
 
   /** The history of a game with one or more moves that is not yet finished */
@@ -38,6 +44,8 @@ object History {
       gs3 <- report.inferences
       gs4 <- gs2.merge(gs3)
     } yield gs4
+
+    override def screen: String = report.screen
   }
 
   /** The complete history of a finished game of Rogue */
