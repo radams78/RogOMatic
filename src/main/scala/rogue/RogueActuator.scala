@@ -1,70 +1,70 @@
 package rogue
 
 import gamedata.pInventory
-import gamestate.IInputRecorder
+import rogue.Event.Event
 
 import scala.annotation.tailrec
 import scala.util.matching.Regex
 
 /** High-level communication with the game of Rogue. */
-class RogueActuator(rogue: IRogue, recorder: IInputRecorder) extends IRogueActuator {
-  override def start(): Either[String, Unit] = {
+class RogueActuator(rogue: IRogue) extends IRogueActuator {
+  override def start(): Either[String, Report.GameOn] = {
     rogue.start()
     for {
-      gameOver <- update()
-    } yield if (gameOver) return Left("Error: game ended before first move") else ()
+      report <- update(Set())
+    } yield report match {
+      case r: Report.GameOn => r
+      case _: Report.GameOver => return Left("Game over before first move")
+    }
   }
 
-  override def sendCommand(command: Command): Either[String, Unit] = {
-    for {_ <- recorder.recordCommand(command)
-         keys <- command.keypresses
-         gameOver <- {
+  override def sendCommand(command: Command): Either[String, Report] = {
+    for {keys <- command.keypresses
+         report <- {
            for (k <- keys) rogue.sendKeypress(k)
-           update()
+           update(Set())
          }
-         } yield ()
+         } yield report
   }
 
   @tailrec
-  private def update(): Either[String, Boolean] = {
+  private def update(events: Set[Event]): Either[String, Report] = {
     val screen: String = rogue.getScreen
     val lines: Array[String] = screen.split("\n").map(_.padTo(80, ' '))
-    recorder.recordScreen(screen)
-    if (!lines.last.exists(_ != ' ')) {
-      for (_ <- readGameOverScreen(screen))
-        yield true
+    if (!lines.last.exists(_ != ' ')) return {
+      for (score <- readGameOverScreen(screen))
+        yield Report.GameOver(screen, score)
     }
     lines.head match {
       case RogueActuator.moreRegex(message) =>
-        readEvent(message)
-        rogue.sendKeypress(' ')
-        update()
+        readEvent(message) match {
+          case Left(err) => Left(err)
+          case Right(event) =>
+            rogue.sendKeypress(' ')
+            update(events + event)
+        }
       case message =>
-        readEvent(message).map((_: Unit) => false)
-        rogue.sendKeypress('i')
-        val screen: String = rogue.getScreen
-        rogue.sendKeypress(' ')
         for {
-          inventory <- pInventory.parseInventoryScreen(screen)
-          _ <- recorder.recordInventory(inventory)
-        } yield false
+          event <- readEvent(message)
+          inventory <- {
+            rogue.sendKeypress('i')
+            val screen: String = rogue.getScreen
+            rogue.sendKeypress(' ')
+            pInventory.parseInventoryScreen(screen)
+          }
+        } yield Report.GameOn(screen, inventory, events + event)
     }
   }
 
-  private def readGameOverScreen(screen: String): Either[String, Unit] = {
+  private def readGameOverScreen(screen: String): Either[String, Int] = {
     screen match {
       case RogueActuator.scoreRegex(score) =>
-        recorder.recordFinalScore(score.toInt)
-        Right(())
+        Right(score.toInt) // TODO Catch error?
       case _ => Left(s"Could not parse screen: $screen")
     }
   }
 
-  private def readEvent(message: String): Either[String, Unit] = {
-    for {e <- Event.interpretMessage(message)
-         _ <- recorder.recordEvent(e)
-         } yield ()
-  }
+  private def readEvent(message: String): Either[String, Event] = Event.interpretMessage(message) // TODO Inline?
 }
 
 object RogueActuator {

@@ -12,7 +12,7 @@ object Event extends Enumeration {
 
   implicit def toValue(x: Value): Val = x.asInstanceOf[Val]
 
-  val NONE: Event = Val((" " * 80).r, pGameState())
+  val NONE: Event = Val("^ *$".r, pGameState())
 
   /** PC picked up a pile of gold */
   val GOLD: Event = Val("""(\d+) pieces of gold""".r.unanchored, pGameState())

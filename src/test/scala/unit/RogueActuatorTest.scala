@@ -1,9 +1,7 @@
 package unit
 
-import domain.pLift
 import gamedata._
-import gamedata.item.magic.scroll.Scroll._
-import gamedata.item.magic.scroll.{Scroll, ScrollPower}
+import gamedata.item.magic.scroll.Scroll
 import gamedata.item.pItem
 import mock._
 import org.scalatest.flatspec.AnyFlatSpec
@@ -14,73 +12,105 @@ import rogue._
 class RogueActuatorTest extends AnyFlatSpec with Matchers {
 
   trait Fixture {
-    val recorder: Recorder = new Recorder
   }
 
   trait ZeroMoveGame extends Fixture {
     val game: MockRogue = mock.ZeroMoveGame.zeroMoveGame
-    val player: IRogueActuator = new RogueActuator(game, recorder)
+    val player: IRogueActuator = new RogueActuator(game)
   }
 
   trait EmptyInventoryGame extends Fixture {
-    val player: IRogueActuator = new RogueActuator(ZeroMoveGame.emptyInventoryGame, recorder)
+    val player: IRogueActuator = new RogueActuator(ZeroMoveGame.emptyInventoryGame)
   }
 
   trait TestGame extends Fixture {
-    val player: IRogueActuator = new RogueActuator(TestGame.testGame, recorder)
+    val player: IRogueActuator = new RogueActuator(TestGame.testGame)
   }
 
   trait DeathGame extends Fixture {
-    val player: IRogueActuator = new RogueActuator(DeathGame.deathGame, recorder)
+    val player: IRogueActuator = new RogueActuator(DeathGame.deathGame)
   }
 
   trait MoreGame extends Fixture {
-    val player: IRogueActuator = new RogueActuator(MoreGame.moreGame, recorder)
+    val player: IRogueActuator = new RogueActuator(MoreGame.moreGame)
   }
 
   trait ReadScroll extends Fixture {
     val player: IRogueActuator = new RogueActuator(MockRogue.Build
       .WaitForCommand("readScroll state 1", TestGame.secondScreen, TestGame.secondInventoryScreen, 'r')
       .Wait(TestGame.thirdScreen, 'f')
-      .Terminal("readScroll state 3", TestGame.fourthScreen, TestGame.fourthInventoryScreen), recorder
+      .Terminal("readScroll state 3", TestGame.fourthScreen, TestGame.fourthInventoryScreen)
     )
   }
 
   it should "display the first screen of the game" in new ZeroMoveGame {
-    player.start()
-    recorder.gameState.screen should be(pLift.Known(ZeroMoveGame.firstScreen))
+    player.start() match {
+      case Right(report: Report.GameOn) => report.screen should be(ZeroMoveGame.firstScreen)
+      case Right(report) => fail(s"Incorrect report type returned: $report")
+      case Left(err) => fail(err)
+    }
   }
 
   it should "display the first inventory of the game" in new EmptyInventoryGame {
-    player.start()
-    recorder.gameState.inventory should be(pInventory(Map[Slot, pItem](), None, None))
+    player.start() match {
+      case Right(report: Report.GameOn) => report.inventory should be(pInventory(Map[Slot, pItem](), None, None))
+      case Right(report) => fail(s"Incorrect report type returned: $report")
+      case Left(err) => fail(err)
+    }
   }
 
   it should "display the new screen after sending the command" in new TestGame {
-    player.start()
-    player.sendCommand(Command.RIGHT)
-    recorder.gameState.screen should be(pLift.Known(TestGame.secondScreen))
+    player.start() match {
+      case Right(report: Report.GameOn) => ()
+      case Right(report) => fail(s"Incorrect report type returned: $report")
+      case Left(err) => fail(err)
+    }
+    player.sendCommand(Command.RIGHT) match {
+      case Right(report: Report.GameOn) => report.screen should be(TestGame.secondScreen)
+      case Right(report) => fail(s"Incorrect report type returned: $report")
+      case Left(err) => fail(err)
+    }
   }
 
   it should "display the inventory after sending the command" in new TestGame {
-    player.start()
-    player.sendCommand(Command.RIGHT)
-    recorder.gameState.inventory should be(TestGame.firstInventory)
+    player.start() match {
+      case Right(report: Report.GameOn) => ()
+      case Right(report) => fail(s"Incorrect report type returned: $report")
+      case Left(err) => fail(err)
+    }
+    player.sendCommand(Command.RIGHT) match {
+      case Right(report: Report.GameOn) => report.inventory should be(TestGame.firstInventory)
+      case Right(report) => fail(s"Incorrect report type returned: $report")
+      case Left(err) => fail(err)
+    }
   }
 
   it should "know when the game is over" in new DeathGame {
-    player.start()
-    player.sendCommand(Command.REST)
-    recorder.getScore should be(7)
+    player.start() match {
+      case Right(report: Report.GameOn) => ()
+      case Right(report) => fail(s"Incorrect report type returned: $report")
+      case Left(err) => fail(err)
+    }
+    player.sendCommand(Command.REST) match {
+      case Right(report: Report.GameOver) => report.score should be(7)
+      case Right(report) => fail(s"Incorrect report type returned: $report")
+      case Left(err) => fail(err)
+    }
   }
 
   it should "clear a more screen" in new MoreGame {
-    player.sendCommand(Command.RIGHT)
-    recorder.gameState.screen should be(pLift.Known(MoreGame.thirdScreen))
+    player.sendCommand(Command.RIGHT) match {
+      case Right(report: Report.GameOn) => report.screen should be(MoreGame.thirdScreen)
+      case Right(report) => fail(s"Incorrect report type returned: $report")
+      case Left(err) => fail(err)
+    }
   }
 
   it should "remember scroll powers" in new ReadScroll {
-    player.sendCommand(Command.Read(Slot.F, Scroll(1, "coph rech")))
-    recorder.gameState.knowledge should contain(ScrollKnowledge("coph rech", ScrollPower.REMOVE_CURSE))
+    player.sendCommand(Command.Read(Slot.F, Scroll(1, "coph rech"))) match {
+      case Right(report: Report.GameOn) => report.events should contain(Event.REMOVE_CURSE)
+      case Right(report) => fail(s"Incorrect report type returned: $report")
+      case Left(err) => fail(err)
+    }
   }
 }

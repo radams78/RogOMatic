@@ -29,7 +29,7 @@ class RogOMatic(recorder: IOutputRecorder, player: IRogueActuator, expert: Exper
 object RogOMatic {
   def transparent(rogue: IRogue, view: IView): RogOMatic = {
     val recorder: Recorder = new Recorder
-    val player: IRogueActuator = new RogueActuator(rogue, recorder)
+    val player: IRogueActuator = new RogueActuator(rogue)
     val expert: Expert = new Transparent(view)
     new RogOMatic(recorder, player, expert)
   }

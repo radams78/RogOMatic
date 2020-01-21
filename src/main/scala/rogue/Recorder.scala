@@ -9,8 +9,6 @@ import rogue.Event.Event
 
 /** Object that receives information about the current state of the game of Rogue and maintains a [[pGameState]] object. */
 class Recorder extends IInputRecorder with IOutputRecorder {
-  def knowledge: Set[Fact] = _gameState.knowledge
-
   private var _gameOver: Boolean = false
   private var _gameState: pGameState = pGameState()
   private var score: Int = 0
@@ -18,6 +16,8 @@ class Recorder extends IInputRecorder with IOutputRecorder {
   def gameState: pGameState = _gameState
 
   def getInventory: pInventory = _gameState.inventory
+
+  def knowledge: Set[Fact] = _gameState.knowledge
 
   def recordScreen(_screen: String): Either[String, Unit] = {
     _gameState = _gameState.copy(screen = pLift.Known(_screen))
