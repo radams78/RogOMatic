@@ -3,7 +3,7 @@ package expert
 import domain.pLift
 import gamedata.ProvidesKnowledge._
 import gamedata._
-import rogomatic.History
+import gamestate.History
 import rogue._
 import view.IView
 
