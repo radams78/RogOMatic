@@ -9,7 +9,7 @@ import gamedata.item.magic.scroll.Scroll
 import gamedata.item.magic.scroll.Scroll.Scroll
 import gamedata.item.pItem
 
-/** Partial information about a move that can be made by the player in Rogue.
+/** Partial information about a move that can be made by the actuator in Rogue.
  *
  * Invariants:
  * - implications is monotone
