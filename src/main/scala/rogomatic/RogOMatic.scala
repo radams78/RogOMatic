@@ -21,7 +21,7 @@ class RogOMatic(actuator: IRogueActuator, expert: Expert) {
       case gameOn: History.GameOn =>
         val cmd: pCommand = expert.advice(gameOn)
         (for {
-          report <- actuator.sendCommand(expert.advice(gameOn))
+          report <- actuator.sendCommand(cmd)
           history <- gameOn.nextMove(cmd, report)
         } yield history) match {
           case Right(history) => playRogue0(history)
