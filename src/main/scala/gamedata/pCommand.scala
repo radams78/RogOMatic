@@ -32,6 +32,13 @@ sealed trait pCommand {
 
 object pCommand {
 
+  case object UNKNOWN extends pCommand {
+    override def merge(that: pCommand): Either[String, pCommand] = Right(that)
+
+    override def keypresses: Either[String, Seq[Char]] = Left("Attempt to perform unknown command")
+  }
+
+
   /** Drink a potion */
   case class Quaff(slot: pSlot, potion: Potion) extends pCommand {
     override def keypresses: Either[String, Seq[Char]] = for (k <- slot.keypress) yield Seq('q', k)
@@ -41,6 +48,7 @@ object pCommand {
         inferredSlot <- slot.merge(thatSlot)
         inferredPotion <- potion.merge(thatPotion)
       } yield Quaff(inferredSlot, inferredPotion)
+      case UNKNOWN => Right(this)
       case _ => Left(s"Incompatible commands: $this and $that")
     }
 
@@ -67,6 +75,7 @@ object pCommand {
         inferredSlot <- slot.merge(thatSlot)
         inferredScroll <- scroll.merge(thatScroll)
       } yield Read(inferredSlot, inferredScroll)
+      case UNKNOWN => Right(this)
       case _ => Left(s"Incompatible commands: $this and $that")
     }
 
@@ -97,6 +106,7 @@ object pCommand {
         inferredSlot <- slot.merge(thatSlot)
         inferredItem <- item.merge(thatItem)
       } yield Throw(inferredDir, inferredSlot, inferredItem)
+      case UNKNOWN => Right(this)
       case _ => Left(s"Incompatible commands: $this and $that")
     }
 
@@ -113,6 +123,7 @@ object pCommand {
 
     override def merge(that: pCommand): Either[String, pCommand] = that match {
       case Wield(thatSlot) => for (inferredSlot <- slot.merge(thatSlot)) yield Wield(inferredSlot)
+      case UNKNOWN => Right(this)
       case _ => Left(s"Incompatible commands: $this and $that")
     }
 
@@ -125,6 +136,7 @@ object pCommand {
 
     override def merge(that: pCommand): Either[String, pCommand] = that match {
       case REST => Right(REST)
+      case UNKNOWN => Right(this)
       case _ => Left(s"Incompatible commands: $this and $that")
     }
   }
@@ -145,6 +157,7 @@ object pCommand {
 
     override def merge(that: pCommand): Either[String, pCommand] = that match {
       case DOWN => Right(DOWN)
+      case UNKNOWN => Right(this)
       case _ => Left(s"Incompatible commands: $this and $that")
     }
   }
@@ -165,6 +178,7 @@ object pCommand {
 
     override def merge(that: pCommand): Either[String, pCommand] = that match {
       case RIGHT => Right(RIGHT)
+      case UNKNOWN => Right(this)
       case _ => Left(s"Incompatible commands: $this and $that")
     }
   }
@@ -185,6 +199,7 @@ object pCommand {
 
     override def merge(that: pCommand): Either[String, pCommand] = that match {
       case UPRIGHT => Right(UPRIGHT)
+      case UNKNOWN => Right(this)
       case _ => Left(s"Incompatible commands: $this and $that")
     }
   }
@@ -205,6 +220,7 @@ object pCommand {
 
     override def merge(that: pCommand): Either[String, pCommand] = that match {
       case DOWNSTAIRS => Right(DOWNSTAIRS)
+      case UNKNOWN => Right(this)
       case _ => Left(s"Incompatible commands: $this and $that")
     }
   }
@@ -215,6 +231,7 @@ object pCommand {
 
     override def merge(that: pCommand): Either[String, pCommand] = that match {
       case DOWNLEFT => Right(DOWNLEFT)
+      case UNKNOWN => Right(this)
       case _ => Left(s"Incompatible commands: $this and $that")
     }
   }
