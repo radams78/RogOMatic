@@ -1,6 +1,6 @@
 package rogue
 
-import gamedata.{Report, pCommand, pInventory}
+import gamedata.{Report, pInventory}
 import rogue.Event.Event
 
 import scala.annotation.tailrec
@@ -18,13 +18,9 @@ class RogueActuator(rogue: IRogue) extends IRogueActuator {
     }
   }
 
-  override def sendCommand(command: pCommand): Either[String, Report] = {
-    for {keys <- command.keypresses
-         report <- {
-           for (k <- keys) rogue.sendKeypress(k)
-           update(Set())
-         }
-         } yield report
+  override def sendCommand(command: Command): Either[String, Report] = {
+    for (k <- command.keypresses) rogue.sendKeypress(k)
+    update(Set())
   }
 
   @tailrec

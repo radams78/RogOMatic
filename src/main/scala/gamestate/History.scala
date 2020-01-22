@@ -4,6 +4,7 @@ import domain.Domain._
 import gamedata.ProvidesKnowledge._
 import gamedata.UsesKnowledge._
 import gamedata._
+import rogue.Command
 
 /** The history of the game, holding all commands sent to Rogue and all reports retrieved from Rogue */
 trait History
@@ -19,7 +20,7 @@ object History {
     def screen: String
 
     /** Add a move to the history */
-    def nextMove(cmd: pCommand, report: Report): Either[String, History] = report match {
+    def nextMove(cmd: Command, report: Report): Either[String, History] = report match {
       case report: Report.GameOn => NextMove.build(this, cmd, report)
       case report: Report.GameOver => Right(GameOver(this, cmd, report))
     }
@@ -62,17 +63,17 @@ object History {
   }
 
   object NextMove {
-    def build(history: GameOn, command: pCommand, report: Report.GameOn): Either[String, NextMove] = for {
-      i2 <- history.inventory.infer(command)
+    def build(history: GameOn, command: Command, report: Report.GameOn): Either[String, NextMove] = for {
+      lastCommand <- command.topCommand.merge(report.lastCommand)
+      i2 <- history.inventory.infer(lastCommand)
       i3 <- i2.merge(report.inventory)
       i4 <- i3.infer(report) // TODO Ugly?
-
-    } yield NextMove(history, command, report, i4)
+    } yield NextMove(history, lastCommand, report, i4)
 
   }
 
   /** The complete history of a finished game of Rogue */
-  case class GameOver(history: GameOn, command: pCommand, report: Report.GameOver) extends History {
+  case class GameOver(history: GameOn, command: Command, report: Report.GameOver) extends History {
     /** Final score */
     def score: Int = report.score
 

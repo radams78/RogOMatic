@@ -1,7 +1,6 @@
 package unit
 
 import gamedata._
-import gamedata.item.magic.scroll.Scroll
 import gamedata.item.pItem
 import mock._
 import org.scalatest.flatspec.AnyFlatSpec
@@ -36,7 +35,7 @@ class RogueActuatorTest extends AnyFlatSpec with Matchers {
       case Right(report) => fail(s"Incorrect report type returned: $report")
       case Left(err) => fail(err)
     }
-    player.sendCommand(pCommand.RIGHT) match {
+    player.sendCommand(Command.RIGHT) match {
       case Right(report: Report.GameOn) =>
         report.screen should be(TestGame.secondScreen)
         report.inventory should be(TestGame.firstInventory)
@@ -52,7 +51,7 @@ class RogueActuatorTest extends AnyFlatSpec with Matchers {
       case Right(report) => fail(s"Incorrect report type returned: $report")
       case Left(err) => fail(err)
     }
-    player.sendCommand(pCommand.REST) match {
+    player.sendCommand(Command.REST) match {
       case Right(report: Report.GameOver) => report.score should be(7)
       case Right(report) => fail(s"Incorrect report type returned: $report")
       case Left(err) => fail(err)
@@ -61,7 +60,7 @@ class RogueActuatorTest extends AnyFlatSpec with Matchers {
 
   it should "clear a more screen" in {
     val player: IRogueActuator = new RogueActuator(MoreGame.moreGame)
-    player.sendCommand(pCommand.RIGHT) match {
+    player.sendCommand(Command.RIGHT) match {
       case Right(report: Report.GameOn) => report.screen should be(MoreGame.thirdScreen)
       case Right(report) => fail(s"Incorrect report type returned: $report")
       case Left(err) => fail(err)
@@ -74,7 +73,7 @@ class RogueActuatorTest extends AnyFlatSpec with Matchers {
       .Wait(TestGame.thirdScreen, 'f')
       .Terminal("readScroll state 3", TestGame.fourthScreen, TestGame.fourthInventoryScreen)
     )
-    player.sendCommand(pCommand.Read(Slot.F, Scroll(1, "coph rech"))) match {
+    player.sendCommand(Command.Read(Slot.F)) match {
       case Right(report: Report.GameOn) => report.events should contain(Event.REMOVE_CURSE)
       case Right(report) => fail(s"Incorrect report type returned: $report")
       case Left(err) => fail(err)
