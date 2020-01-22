@@ -2,6 +2,7 @@ package view
 
 import domain.pLift
 import gamedata._
+import rogue.Command
 
 import scala.io.StdIn
 
@@ -30,31 +31,31 @@ class TextView extends IView {
     println(s"Score: $score")
   }
 
-  override def getCommand: pCommand = {
-    def getCommand0: Either[String, pCommand] = {
+  override def getCommand: Command = {
+    def getCommand0: Either[String, Command] = {
       for {c <- getCharacter("No command entered")
            cmd <- c match {
-             case 'b' => Right(pCommand.DOWNLEFT)
-             case 'h' => Right(pCommand.LEFT)
-             case 'j' => Right(pCommand.UP)
-             case 'k' => Right(pCommand.DOWN)
-             case 'l' => Right(pCommand.RIGHT)
-             case 'n' => Right(pCommand.DOWNRIGHT)
+             case 'b' => Right(Command.DOWNLEFT)
+             case 'h' => Right(Command.LEFT)
+             case 'j' => Right(Command.UP)
+             case 'k' => Right(Command.DOWN)
+             case 'l' => Right(Command.RIGHT)
+             case 'n' => Right(Command.DOWNRIGHT)
              case 'q' => for {
                slot <- getItem
-             } yield pCommand.Quaff(slot)
+             } yield Command.Quaff(slot)
              case 'r' => for {
                slot <- getItem
-             } yield pCommand.Read(slot)
+             } yield Command.Read(slot)
              case 't' => for {
                dir <- getDirection
                slot <- getItem
-             } yield pCommand.Throw(dir, slot)
-             case 'u' => Right(pCommand.UPRIGHT)
-             case 'w' => for (slot <- getItem) yield pCommand.Wield(slot)
-             case 'y' => Right(pCommand.UPLEFT)
-             case '.' => Right(pCommand.REST)
-             case '>' => Right(pCommand.DOWNSTAIRS)
+             } yield Command.Throw(dir, slot)
+             case 'u' => Right(Command.UPRIGHT)
+             case 'w' => for (slot <- getItem) yield Command.Wield(slot)
+             case 'y' => Right(Command.UPLEFT)
+             case '.' => Right(Command.REST)
+             case '>' => Right(Command.DOWNSTAIRS)
              case _ => Left(s"Unrecognised command: $c")
            }} yield cmd
     }

@@ -1,5 +1,6 @@
 package mock
 
+import gamedata._
 import gamedata.item.armor.{Armor, ArmorType}
 import gamedata.item.magic.scroll.Scroll.ScrollKnowledge
 import gamedata.item.magic.scroll.{Scroll, ScrollPower}
@@ -7,7 +8,7 @@ import gamedata.item.magic.wand
 import gamedata.item.magic.wand.{Material, Wand, WandShape}
 import gamedata.item.weapon.{MeleeType, WeaponType, pMissile, pWeapon}
 import gamedata.item.{weapon, _}
-import gamedata.{pCommand, _}
+import rogue.Command
 
 /** Sample data for a game of Rogue used in testing. The game lasts three turns, and involves several different
  * inventory items, recognising the effect of a scroll when read, and recognising the end of the game. */
@@ -301,9 +302,9 @@ object TestGame {
 
   /** A mock user who plays this game of Rogue */
   def user: MockUser = MockUser.Start
-    .Command(TestGame.firstScreen, TestGame.firstInventory, Set(), pCommand.RIGHT)
-    .Command(TestGame.secondScreen, TestGame.firstInventory, Set(), pCommand.Read(TestGame.firstInventory, Slot.F))
-    .Command(TestGame.fourthScreen, TestGame.fourthInventory, Set(ScrollKnowledge("coph rech", ScrollPower.REMOVE_CURSE)), pCommand.LEFT)
+    .Command(TestGame.firstScreen, TestGame.firstInventory, Set(), Command.RIGHT)
+    .Command(TestGame.secondScreen, TestGame.firstInventory, Set(), Command.Read(Slot.F))
+    .Command(TestGame.fourthScreen, TestGame.fourthInventory, Set(ScrollKnowledge("coph rech", ScrollPower.REMOVE_CURSE)), Command.LEFT)
     .GameOver(0)
     .End
 }
