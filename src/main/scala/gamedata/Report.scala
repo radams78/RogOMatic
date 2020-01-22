@@ -17,18 +17,21 @@ object Report {
   /** Game is still in progress
    *
    * @param events Set of events reported by message lines */
-  case class GameOn(override val screen: String, inventory: pInventory, events: Set[Event]) extends Report {
-    def inferences: Either[String, pGameState] = {
-      val gs0: pGameState = pGameState(pLift.Known(screen), inventory, Set(), pLift.UNKNOWN)
-      events.foldLeft[Either[String, pGameState]](Right(gs0))({ case (x, event) => x match {
-        case Right(gs) => gs.merge(event.inference)
-        case Left(err) => Left(err)
-      }
-      })
-    }
+  case class GameOn(override val screen: String, inventory: pInventory, events: Set[Event], inferences: pGameState) extends Report {
   }
 
   object GameOn {
+    def build(screen: String, inventory: pInventory, events: Set[Event]): Either[String, GameOn] = {
+      for (inferences <- {
+        val gs0: pGameState = pGameState(pLift.Known(screen), inventory, Set(), pLift.UNKNOWN)
+        events.foldLeft[Either[String, pGameState]](Right(gs0))({ case (x, event) => x match {
+          case Right(gs) => gs.merge(event.inference)
+          case Left(err) => Left(err)
+        }
+        })
+      }) yield GameOn(screen, inventory, events, inferences)
+    }
+    
     implicit def providesKnowledge: ProvidesKnowledge[GameOn] = (self: GameOn) => self.inventory.implications.union(
       self.events.flatMap((e: Event) => e.implications)
     )

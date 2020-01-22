@@ -1,6 +1,7 @@
 package rogomatic
 
 import expert.{Expert, Transparent}
+import gamedata.pCommand
 import gamestate.History
 import rogue._
 import view.IView
@@ -18,12 +19,13 @@ class RogOMatic(actuator: IRogueActuator, expert: Expert) {
     def playRogue0(history: History): Unit = history match {
       case gameOver: History.GameOver => view.displayGameOver(gameOver.score)
       case gameOn: History.GameOn =>
+        val cmd: pCommand = expert.advice(gameOn)
         (for {
-          cmd <- expert.advice(gameOn)
-          report <- actuator.sendCommand(cmd)
-        } yield (cmd, report)) match {
+          report <- actuator.sendCommand(expert.advice(gameOn))
+          history <- gameOn.nextMove(cmd, report)
+        } yield history) match {
+          case Right(history) => playRogue0(history)
           case Left(err) => view.displayError(err)
-          case Right((cmd, report)) => playRogue0(gameOn.nextMove(cmd, report))
         }
     }
 

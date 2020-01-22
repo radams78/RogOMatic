@@ -52,7 +52,8 @@ class RogueActuator(rogue: IRogue) extends IRogueActuator {
             rogue.sendKeypress(' ')
             pInventory.parseInventoryScreen(screen)
           }
-        } yield Report.GameOn(screen, inventory, events + event)
+          report <- Report.GameOn.build(screen, inventory, events + event)
+        } yield report
     }
   }
 

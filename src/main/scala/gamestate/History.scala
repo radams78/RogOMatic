@@ -1,6 +1,7 @@
 package gamestate
 
 import domain.Domain._
+import domain.pLift
 import gamedata.ProvidesKnowledge._
 import gamedata.UsesKnowledge._
 import gamedata._
@@ -12,57 +13,57 @@ object History {
 
   /** The history of a game that is not yet finished */
   trait GameOn extends History {
-    def inventory: Either[String, pInventory]
+    def inventory: pInventory
 
     def screen: String
 
     /** Add a move to the history */
-    def nextMove(cmd: pCommand, report: Report): History = report match {
-      case report: Report.GameOn => NextMove(this, cmd, report)
-      case report: Report.GameOver => GameOver(this, cmd, report)
+    def nextMove(cmd: pCommand, report: Report): Either[String, History] = report match {
+      case report: Report.GameOn => NextMove.build(this, cmd, report)
+      case report: Report.GameOver => Right(GameOver(this, cmd, report))
     }
 
     /** The current stae of the game that can be inferred from the history */
-    def gameState: Either[String, pGameState]
+    def gameState: pGameState
+
+    def knowledge: Set[Fact] = gameState.knowledge
+
+    def lastCommand: pLift[Option[pCommand]] = gameState.lastCommand
   }
 
   object GameOn {
-    implicit def providesKnowledge: ProvidesKnowledge[GameOn] = (self: GameOn) => self.gameState match {
-      case Left(_) => Set()
-      case Right(gs) => gs.implications
-    }
+    implicit def providesKnowledge: ProvidesKnowledge[GameOn] = (self: GameOn) => self.inventory.implications union
+      self.knowledge union
+      (self.lastCommand match {
+        case pLift.UNKNOWN => Set()
+        case pLift.Known(None) => Set()
+        case pLift.Known(Some(command)) => command.implications
+      })
   }
 
   /** The history of a game before the first move is made */
   case class FirstMove(report: Report.GameOn) extends GameOn {
-    override def gameState: Either[String, pGameState] =
-      for {
-        gs <- report.inferences
-        gs2 <- pGameState().merge(gs)
-      } yield gs2
+    override def gameState: pGameState = report.inferences
 
     override def screen: String = report.screen
 
-    override def inventory: Either[String, pInventory] = Right(report.inventory)
+    override def inventory: pInventory = report.inventory
   }
 
   /** The history of a game with one or more moves that is not yet finished */
-  case class NextMove(history: GameOn, command: pCommand, report: Report.GameOn) extends GameOn {
-    override def gameState: Either[String, pGameState] = for {
-      gs <- history.gameState
-      gs2 <- gs.merge(pGameState(command))
-      gs3 <- report.inferences
-      gs4 <- gs2.merge(gs3)
-    } yield gs4
-
+  case class NextMove(history: GameOn, command: pCommand, report: Report.GameOn, override val gameState: pGameState, override val inventory: pInventory) extends GameOn {
     override def screen: String = report.screen
+  }
 
-    override def inventory: Either[String, pInventory] = for {
-      i1 <- history.inventory
-      i2 <- i1.infer(command)
+  object NextMove {
+    def build(history: GameOn, command: pCommand, report: Report.GameOn): Either[String, NextMove] = for {
+      gs2 <- history.gameState.merge(pGameState(command))
+      gs4 <- gs2.merge(report.inferences)
+      i2 <- history.inventory.infer(command)
       i3 <- i2.merge(report.inventory)
       i4 <- i3.infer(report) // TODO Ugly?
-    } yield i4
+    } yield NextMove(history, command, report, gs4, i4)
+
   }
 
   /** The complete history of a finished game of Rogue */
