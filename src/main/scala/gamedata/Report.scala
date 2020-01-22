@@ -1,8 +1,6 @@
 package gamedata
 
-import domain.pLift
 import gamedata.ProvidesKnowledge._
-import gamestate.pGameState
 import rogue.Event.Event
 
 /** Report returned from parsing screens from Rogue */
@@ -22,7 +20,6 @@ object Report {
   object GameOn {
     def build(screen: String, inventory: pInventory, events: Set[Event]): Either[String, GameOn] = {
       for (inferences <- {
-        val gs0: pGameState = pGameState(pLift.Known(screen), inventory, Set(), pLift.UNKNOWN)
         events.foldLeft[Either[String, pCommand]](Right(pCommand.UNKNOWN))({ case (x, event) => x match {
           case Right(cmd) => cmd.merge(event.inference)
           case Left(err) => Left(err)
