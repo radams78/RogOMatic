@@ -1,7 +1,6 @@
 package mock
 
 import gamedata.{Fact, pInventory}
-import mock.MockUserState.TERMINAL
 import org.scalatest.Assertions
 import rogue.Command
 import view.IView
@@ -165,7 +164,7 @@ trait MockUserBuilder {
   def GameOver(expectedScore: Int): MockUserBuilder = new GameOver(expectedScore)
 
   /** Mark the list of instructions as finished, and return the corresponding [[MockUser]] object. */
-  def End: MockUser = build(TERMINAL)
+  def End: MockUser = build(MockUserState.TERMINAL)
 }
 
 object MockUser {
