@@ -12,8 +12,10 @@ object History {
 
   /** The history of a game that is not yet finished */
   trait GameOn extends History {
+    /** Current inventory */
     def inventory: pInventory
 
+    /** Last screen displayed by Rogue */
     def screen: String
 
     /** Add a move to the history */
@@ -22,8 +24,10 @@ object History {
       case report: Report.GameOver => Right(GameOver(this, cmd, report))
     }
 
+    /** Set of all facts we can deduce from the history */
     def knowledge: Set[Fact]
 
+    /** Last command performed, or None if it is before the first move of the game */
     def lastCommand: Option[pCommand]
   }
 
