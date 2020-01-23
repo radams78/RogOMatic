@@ -18,16 +18,16 @@ import view.IView
  *
  * The implementation of [[MockUser]] uses the State pattern. */
 class MockUser(initial: MockUserState) extends IView with Assertions {
-  override def displayFact(fact: Fact): Unit = state = state.display(Displayable.Fact(fact))
-
   private var state: MockUserState = initial
 
   /** True if the mock user is in the TERMINAL State */
   def finished: Boolean = state.finished
 
-  override def displayGameOver(finalScore: Int): Unit = state = state.display(Displayable.GameOver(finalScore))
-
   override def displayError(err: String): Unit = fail(err)
+
+  override def displayFact(fact: Fact): Unit = state = state.display(Displayable.Fact(fact))
+
+  override def displayGameOver(finalScore: Int): Unit = state = state.display(Displayable.GameOver(finalScore))
 
   override def displayInventory(inventory: pInventory): Unit = state = state.display(Displayable.Inventory(inventory))
 
