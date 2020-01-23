@@ -18,20 +18,20 @@ import view.IView
  *
  * The implementation of [[MockUser]] uses the State pattern. */
 class MockUser(initial: MockUserState) extends IView with Assertions {
-  override def displayFact(fact: Fact): Unit = state = state.displayFact(fact)
+  override def displayFact(fact: Fact): Unit = state = state.display(Displayable.Fact(fact))
 
   private var state: MockUserState = initial
 
   /** True if the mock user is in the TERMINAL State */
   def finished: Boolean = state.finished
 
-  override def displayGameOver(finalScore: Int): Unit = state = state.displayGameOver(finalScore)
+  override def displayGameOver(finalScore: Int): Unit = state = state.display(Displayable.GameOver(finalScore))
 
-  override def displayError(err: String): Unit = state = state.displayError(err)
+  override def displayError(err: String): Unit = fail(err)
 
-  override def displayInventory(inventory: pInventory): Unit = state = state.displayInventory(inventory)
+  override def displayInventory(inventory: pInventory): Unit = state = state.display(Displayable.Inventory(inventory))
 
-  override def displayScreen(screen: String): Unit = state = state.displayScreen(screen)
+  override def displayScreen(screen: String): Unit = state = state.display(Displayable.Screen(screen))
 
   override def getCommand: Command = state.getCommand match {
     case (cmd, newState) =>
@@ -40,68 +40,60 @@ class MockUser(initial: MockUserState) extends IView with Assertions {
   }
 }
 
+// TODO Move this outside test suite?
+private trait Displayable
+
+private object Displayable {
+
+  case class GameOver(finalScore: Int) extends Displayable
+
+  case class Inventory(inventory: pInventory) extends Displayable
+
+  case class Screen(screen: String) extends Displayable
+
+  case class Fact(fact: gamedata.Fact) extends Displayable
+
+}
+
 /** A state that a [[MockUser]] object may be in */
 private trait MockUserState extends Assertions {
-  def displayFact(fact: Fact): MockUserState = fail(s"Unexpected fact: $fact")
+  def display(displayable: Displayable): MockUserState = fail(s"Unexpected data to display: $displayable")
 
   val finished: Boolean = false
 
-  def displayError(err: String): MockUserState = fail(s"ERROR: $err")
-
-  def displayGameOver(finalScore: Int): MockUserState = fail("Displayed game over")
-
   def getCommand: (Command, MockUserState) = fail(s"Asked for command in state $this")
-
-  def displayScreen(screen: String): MockUserState = fail(s"Unexpected screen: $screen")
-
-  def displayInventory(inventory: pInventory): MockUserState = fail(s"Unexpected inventory: $inventory")
 }
 
 private object MockUserState {
 
-  /** A mock user that will wait until they have seen [[expectedScreen]] and [[expectedInventory]], then enter [[command]]
-   * and switch to state [[next]].
-   *
-   * @param displayedScreen    True if the user has seen expectedScreen
-   * @param displayedInventory True if the user has seen expectedInventory */
-  class Command(expectedScreen: String,
-                expectedInventory: pInventory,
-                expectedKnowledge: Set[Fact],
+  /** A mock user that will wait until they have seen [[expected]], then enter [[command]]
+   * and switch to state [[next]]. */
+  class Command(expected: Set[Displayable],
                 command: rogue.Command,
-                displayedScreen: Boolean,
-                displayedInventory: Boolean,
-                displayedFacts: Set[Fact],
                 next: MockUserState) extends MockUserState {
-    override def displayScreen(screen: String): MockUserState =
-      if (screen == expectedScreen) new Command(expectedScreen, expectedInventory, expectedKnowledge, command, true, displayedInventory, displayedFacts, next)
-      else fail(s"Unexpected screen:\n$screen\nExpected screen:$expectedScreen")
+    override def display(displayable: Displayable): MockUserState =
+      if (expected contains displayable) new Command(expected - displayable, command, next)
+      else fail(s"Unexpected data to display: $displayable")
 
-    override def displayInventory(inventory: pInventory): MockUserState =
-      if (inventory == expectedInventory) new Command(expectedScreen, expectedInventory, expectedKnowledge, command, displayedScreen, true, displayedFacts, next)
-      else fail(s"Unexpected inventory:\n$inventory\nExpected inventory:\n$expectedInventory")
-
-    override def displayFact(fact: Fact): MockUserState =
-      new Command(expectedScreen, expectedInventory, expectedKnowledge, command, displayedScreen, displayedInventory, displayedFacts + fact, next)
-
-    override def getCommand: (rogue.Command, MockUserState) = {
-      if (!displayedScreen) fail(s"Screen never displayed: $expectedScreen")
-      if (!displayedInventory) fail(s"Inventory never displayed: $expectedInventory")
-      if (displayedFacts != expectedKnowledge) fail(s"Unexpected knowledge: $displayedFacts Expected: $expectedKnowledge")
-      (command, next)
-    }
+    override def getCommand: (rogue.Command, MockUserState) =
+      if (expected.isEmpty) (command, next)
+      else fail(s"Never displayed: $expected")
   }
 
   object Command {
-    def apply(expectedScreen: String, expectedInventory: pInventory, expectedKnowledge: Set[Fact], command: rogue.Command, next: MockUserState): Command =
-      new Command(expectedScreen, expectedInventory, expectedKnowledge, command, false, false, Set(), next)
+    def apply(expectedScreen: String, expectedInventory: pInventory, expectedKnowledge: Set[Fact], command: rogue.Command, next: MockUserState): MockUserState.Command =
+      new MockUserState.Command(Set(Displayable.Screen(expectedScreen), Displayable.Inventory(expectedInventory)) ++ expectedKnowledge.map(Displayable.Fact),
+        command, next)
   }
 
   /** A mock user that will wait until they have seen the game over message with score [[expectedScore]], then switch
    * to state [[next]] */
   case class GameOver(expectedScore: Int, next: MockUserState) extends MockUserState {
-    override def displayGameOver(finalScore: Int): MockUserState = {
-      assert(finalScore == expectedScore)
-      next
+    override def display(displayable: Displayable): MockUserState = displayable match {
+      case Displayable.GameOver(finalScore) =>
+        assert(finalScore == expectedScore)
+        next
+      case _ => fail(s"Unexpected data for display: $displayable")
     }
   }
 
