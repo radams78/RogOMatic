@@ -5,13 +5,14 @@ import rogue.Command
 
 /** Interface for the IO view. The implementations should be Humble Object */
 trait IView {
-  def displayFact(fact: Fact): Unit
-
   /** Get a command from the user */
   def getCommand: Command
 
   /** Display an error message */
   def displayError(s: String): Unit
+
+  /** Display a fact that has been learned */
+  def displayFact(fact: Fact): Unit
 
   /** Display the PC's inventory */
   def displayInventory(inventory: pInventory): Unit
