@@ -33,19 +33,6 @@ case class pInventory(items: Map[Slot, Option[pItem]],
 }
 
 object pInventory {
-  implicit def providesKnowledge: ProvidesKnowledge[pInventory] = (self: pInventory) => self.items.values.flatMap((oi: Option[pItem]) => oi.toSet.flatMap((i: pItem) => i.implications)).toSet
-
-  implicit def usesKnowledge: UsesKnowledge[pInventory] = (self: pInventory, fact: Fact) => {
-    val _items: Either[String, Map[Slot, Option[pItem]]] = self.items.foldLeft[Either[String, Map[Slot, Option[pItem]]]](
-      Right(Map())
-    )({
-      case (Left(err), _) => Left(err)
-      case (Right(_items), (slot, None)) => Right(_items + (slot -> None))
-      case (Right(_items), (slot, Some(i))) => for (j <- i.infer(fact)) yield _items + (slot -> Some(j))
-    })
-    for (__items <- _items) yield pInventory(__items, self.wearing, self.wielding)
-  }
-
   def apply(): pInventory = new pInventory(Map(), pLift.UNKNOWN, pLift.UNKNOWN)
 
   def apply(items: Map[Slot, pItem], wearing: Option[Slot], wielding: Option[Slot]): pInventory =
@@ -54,10 +41,6 @@ object pInventory {
       pLift.Known(wearing),
       pLift.Known(wielding)
     )
-
-  private val wearingRegex: UnanchoredRegex = """(\w)\) (.*) being worn""".r.unanchored
-  private val wieldingRegex: UnanchoredRegex = """(\w)\) (.*) in hand""".r.unanchored
-  private val inventoryLineRegex: UnanchoredRegex = """(\w)\) (.*?)\s*$""".r.unanchored
 
   /** Given a screen retrieved from Rogue displaying the inventory, return the corresponding [[pInventory]] */
   def parseInventoryScreen(screen: String): Either[String, pInventory] = {
@@ -101,4 +84,21 @@ object pInventory {
     wearing <- x.wearing.merge(y.wearing)
     wielding <- x.wielding.merge(y.wielding)
   } yield new pInventory(items, wearing, wielding)
+
+  implicit def providesKnowledge: ProvidesKnowledge[pInventory] = (self: pInventory) => self.items.values.flatMap((oi: Option[pItem]) => oi.toSet.flatMap((i: pItem) => i.implications)).toSet
+
+  implicit def usesKnowledge: UsesKnowledge[pInventory] = (self: pInventory, fact: Fact) => {
+    val _items: Either[String, Map[Slot, Option[pItem]]] = self.items.foldLeft[Either[String, Map[Slot, Option[pItem]]]](
+      Right(Map())
+    )({
+      case (Left(err), _) => Left(err)
+      case (Right(_items), (slot, None)) => Right(_items + (slot -> None))
+      case (Right(_items), (slot, Some(i))) => for (j <- i.infer(fact)) yield _items + (slot -> Some(j))
+    })
+    for (__items <- _items) yield pInventory(__items, self.wearing, self.wielding)
+  }
+
+  private val wearingRegex: UnanchoredRegex = """(\w)\) (.*) being worn""".r.unanchored
+  private val wieldingRegex: UnanchoredRegex = """(\w)\) (.*) in hand""".r.unanchored
+  private val inventoryLineRegex: UnanchoredRegex = """(\w)\) (.*?)\s*$""".r.unanchored
 }
