@@ -16,7 +16,21 @@ import scala.util.matching.UnanchoredRegex
  *  - If ! item.keys.contains(s) then it is unknown whether slot s is empty or not */
 case class pInventory(items: Map[Slot, Option[pItem]],
                       wearing: pLift[Option[Slot]],
-                      wielding: pLift[Option[Slot]])
+                      wielding: pLift[Option[Slot]]) {
+  override def toString: String = {
+    (for ((slot, item) <- items.toList.sortBy(_._1)) yield s"$slot) $item\n") +
+      (wielding match {
+        case pLift.UNKNOWN => "pWeapon: UNKNOWN\n"
+        case pLift.Known(None) => ""
+        case pLift.Known(Some(weapon)) => s"pWeapon: $weapon\n"
+      }) +
+      (wearing match {
+        case pLift.UNKNOWN => "Armor: UNKNOWN"
+        case pLift.Known(None) => ""
+        case pLift.Known(Some(armor)) => s"Armor: $armor"
+      })
+  }
+}
 
 object pInventory {
   implicit def providesKnowledge: ProvidesKnowledge[pInventory] = (self: pInventory) => self.items.values.flatMap((oi: Option[pItem]) => oi.toSet.flatMap((i: pItem) => i.implications)).toSet
