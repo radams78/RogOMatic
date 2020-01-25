@@ -57,11 +57,13 @@ private object Displayable {
 
 /** A state that a [[MockUser]] object may be in */
 private trait MockUserState extends Assertions {
-  def display(displayable: Displayable): MockUserState = fail(s"Unexpected data to display: $displayable")
+  def name: String
+
+  def display(displayable: Displayable): MockUserState = fail(s"Unexpected data to display in state $name: $displayable")
 
   val finished: Boolean = false
 
-  def getCommand: (Command, MockUserState) = fail(s"Asked for command in state $this")
+  def getCommand: (Command, MockUserState) = fail(s"Asked for command in state $name")
 }
 
 private object MockUserState {
@@ -73,11 +75,13 @@ private object MockUserState {
                 next: MockUserState) extends MockUserState {
     override def display(displayable: Displayable): MockUserState =
       if (expected contains displayable) new Command(expected - displayable, command, next)
-      else fail(s"Unexpected data to display: $displayable")
+      else fail(s"Unexpected data to display in state $name: $displayable")
 
     override def getCommand: (rogue.Command, MockUserState) =
       if (expected.isEmpty) (command, next)
-      else fail(s"Never displayed: $expected")
+      else fail(s"Never displayed in state $name: $expected")
+
+    override def name: String = s"Waiting to perform $command"
   }
 
   object Command {
@@ -93,13 +97,17 @@ private object MockUserState {
       case Displayable.GameOver(finalScore) =>
         assert(finalScore == expectedScore)
         next
-      case _ => fail(s"Unexpected data for display: $displayable")
+      case _ => fail(s"Unexpected data to display in state $name: $displayable")
     }
+
+    override def name: String = "Game over"
   }
 
   /** A mock user in this state will fail if any of its methods is called. */
   case object TERMINAL extends MockUserState {
     override val finished: Boolean = true
+
+    override def name: String = "terminal"
   }
 
 }

@@ -30,6 +30,8 @@ object Scroll {
 
   def apply(quantity: Int, title: String): Scroll = ScrollType.StackableMagicItem(Some(quantity), Some(title), None)
 
+  def apply(quantity: Int, power: ScrollPower): Scroll = ScrollType.StackableMagicItem(Some(quantity), None, Some(power))
+
   def apply(quantity: Int, title: String, power: ScrollPower): Scroll =
     ScrollType.StackableMagicItem(Some(quantity), Some(title), Some(power))
 

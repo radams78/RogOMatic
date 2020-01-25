@@ -36,12 +36,12 @@ trait MagicItemType {
 
     def power: Option[Power]
 
-    def merge(that: MagicItem): Either[String, MagicItem]
+    def _merge(that: MagicItem): Either[String, MagicItem]
 
     def build(attribute: Attribute, power: Power): MagicItem
 
-    override def merge(that: pItem): Either[String, pItem] = that match {
-      case magicItem: MagicItem => merge(magicItem)
+    override def merge(that: pItem): Either[String, MagicItem] = that match {
+      case magicItem: MagicItem => _merge(magicItem)
       case pItem.UNKNOWN => Right(this)
       case _ => Left(s"Incompatible information: $this and $that")
     }
@@ -51,9 +51,9 @@ trait MagicItemType {
       case _ => Set()
     }
 
-    override def infer(fact: Fact): Either[String, pItem] = fact match {
+    override def infer(fact: Fact): Either[String, MagicItem] = fact match {
       case MagicItemKnowledge(_attribute, _power) if attribute.contains(_attribute) || power.contains(_power) =>
-        merge(build(_attribute, _power))
+        _merge(build(_attribute, _power))
       case _ => Right(this)
     }
   }
@@ -68,12 +68,18 @@ trait StackableMagicItemType extends MagicItemType {
   def plural: String
 
   case class StackableMagicItem(quantity: Option[Int], attribute: Option[Attribute], power: Option[Power]) extends MagicItem {
-    override def merge(that: MagicItem): Either[String, StackableMagicItem] = that match {
+    override def _merge(that: MagicItem): Either[String, StackableMagicItem] = that match {
       case StackableMagicItem(thatQuantity, thatAttribute, thatPower) => for {
         inferredQuantity <- quantity.merge(thatQuantity)
         inferredAttribute <- attribute.merge(thatAttribute)
         inferredPower <- power.merge(thatPower)
       } yield StackableMagicItem(inferredQuantity, inferredAttribute, inferredPower)
+    }
+
+    override def merge(that: pItem): Either[String, StackableMagicItem] = that match {
+      case magicItem: MagicItem => _merge(magicItem)
+      case pItem.UNKNOWN => Right(this)
+      case _ => Left(s"Incompatible information: $this and $that")
     }
 
     override def toString: String =
@@ -93,6 +99,12 @@ trait StackableMagicItemType extends MagicItemType {
 
     override def build(attribute: Attribute, power: Power): MagicItem =
       StackableMagicItem(None, Some(attribute), Some(power))
+
+    override def infer(fact: Fact): Either[String, StackableMagicItem] = fact match {
+      case MagicItemKnowledge(_attribute, _power) if attribute.contains(_attribute) || power.contains(_power) =>
+        _merge(build(_attribute, _power))
+      case _ => Right(this)
+    }
   }
 
   object StackableMagicItem {

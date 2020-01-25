@@ -24,7 +24,7 @@ sealed trait pCommand {
   /** Combine two pieces of information about a command */
   def merge(that: pCommand): Either[String, pCommand]
 
-  private def infer(fact: Fact): Either[String, pCommand] = Right(this) // TODO
+  def infer(fact: Fact): Either[String, pCommand] = Right(this) // TODO
 }
 
 object pCommand {
@@ -45,7 +45,21 @@ object pCommand {
       case _ => Left(s"Incompatible commands: $this and $that")
     }
 
-    override def implications: Set[Fact] = potion.implications // TODO Plus fact that potion is in slot
+    override def implications: Set[Fact] = potion.implications.++(slot match {
+      case pSlot(None) => Set()
+      case pSlot(Some(s)) => Set(InSlot(s, potion))
+    })
+
+    override def infer(fact: Fact): Either[String, Quaff] = fact match {
+      case InSlot(s, i) =>
+        if (slot == pSlot(s))
+          for (p <- potion.merge(i))
+            yield new Quaff(slot, p)
+        else Right(this)
+      case f =>
+        for (p <- potion.infer(f))
+          yield new Quaff(slot, p)
+    }
   }
 
   object Quaff {
@@ -70,7 +84,21 @@ object pCommand {
       case _ => Left(s"Incompatible commands: $this and $that")
     }
 
-    override def implications: Set[Fact] = scroll.implications
+    override def implications: Set[Fact] = scroll.implications.++(slot match {
+      case pSlot(None) => Set()
+      case pSlot(Some(s)) => Set(InSlot(s, scroll))
+    })
+
+    override def infer(fact: Fact): Either[String, Read] = fact match {
+      case InSlot(s, i) =>
+        if (slot == pSlot(s))
+          for (s <- scroll.merge(i))
+            yield new Read(slot, s)
+        else Right(this)
+      case f =>
+        for (s <- scroll.infer(f))
+          yield new Read(slot, s)
+    }
   }
 
   object Read {
@@ -99,7 +127,18 @@ object pCommand {
       case _ => Left(s"Incompatible commands: $this and $that")
     }
 
-    override def implications: Set[Fact] = item.implications // TODO Plus fact that item is in slot
+    override def implications: Set[Fact] = item.implications.+(InSlot(slot, item))
+
+    override def infer(fact: Fact): Either[String, pCommand] = fact match {
+      case InSlot(s, i) =>
+        if (slot == s)
+          for (ii <- item.merge(i))
+            yield new Throw(dir, slot, ii)
+        else Right(this)
+      case f =>
+        for (ii <- item.infer(f))
+          yield new Throw(dir, slot, ii)
+    }
   }
 
   object Throw {
@@ -113,8 +152,6 @@ object pCommand {
       case UNKNOWN => Right(this)
       case _ => Left(s"Incompatible commands: $this and $that")
     }
-
-    // TODO Implications
   }
 
   /** Rest */

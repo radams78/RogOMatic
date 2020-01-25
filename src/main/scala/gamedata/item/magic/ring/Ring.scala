@@ -21,7 +21,7 @@ object RingType extends MagicItemType {
 /** Contract: 
  * - implications is monotone */
 case class Ring(gem: Option[Gem], power: Option[RingPower]) extends RingType.MagicItem {
-  override def merge(that: RingType.MagicItem): Either[String, Ring] = that match {
+  override def _merge(that: RingType.MagicItem): Either[String, Ring] = that match {
     case Ring(thatGem, thatPower) => for {
       inferredGem <- attribute.merge(thatGem)
       inferredPower <- power.merge(thatPower)
@@ -53,7 +53,7 @@ case class Ring(gem: Option[Gem], power: Option[RingPower]) extends RingType.Mag
 object Ring {
   def apply(gem: Gem): Ring = new Ring(Some(gem), None)
 
-  implicit def domain: Domain[Ring] = (x: Ring, y: Ring) => x.merge(y)
+  implicit def domain: Domain[Ring] = (x: Ring, y: Ring) => x._merge(y)
 
   implicit def usesKnowledge: UsesKnowledge[Ring] =
     (self: Ring, fact: Fact) => (fact, self.attribute, self.power) match {

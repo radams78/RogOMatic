@@ -1,9 +1,9 @@
 package gamestate
 
-import domain.Domain._
 import gamedata.ProvidesKnowledge._
 import gamedata.UsesKnowledge._
 import gamedata._
+import gamedata.pInventory._
 import rogue.Command
 
 /** The history of the game, holding all commands sent to Rogue and all reports retrieved from Rogue */
@@ -64,11 +64,11 @@ object History {
 
   object NextMove {
     def build(history: GameOn, command: Command, report: Report.GameOn): Either[String, NextMove] = for {
-      lastCommand <- command.topCommand.merge(report.lastCommand)
-      i2 <- history.inventory.infer(lastCommand)
-      i3 <- i2.merge(report.inventory)
-      i4 <- i3.infer(report) // TODO Ugly?
-    } yield NextMove(history, lastCommand, report, i4)
+      cmd <- command.topCommand.merge(report.lastCommand)
+      lastCommand <- cmd.infer(history.inventory)
+      i2 <- report.inventory.infer(lastCommand)
+      i3 <- i2.infer(report) // TODO Inference from history.inventory?
+    } yield NextMove(history, lastCommand, report, i3)
 
   }
 

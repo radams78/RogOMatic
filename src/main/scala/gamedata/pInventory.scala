@@ -85,7 +85,11 @@ object pInventory {
     wielding <- x.wielding.merge(y.wielding)
   } yield new pInventory(items, wearing, wielding)
 
-  implicit def providesKnowledge: ProvidesKnowledge[pInventory] = (self: pInventory) => self.items.values.flatMap((oi: Option[pItem]) => oi.toSet.flatMap((i: pItem) => i.implications)).toSet
+  implicit def providesKnowledge: ProvidesKnowledge[pInventory] = (self: pInventory) => {
+    self.items.flatMap({ case (s: Slot, oi: Option[item.pItem]) =>
+      oi.toSet.flatMap((i: item.pItem) => i.implications + InSlot(s, i))
+    }).toSet
+  }
 
   implicit def usesKnowledge: UsesKnowledge[pInventory] = (self: pInventory, fact: Fact) => {
     val _items: Either[String, Map[Slot, Option[pItem]]] = self.items.foldLeft[Either[String, Map[Slot, Option[pItem]]]](
@@ -102,3 +106,5 @@ object pInventory {
   private val wieldingRegex: UnanchoredRegex = """(\w)\) (.*) in hand""".r.unanchored
   private val inventoryLineRegex: UnanchoredRegex = """(\w)\) (.*?)\s*$""".r.unanchored
 }
+
+case class InSlot(slot: Slot, item: pItem) extends Fact

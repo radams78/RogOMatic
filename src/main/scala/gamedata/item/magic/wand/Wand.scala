@@ -33,7 +33,7 @@ case class Wand(wandShape: Option[WandShape], material: Option[Material], power:
 
   override def attribute: Option[Material] = material
 
-  override def merge(that: WandType.MagicItem): Either[String, WandType.MagicItem] = that match {
+  override def _merge(that: WandType.MagicItem): Either[String, WandType.MagicItem] = that match {
     case Wand(thatWandShape, thatMaterial, thatPower) => for {
       inferredWandType <- wandShape.merge(thatWandShape)
       inferredMaterial <- material.merge(thatMaterial)
