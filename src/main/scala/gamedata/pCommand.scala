@@ -24,7 +24,7 @@ sealed trait pCommand {
   /** Combine two pieces of information about a command */
   def merge(that: pCommand): Either[String, pCommand]
 
-  def infer(fact: Fact): Either[String, pCommand] = Right(this) // TODO
+  def _infer(fact: Fact): Either[String, pCommand] = Right(this) // TODO
 }
 
 object pCommand {
@@ -50,7 +50,7 @@ object pCommand {
       case pSlot(Some(s)) => Set(InSlot(s, potion))
     })
 
-    override def infer(fact: Fact): Either[String, Quaff] = fact match {
+    override def _infer(fact: Fact): Either[String, Quaff] = fact match {
       case InSlot(s, i) =>
         if (slot == pSlot(s))
           for (p <- potion.merge(i))
@@ -89,7 +89,7 @@ object pCommand {
       case pSlot(Some(s)) => Set(InSlot(s, scroll))
     })
 
-    override def infer(fact: Fact): Either[String, Read] = fact match {
+    override def _infer(fact: Fact): Either[String, Read] = fact match {
       case InSlot(s, i) =>
         if (slot == pSlot(s))
           for (s <- scroll.merge(i))
@@ -129,7 +129,7 @@ object pCommand {
 
     override def implications: Set[Fact] = item.implications.+(InSlot(slot, item))
 
-    override def infer(fact: Fact): Either[String, pCommand] = fact match {
+    override def _infer(fact: Fact): Either[String, pCommand] = fact match {
       case InSlot(s, i) =>
         if (slot == s)
           for (ii <- item.merge(i))
@@ -245,5 +245,5 @@ object pCommand {
 
   implicit def providesKnowledge: ProvidesKnowledge[pCommand] = (self: pCommand) => self.implications
 
-  implicit def usesKnowledge: UsesKnowledge[pCommand] = (self: pCommand, fact: Fact) => self.infer(fact)
+  implicit def usesKnowledge: UsesKnowledge[pCommand] = (self: pCommand, fact: Fact) => self._infer(fact)
 }
