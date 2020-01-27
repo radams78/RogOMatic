@@ -10,7 +10,6 @@ import rogue.{Command, Event}
 
 class HistoryTest extends AnyFlatSpec with Matchers {
   "Reading the new inventory" should "update the inventory correctly" in {
-    // TODO Better report format for first move?
     (for {
       report1 <- Report.GameOn.build("", pInventory(Map(Slot.A -> Food(1), Slot.B -> Scroll(2, "abcde")), None, None), Set())
       report2 <- Report.GameOn.build("", pInventory(Map(Slot.A -> Food(1), Slot.B -> Scroll(1, ScrollPower.REMOVE_CURSE)), None, None), Set(Event.REMOVE_CURSE))
