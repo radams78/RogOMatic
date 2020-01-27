@@ -23,7 +23,7 @@ object RingType extends MagicItemType {
 case class Ring(gem: Option[Gem], power: Option[RingPower]) extends RingType.MagicItem {
   override def _merge(that: RingType.MagicItem): Either[String, Ring] = that match {
     case Ring(thatGem, thatPower) => for {
-      inferredGem <- attribute.merge(thatGem)
+      inferredGem <- gem.merge(thatGem)
       inferredPower <- power.merge(thatPower)
     } yield Ring(inferredGem, inferredPower)
   }
