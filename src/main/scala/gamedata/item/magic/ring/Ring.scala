@@ -7,7 +7,7 @@ import gamedata.item.magic.ring.Gem.Gem
 import gamedata.item.magic.ring.RingPower.RingPower
 import gamedata.{Fact, UsesKnowledge}
 
-/** A ring */
+/** Magic rings */
 object RingType extends MagicItemType {
   override type Attribute = Gem
 
@@ -18,8 +18,6 @@ object RingType extends MagicItemType {
   override implicit def powerDomain: Domain[RingPower] = RingPower.domain
 }
 
-/** Contract: 
- * - implications is monotone */
 case class Ring(gem: Option[Gem], power: Option[RingPower]) extends RingType.MagicItem {
   override def _merge(that: RingType.MagicItem): Either[String, Ring] = that match {
     case Ring(thatGem, thatPower) => for {
