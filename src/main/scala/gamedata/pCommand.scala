@@ -15,16 +15,14 @@ import gamedata.item.pItem
  * - command <= command.infer(fact)
  * - command.infer(command.implications) == command
  * - command.infer(fact).implications contains fact */
-// TODO Validation 
-// TODO Prove invariants
 sealed trait pCommand {
   /** Facts that can be deduced from this command */
-  def implications: Set[Fact] = Set() // TODO
+  def implications: Set[Fact] = Set()
 
   /** Combine two pieces of information about a command */
   def merge(that: pCommand): Either[String, pCommand]
 
-  def _infer(fact: Fact): Either[String, pCommand] = Right(this) // TODO
+  def _infer(fact: Fact): Either[String, pCommand] = Right(this)
 }
 
 object pCommand {
