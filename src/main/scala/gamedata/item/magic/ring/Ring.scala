@@ -29,10 +29,7 @@ case class Ring(gem: Option[Gem], power: Option[RingPower]) extends RingType.Mag
   }
 
   override def toString: String =
-    (quantity match {
-      case Some(q) => q.toString
-      case None => "some"
-    }) +
+    "a" +
       (attribute match {
         case Some(a) => " " + a.toString
         case None => ""
