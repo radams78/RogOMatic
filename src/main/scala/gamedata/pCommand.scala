@@ -63,11 +63,6 @@ object pCommand {
   object Quaff {
     def apply(potion: Potion): Quaff = Quaff(pSlot.UNKNOWN, potion)
 
-    // TODO Error handling
-    def apply(inventory: pInventory, slot: Slot): Quaff = {
-      Quaff(pSlot(slot), inventory.items(slot).asInstanceOf[Potion])
-    }
-
     def apply(slot: Slot): Quaff = Quaff(pSlot(slot), Potion.UNKNOWN)
   }
 
