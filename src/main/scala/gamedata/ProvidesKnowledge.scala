@@ -1,6 +1,8 @@
 package gamedata
 
-trait Fact
+trait Fact {
+  def after(command: pCommand): Either[String, Set[Fact]]
+}
 
 trait ProvidesKnowledge[T] {
   def implications(self: T): Set[Fact]
@@ -18,6 +20,8 @@ object ProvidesKnowledge {
   }
 
   implicit def factProvidesKnowledge: ProvidesKnowledge[Fact] = (self: Fact) => Set(self)
+
+  implicit def setProvidesKnowledge[T](implicit s: ProvidesKnowledge[T]): ProvidesKnowledge[Set[T]] = (self: Set[T]) => self.flatMap(s.implications)
 }
 
 

@@ -23,6 +23,8 @@ case class Melee(meleeType: pLift[MeleeType], plusToHit: pLift[Bonus], plusDamag
     case pItem.UNKNOWN => Right(this)
     case _ => Left(s"Incompatible item: $this and $that")
   }
+
+  override def consumeOne: pLift[Option[pItem]] = pLift.Known(None)
 }
 
 object Melee {

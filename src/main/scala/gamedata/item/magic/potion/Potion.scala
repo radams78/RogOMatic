@@ -1,6 +1,6 @@
 package gamedata.item.magic.potion
 
-import domain.Domain
+import domain.{Domain, pLift}
 import gamedata.item.magic.StackableMagicItemType
 import gamedata.item.magic.potion.Colour.Colour
 import gamedata.item.magic.potion.PotionPower.PotionPower
@@ -26,9 +26,9 @@ object Potion {
 
   implicit def domain: Domain[Potion] = PotionType.StackableMagicItem.domain
 
-  def apply(quantity: Int, colour: Colour): Potion = PotionType.StackableMagicItem(Some(quantity), Some(colour), None)
+  def apply(quantity: Int, colour: Colour): Potion = PotionType.StackableMagicItem(pLift.Known(quantity), pLift.Known(colour), pLift.UNKNOWN)
 
-  def apply(power: PotionPower): Potion = PotionType.StackableMagicItem(None, None, Some(power))
+  def apply(power: PotionPower): Potion = PotionType.StackableMagicItem(pLift.UNKNOWN, pLift.UNKNOWN, pLift.Known(power))
 
-  val UNKNOWN: Potion = PotionType.StackableMagicItem(None, None, None)
+  val UNKNOWN: Potion = PotionType.StackableMagicItem(pLift.UNKNOWN, pLift.UNKNOWN, pLift.UNKNOWN)
 }

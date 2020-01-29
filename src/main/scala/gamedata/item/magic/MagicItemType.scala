@@ -1,9 +1,9 @@
 package gamedata.item.magic
 
-import domain.Domain
 import domain.Domain._
+import domain.{Domain, pLift}
 import gamedata.item.pItem
-import gamedata.{Fact, UsesKnowledge}
+import gamedata.{Fact, UsesKnowledge, pCommand}
 
 /** A type of item that has a magic power, and an attribute (e.g. colour, gem, material). When the item is first found,
  * we see only its attribute. When we learn what its power is, we record this [[Fact]] that that attribute is mapped to
@@ -30,11 +30,11 @@ trait MagicItemType {
    * - build(a, p).power == Some(p) */
   trait MagicItem extends pItem {
     /** Quantity of items in the stack, if known */
-    def quantity: Option[Int]
+    def quantity: pLift[Int]
 
-    def attribute: Option[Attribute]
+    def attribute: pLift[Attribute]
 
-    def power: Option[Power]
+    def power: pLift[Power]
 
     def _merge(that: MagicItem): Either[String, MagicItem]
 
@@ -47,18 +47,20 @@ trait MagicItemType {
     }
 
     override def implications: Set[Fact] = (attribute, power) match {
-      case (Some(a), Some(p)) => Set(MagicItemKnowledge(a, p))
+      case (pLift.Known(a), pLift.Known(p)) => Set(MagicItemKnowledge(a, p))
       case _ => Set()
     }
 
     override def infer(fact: Fact): Either[String, MagicItem] = fact match {
-      case MagicItemKnowledge(_attribute, _power) if attribute.contains(_attribute) || power.contains(_power) =>
+      case MagicItemKnowledge(_attribute, _power) if attribute == pLift.Known(_attribute) || power == pLift.Known(_power) =>
         _merge(build(_attribute, _power))
       case _ => Right(this)
     }
   }
 
-  case class MagicItemKnowledge(attribute: Attribute, power: Power) extends Fact
+  case class MagicItemKnowledge(attribute: Attribute, power: Power) extends Fact {
+    override def after(command: pCommand): Either[String, Set[Fact]] = Right(Set(this))
+  }
 
 }
 
@@ -67,7 +69,7 @@ trait StackableMagicItemType extends MagicItemType {
 
   def plural: String
 
-  case class StackableMagicItem(quantity: Option[Int], attribute: Option[Attribute], power: Option[Power]) extends MagicItem {
+  case class StackableMagicItem(quantity: pLift[Int], attribute: pLift[Attribute], power: pLift[Power]) extends MagicItem {
     override def _merge(that: MagicItem): Either[String, StackableMagicItem] = that match {
       case StackableMagicItem(thatQuantity, thatAttribute, thatPower) => for {
         inferredQuantity <- quantity.merge(thatQuantity)
@@ -84,26 +86,32 @@ trait StackableMagicItemType extends MagicItemType {
 
     override def toString: String =
       (quantity match {
-        case Some(q) => q.toString
-        case None => "some"
+        case pLift.Known(q) => q.toString
+        case pLift.UNKNOWN => "some"
       }) +
         (attribute match {
-          case Some(a) => " " + a.toString
-          case None => ""
+          case pLift.Known(a) => " " + a.toString
+          case pLift.UNKNOWN => ""
         }) + " " +
-        (if (quantity.contains(1)) singular else plural) +
+        (if (quantity == pLift.Known(1)) singular else plural) +
         (power match {
-          case Some(p) => " " + p.toString
-          case None => ""
+          case pLift.Known(p) => " " + p.toString
+          case pLift.UNKNOWN => ""
         })
 
     override def build(attribute: Attribute, power: Power): MagicItem =
-      StackableMagicItem(None, Some(attribute), Some(power))
+      StackableMagicItem(pLift.UNKNOWN, pLift.Known(attribute), pLift.Known(power))
 
     override def infer(fact: Fact): Either[String, StackableMagicItem] = fact match {
-      case MagicItemKnowledge(_attribute, _power) if attribute.contains(_attribute) || power.contains(_power) =>
+      case MagicItemKnowledge(_attribute, _power) if attribute == pLift.Known(_attribute) || power == pLift.Known(_power) =>
         _merge(build(_attribute, _power))
       case _ => Right(this)
+    }
+
+    override def consumeOne: pLift[Option[pItem]] = quantity match {
+      case pLift.UNKNOWN => pLift.UNKNOWN
+      case pLift.Known(1) => pLift.Known(None)
+      case pLift.Known(q) => pLift.Known(Some(StackableMagicItem(pLift.Known(q - 1), attribute, power)))
     }
   }
 
@@ -111,10 +119,10 @@ trait StackableMagicItemType extends MagicItemType {
     implicit def domain: Domain[StackableMagicItem] = (x: StackableMagicItem, y: StackableMagicItem) => x.merge(y)
 
     implicit def usesKnowledge: UsesKnowledge[StackableMagicItem] = (self: StackableMagicItem, fact: Fact) => (fact, self.attribute, self.power) match {
-      case (MagicItemKnowledge(_a, _p), Some(a), Some(p)) if (a == _a && p != _p) || (a != _a && p == _p) =>
+      case (MagicItemKnowledge(_a, _p), pLift.Known(a), pLift.Known(p)) if (a == _a && p != _p) || (a != _a && p == _p) =>
         Left(s"Incompatible information: $a -> $p and ${_a} -> ${_p}")
-      case (MagicItemKnowledge(_a, _p), Some(a), None) if a == _a => Right(StackableMagicItem(self.quantity, Some(a), Some(_p)))
-      case (MagicItemKnowledge(_a, _p), None, Some(p)) if p == _p => Right(StackableMagicItem(self.quantity, Some(_a), Some(p)))
+      case (MagicItemKnowledge(_a, _p), pLift.Known(a), pLift.UNKNOWN) if a == _a => Right(StackableMagicItem(self.quantity, pLift.Known(a), pLift.Known(_p)))
+      case (MagicItemKnowledge(_a, _p), pLift.UNKNOWN, pLift.Known(p)) if p == _p => Right(StackableMagicItem(self.quantity, pLift.Known(_a), pLift.Known(p)))
       case _ => Right(self)
     }
   }

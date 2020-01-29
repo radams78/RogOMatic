@@ -21,6 +21,12 @@ case class pMissile(quantity: pLift[Int], missiletype: pLift[MissileType], plusT
     case pItem.UNKNOWN => Right(this)
     case _ => Left(s"Incompatible information: $this and $that")
   }
+
+  override def consumeOne: pLift[Option[pItem]] = quantity match {
+    case pLift.UNKNOWN => pLift.UNKNOWN
+    case pLift.Known(1) => pLift.Known(None)
+    case pLift.Known(q) => pLift.Known(Some(pMissile(pLift.Known(q - 1), missiletype, plusToHit, plusDamage)))
+  }
 }
 
 object pMissile {

@@ -3,6 +3,8 @@ package gamestate
 import gamedata.ProvidesKnowledge._
 import gamedata.UsesKnowledge._
 import gamedata._
+import gamedata.item.magic.potion.Potion.Potion
+import gamedata.item.magic.scroll.Scroll.Scroll
 import gamedata.pInventory._
 import rogue.Command
 
@@ -13,6 +15,42 @@ object History {
 
   /** The history of a game that is not yet finished */
   trait GameOn extends History {
+    def elaborate(command: Command): Either[String, pCommand] = command match {
+      case Command.UP => Right(pCommand.UP)
+      case Command.DOWN => Right(pCommand.DOWN)
+      case Command.LEFT => Right(pCommand.LEFT)
+      case Command.RIGHT => Right(pCommand.RIGHT)
+      case Command.UPLEFT => Right(pCommand.UPLEFT)
+      case Command.UPRIGHT => Right(pCommand.UPRIGHT)
+      case Command.DOWNLEFT => Right(pCommand.DOWNLEFT)
+      case Command.DOWNRIGHT => Right(pCommand.DOWNRIGHT)
+      case Command.REST => Right(pCommand.REST)
+      case Command.DOWNSTAIRS => Right(pCommand.DOWNSTAIRS)
+      case Command.Quaff(slot) => inventory.items(slot) match {
+        case Some(potion: Potion) => Right(pCommand.Quaff(slot, potion))
+        case Some(item) => Left(s"Tried to quaff $item")
+        case None => Left(s"Tried to quaff empty slot")
+      }
+      case Command.Read(slot) => inventory.items(slot) match {
+        case Some(scroll: Scroll) => Right(pCommand.Read(slot, scroll))
+        case Some(item) => Left(s"Tried to read $item")
+        case None => Left(s"Tried to read empty slot")
+      }
+      case Command.Throw(dir, slot) => inventory.items(slot) match {
+        case Some(item) => Right(pCommand.Throw(dir, slot, item))
+        case None => Left(s"Tried to throw empty slot")
+      }
+      case Command.Wield(slot) => Right(pCommand.Wield(slot))
+    }
+
+    def implicationsAfter(command: pCommand): Either[String, Set[Fact]] =
+      knowledge.foldLeft[Either[String, Set[Fact]]](Right(command.implications))({
+        case (acc, fact) => for {
+          f1 <- acc
+          f2 <- fact.after(command)
+        } yield f1 ++ f2
+      })
+
     /** Current inventory */
     def inventory: pInventory
 
@@ -64,11 +102,12 @@ object History {
 
   object NextMove {
     def build(history: GameOn, command: Command, report: Report.GameOn): Either[String, NextMove] = for {
-      cmd <- command.topCommand.merge(report.lastCommand)
-      lastCommand <- cmd.infer(history.inventory)
-      i2 <- report.inventory.infer(lastCommand)
-      i3 <- i2.infer(report) // TODO Inference from history.inventory?
-    } yield NextMove(history, lastCommand, report, i3)
+      lastCommand <- history.elaborate(command)
+      lastCommand <- lastCommand.merge(report.lastCommand)
+      facts <- history.implicationsAfter(lastCommand)
+      inventory <- report.inventory.infer(facts)
+      inventory <- inventory.infer(lastCommand)
+    } yield NextMove(history, lastCommand, report, inventory)
 
   }
 

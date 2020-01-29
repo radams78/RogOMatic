@@ -1,6 +1,6 @@
 package gamedata.item
 
-import domain.Domain
+import domain.{Domain, pLift}
 import gamedata.item.armor.{Armor, ArmorType}
 import gamedata.item.magic.potion.{Colour, Potion}
 import gamedata.item.magic.ring.{Gem, Ring}
@@ -19,6 +19,8 @@ import scala.util.matching.Regex
  * - x <= x.infer(fact)
  * - if x.impliciations contains fact then x.infer(fact) == x */
 trait pItem {
+  def consumeOne: pLift[Option[pItem]]
+
   def infer(fact: Fact): Either[String, pItem] = Right(this)
 
   def merge(that: pItem): Either[String, pItem]
@@ -39,6 +41,8 @@ object pItem {
     override def merge(that: pItem): Either[String, pItem] = Right(that)
 
     override def implications: Set[Fact] = Set()
+
+    override def consumeOne: pLift[Option[pItem]] = pLift.UNKNOWN
   }
 
   private val rationsRegex: Regex = """(\d+) rations of food""".r

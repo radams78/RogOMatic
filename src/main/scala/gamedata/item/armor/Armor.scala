@@ -1,6 +1,7 @@
 package gamedata.item.armor
 
 import domain.Domain._
+import domain.pLift
 import gamedata.item.armor.ArmorType.ArmorType
 import gamedata.item.{Bonus, armor, pItem}
 
@@ -21,6 +22,8 @@ case class IdentifiedArmor(armorType: ArmorType, bonus: Bonus) extends Armor {
     } yield IdentifiedArmor(inferredAmorType, bonus)
     case _ => Left(s"Incompatible item: $this and $that")
   }
+
+  override def consumeOne: pLift[Option[pItem]] = pLift.Known(None)
 }
 
 /** An unidentified suit of armor */
@@ -36,6 +39,8 @@ case class UnidentifiedArmor(armorType: ArmorType) extends Armor {
     } yield UnidentifiedArmor(inferredArmorType)
     case _ => Left(s"Incompatible item: $this and $that")
   }
+
+  override def consumeOne: pLift[Option[pItem]] = pLift.Known(None)
 }
 
 /** Factory methods for [[Armor]] */

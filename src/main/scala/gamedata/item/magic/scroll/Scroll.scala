@@ -1,6 +1,6 @@
 package gamedata.item.magic.scroll
 
-import domain.Domain
+import domain.{Domain, pLift}
 import gamedata.item.magic.StackableMagicItemType
 import gamedata.item.magic.scroll.ScrollPower.ScrollPower
 
@@ -24,16 +24,16 @@ object ScrollType extends StackableMagicItemType {
 object Scroll {
   type Scroll = ScrollType.StackableMagicItem
 
-  val UNKNOWN: Scroll = ScrollType.StackableMagicItem(None, None, None)
+  val UNKNOWN: Scroll = ScrollType.StackableMagicItem(pLift.UNKNOWN, pLift.UNKNOWN, pLift.UNKNOWN)
 
-  def apply(power: ScrollPower): Scroll = ScrollType.StackableMagicItem(None, None, Some(power))
+  def apply(power: ScrollPower): Scroll = ScrollType.StackableMagicItem(pLift.UNKNOWN, pLift.UNKNOWN, pLift.Known(power))
 
-  def apply(quantity: Int, title: String): Scroll = ScrollType.StackableMagicItem(Some(quantity), Some(title), None)
+  def apply(quantity: Int, title: String): Scroll = ScrollType.StackableMagicItem(pLift.Known(quantity), pLift.Known(title), pLift.UNKNOWN)
 
-  def apply(quantity: Int, power: ScrollPower): Scroll = ScrollType.StackableMagicItem(Some(quantity), None, Some(power))
+  def apply(quantity: Int, power: ScrollPower): Scroll = ScrollType.StackableMagicItem(pLift.Known(quantity), pLift.UNKNOWN, pLift.Known(power))
 
   def apply(quantity: Int, title: String, power: ScrollPower): Scroll =
-    ScrollType.StackableMagicItem(Some(quantity), Some(title), Some(power))
+    ScrollType.StackableMagicItem(pLift.Known(quantity), pLift.Known(title), pLift.Known(power))
 
   type ScrollKnowledge = ScrollType.MagicItemKnowledge
 

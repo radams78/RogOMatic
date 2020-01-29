@@ -23,6 +23,8 @@ case class pShooter(shooterType: pLift[ShooterType], plusToHit: pLift[Bonus], pl
       inferredPlusDamage <- plusDamage.merge(thatPlusDamage)
     } yield pShooter(inferredWieldableType, inferredPlusToHit, inferredPlusDamage)
   }
+
+  override def consumeOne: pLift[Option[pItem]] = pLift.Known(None)
 }
 
 object pShooter {

@@ -87,7 +87,7 @@ object pInventory {
 
   implicit def providesKnowledge: ProvidesKnowledge[pInventory] = (self: pInventory) => {
     self.items.flatMap({ case (s: Slot, oi: Option[item.pItem]) =>
-      oi.toSet.flatMap((i: item.pItem) => i.implications + InSlot(s, i))
+      oi.toSet.flatMap((i: item.pItem) => i.implications + InSlot(s, Some(i)))
     }).toSet
   }
 
@@ -107,4 +107,14 @@ object pInventory {
   private val inventoryLineRegex: UnanchoredRegex = """(\w)\) (.*?)\s*$""".r.unanchored
 }
 
-case class InSlot(slot: Slot, item: pItem) extends Fact
+case class InSlot(slot: Slot, item: Option[pItem]) extends Fact {
+  override def after(command: pCommand): Either[String, Set[Fact]] = if (command.consumes(slot)) {
+    item match {
+      case None => Left(s"Performed command $command while $slot is empty")
+      case Some(i) => i.consumeOne match {
+        case pLift.UNKNOWN => Right(Set())
+        case pLift.Known(i) => Right(Set(InSlot(slot, i)))
+      }
+    }
+  } else Right(Set(this))
+}
