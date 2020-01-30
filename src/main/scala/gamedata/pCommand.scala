@@ -1,7 +1,7 @@
 package gamedata
 
-import domain.Domain
 import domain.Domain._
+import domain.{Domain, pLift}
 import gamedata.item.magic.potion.Potion
 import gamedata.item.magic.potion.Potion._
 import gamedata.item.magic.scroll.Scroll
@@ -16,10 +16,11 @@ import gamedata.item.pItem
  * - command.infer(command.implications) == command
  * - command.infer(fact).implications contains fact */
 sealed trait pCommand {
+  /** True if the command consumes one unit of the stack of items in slot. */
   def consumes(slot: Slot): Boolean = false
 
-  /** Facts that can be deduced from this command */
-  def implications: Set[Fact] = Set() // TODO Before or after?
+  /** Facts that are known to be true *after* the command has been performed */
+  def implications: Set[Fact] = Set()
 
   /** Combine two pieces of information about a command */
   def merge(that: pCommand): Either[String, pCommand]
@@ -35,8 +36,8 @@ object pCommand {
 
 
   /** Drink a potion */
-  case class Quaff(slot: pSlot, potion: Potion) extends pCommand {
-    override def consumes(_slot: Slot): Boolean = slot == pSlot(_slot)
+  case class Quaff(slot: pLift[Slot], potion: Potion) extends pCommand {
+    override def consumes(_slot: Slot): Boolean = slot == pLift.Known(_slot)
 
     override def merge(that: pCommand): Either[String, pCommand] = that match {
       case Quaff(thatSlot, thatPotion) => for {
@@ -47,18 +48,18 @@ object pCommand {
       case _ => Left(s"Incompatible commands: $this and $that")
     }
 
-    override def implications: Set[Fact] = potion.implications.++(slot match {
-      case pSlot(None) => Set()
-      case pSlot(Some(s)) => Set(InSlot(s, Some(potion)))
+    override def implications: Set[Fact] = potion.implications.++((slot, potion.consumeOne) match {
+      case (pLift.Known(s), pLift.Known(i)) => Set(InSlot(s, i))
+      case _ => Set()
     })
 
     override def _infer(fact: Fact): Either[String, Quaff] = fact match {
       case InSlot(s, Some(i)) =>
-        if (slot == pSlot(s))
+        if (slot == pLift.Known(s))
           for (p <- potion.merge(i))
             yield new Quaff(slot, p)
         else Right(this)
-      case InSlot(s, None) if slot == pSlot(s) => Left(s"Slot $s contains $potion and is empty")
+      case InSlot(s, None) if slot == pLift.Known(s) => Left(s"Slot $s contains $potion and is empty")
       case f =>
         for (p <- potion.infer(f))
           yield new Quaff(slot, p)
@@ -66,14 +67,16 @@ object pCommand {
   }
 
   object Quaff {
-    def apply(potion: Potion): Quaff = Quaff(pSlot.UNKNOWN, potion)
+    def apply(potion: Potion): Quaff = Quaff(pLift.UNKNOWN, potion)
 
-    def apply(slot: Slot): Quaff = Quaff(pSlot(slot), Potion.UNKNOWN)
+    def apply(slot: Slot): Quaff = Quaff(pLift.Known(slot), Potion.UNKNOWN)
+
+    def apply(slot: Slot, potion: Potion): Quaff = Quaff(pLift.Known(slot), potion)
   }
 
   /** Read a scroll */
-  case class Read(slot: pSlot, scroll: Scroll) extends pCommand {
-    override def consumes(_slot: Slot): Boolean = slot == pSlot(_slot)
+  case class Read(slot: pLift[Slot], scroll: Scroll) extends pCommand {
+    override def consumes(_slot: Slot): Boolean = slot == pLift.Known(_slot)
 
     override def merge(that: pCommand): Either[String, pCommand] = that match {
       case Read(thatSlot, thatScroll) => for {
@@ -85,17 +88,17 @@ object pCommand {
     }
 
     override def implications: Set[Fact] = scroll.implications.++(slot match {
-      case pSlot(None) => Set()
-      case pSlot(Some(s)) => Set(InSlot(s, Some(scroll)))
+      case pLift.UNKNOWN => Set()
+      case pLift.Known(s) => Set(InSlot(s, Some(scroll)))
     })
 
     override def _infer(fact: Fact): Either[String, Read] = fact match {
       case InSlot(s, Some(i)) =>
-        if (slot == pSlot(s))
+        if (slot == pLift.Known(s))
           for (s <- scroll.merge(i))
             yield new Read(slot, s)
         else Right(this)
-      case InSlot(s, None) if slot == pSlot(s) => Left(s"Slot $s contains $scroll and is empty")
+      case InSlot(s, None) if slot == pLift.Known(s) => Left(s"Slot $s contains $scroll and is empty")
       case f =>
         for (s <- scroll.infer(f))
           yield new Read(slot, s)
@@ -109,11 +112,11 @@ object pCommand {
       case None => throw new Error(s"Tried to read empty slot $slot")
     }
 
-    def apply(slot: Slot, scroll: Scroll): Read = Read(pSlot(slot), scroll)
+    def apply(slot: Slot, scroll: Scroll): Read = Read(pLift.Known(slot), scroll)
 
-    def apply(slot: Slot): Read = Read(pSlot(slot), Scroll.UNKNOWN)
+    def apply(slot: Slot): Read = Read(pLift.Known(slot), Scroll.UNKNOWN)
 
-    def apply(scroll: Scroll): Read = Read(pSlot.UNKNOWN, scroll)
+    def apply(scroll: Scroll): Read = Read(pLift.UNKNOWN, scroll)
   }
 
   /** Throw an item */

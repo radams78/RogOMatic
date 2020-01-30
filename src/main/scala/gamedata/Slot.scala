@@ -1,7 +1,6 @@
 package gamedata
 
 import domain.Domain
-import domain.Domain._
 
 /** The set of slots in the PC's inventory */
 case class Slot(label: Char) extends Ordered[Slot] {
@@ -27,22 +26,4 @@ object Slot {
   implicit def domain: Domain[Slot] = Domain.flatDomain
 
   val ALL: Set[Slot] = ('a' to 'x').map(Slot(_)).toSet
-}
-
-/** Partial information about a slot: either a slot, or UNKNOWN */
-case class pSlot(slot: Option[Slot]) {
-  def keypress: Either[String, Char] = slot match {
-    case Some(s) => Right(s.label)
-    case None => Left(s"Error: Unknown slot")
-  }
-}
-
-object pSlot {
-  val UNKNOWN: pSlot = pSlot(None)
-
-  def apply(slot: Slot): pSlot = pSlot(Some(slot))
-
-  implicit def toPSlot(x: Slot): pSlot = pSlot(Some(x))
-
-  implicit def domain: Domain[pSlot] = (x: pSlot, y: pSlot) => for (slot <- x.slot.merge(y.slot)) yield pSlot(slot)
 }
