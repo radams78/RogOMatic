@@ -18,7 +18,7 @@ case class pInventory(items: Map[Slot, Option[pItem]],
                       wearing: pLift[Option[Slot]],
                       wielding: pLift[Option[Slot]]) {
   override def toString: String = {
-    (for ((slot, item) <- items.toList.sortBy(_._1)) yield s"$slot) $item\n") +
+    (for ((slot, item) <- items) yield s"$slot) $item").mkString("\n") +
       (wielding match {
         case pLift.UNKNOWN => "pWeapon: UNKNOWN\n"
         case pLift.Known(None) => ""
