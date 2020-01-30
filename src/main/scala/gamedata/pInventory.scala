@@ -20,9 +20,9 @@ case class pInventory(items: Map[Slot, Option[pItem]],
   override def toString: String = {
     (for ((slot, item) <- items) yield s"$slot) $item").mkString("\n") +
       (wielding match {
-        case pLift.UNKNOWN => "pWeapon: UNKNOWN\n"
+        case pLift.UNKNOWN => "Wielding: UNKNOWN\n"
         case pLift.Known(None) => ""
-        case pLift.Known(Some(weapon)) => s"pWeapon: $weapon\n"
+        case pLift.Known(Some(weapon)) => s"Wielding: $weapon\n"
       }) +
       (wearing match {
         case pLift.UNKNOWN => "Armor: UNKNOWN"
