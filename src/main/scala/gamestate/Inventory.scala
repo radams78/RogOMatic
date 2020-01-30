@@ -7,7 +7,11 @@ import gamedata.item.pItem
 
 import scala.util.matching.UnanchoredRegex
 
-case class Inventory(items: Map[Slot, pItem], wearing: Option[Slot], wielding: Option[Slot]) {
+/** An inventory in which we know whether every slot is empty or full.
+ *
+ * For an inventory in which the status of some slots is unknown, use [[pInventory]] */
+case class Inventory(private val items: Map[Slot, pItem], wearing: Option[Slot], wielding: Option[Slot]) {
+  /** Contents of the given slot */
   def item(slot: Slot): Option[pItem] = items.get(slot)
 
   def topInventory: pInventory = new pInventory(

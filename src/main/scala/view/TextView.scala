@@ -11,7 +11,10 @@ class TextView extends IView {
   override def displayScreen(screen: String): Unit = println(screen)
 
   override def displayInventory(inventory: Inventory): Unit = {
-    for ((slot, item) <- inventory.items.toList.sortBy(_._1)) println(s"$slot) $item")
+    for (slot <- Slot.ALL) inventory.item(slot) match {
+      case None => ()
+      case Some(item) => println(s"$slot) $item")
+    }
     inventory.wielding match {
       case None => ()
       case Some(weapon) => println(s"Wielding: $weapon")
