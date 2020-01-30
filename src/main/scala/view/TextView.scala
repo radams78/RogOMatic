@@ -14,7 +14,7 @@ class TextView extends IView {
     for ((slot, item) <- inventory.items.toList.sortBy(_._1)) println(s"$slot) $item")
     inventory.wielding match {
       case None => ()
-      case Some(weapon) => println(s"pWeapon: $weapon")
+      case Some(weapon) => println(s"Wielding: $weapon")
     }
     inventory.wearing match {
       case None => ()
