@@ -64,6 +64,16 @@ trait MagicItemType {
 
 }
 
+trait UnstackableMagicItemType extends MagicItemType {
+
+  trait UnstackableMagicItem extends MagicItem {
+    override def quantity: pLift[Int] = pLift.Known(1)
+
+    override def consumeOne: pLift[Option[pItem]] = pLift.Known(None)
+  }
+
+}
+
 trait StackableMagicItemType extends MagicItemType {
   def singular: String
 

@@ -2,14 +2,13 @@ package gamedata.item.magic.ring
 
 import domain.Domain._
 import domain.{Domain, pLift}
-import gamedata.item.magic.MagicItemType
+import gamedata.item.magic.UnstackableMagicItemType
 import gamedata.item.magic.ring.Gem.Gem
 import gamedata.item.magic.ring.RingPower.RingPower
-import gamedata.item.pItem
 import gamedata.{Fact, UsesKnowledge}
 
 /** Magic rings */
-object RingType extends MagicItemType {
+object RingType extends UnstackableMagicItemType {
   override type Attribute = Gem
 
   override implicit def attributeDomain: Domain[Gem] = Gem.domain
@@ -19,7 +18,7 @@ object RingType extends MagicItemType {
   override implicit def powerDomain: Domain[RingPower] = RingPower.domain
 }
 
-case class Ring(gem: pLift[Gem], power: pLift[RingPower]) extends RingType.MagicItem {
+case class Ring(gem: pLift[Gem], power: pLift[RingPower]) extends RingType.UnstackableMagicItem {
   override def _merge(that: RingType.MagicItem): Either[String, Ring] = that match {
     case Ring(thatGem, thatPower) => for {
       inferredGem <- gem.merge(thatGem)
@@ -39,13 +38,9 @@ case class Ring(gem: pLift[Gem], power: pLift[RingPower]) extends RingType.Magic
         case pLift.UNKNOWN => ""
       })
 
-  override def quantity: pLift[Int] = pLift.Known(1)
-
   override def attribute: pLift[Gem] = gem
 
   override def build(attribute: Gem, power: RingPower): Ring = Ring(pLift.Known(attribute), pLift.Known(power))
-
-  override def consumeOne: pLift[Option[pItem]] = pLift.Known(None)
 }
 
 object Ring {
