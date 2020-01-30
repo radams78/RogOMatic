@@ -9,7 +9,7 @@ import org.scalatest.EitherValues
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
-class pInventoryTest extends AnyFlatSpec with Matchers with EitherValues {
+class InventoryTest extends AnyFlatSpec with Matchers with EitherValues {
   "a displayed inventory" should "be correctly parsed" in {
     Inventory.parseInventoryScreen(
       """                                                a) some food
