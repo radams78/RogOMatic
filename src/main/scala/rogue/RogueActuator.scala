@@ -12,7 +12,7 @@ class RogueActuator(rogue: IRogue) extends IRogueActuator {
   override def start(): Either[String, Report.GameOn] = {
     rogue.start()
     for {
-      report <- update(Set())
+      report <- getReport(Set())
     } yield report match {
       case r: Report.GameOn => r
       case _: Report.GameOver => return Left("Game over before first move")
@@ -21,11 +21,11 @@ class RogueActuator(rogue: IRogue) extends IRogueActuator {
 
   override def sendCommand(command: Command): Either[String, Report] = {
     for (k <- command.keypresses) rogue.sendKeypress(k)
-    update(Set())
+    getReport(Set())
   }
 
   @tailrec
-  private def update(events: Set[Event]): Either[String, Report] = {
+  private def getReport(events: Set[Event]): Either[String, Report] = {
     val screen: String = rogue.getScreen
     val lines: Array[String] = screen.split("\n").map(_.padTo(80, ' '))
     if (!lines.last.exists(_ != ' ')) return {
@@ -38,7 +38,7 @@ class RogueActuator(rogue: IRogue) extends IRogueActuator {
           case Left(err) => Left(err)
           case Right(event) =>
             rogue.sendKeypress(' ')
-            update(events + event)
+            getReport(events + event)
         }
       case message =>
         for {
