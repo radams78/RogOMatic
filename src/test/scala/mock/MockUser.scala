@@ -41,7 +41,6 @@ class MockUser(initial: MockUserState) extends IView with Assertions {
   }
 }
 
-// TODO Move this outside test suite?
 private trait Displayable
 
 private object Displayable {

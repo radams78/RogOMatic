@@ -56,8 +56,11 @@ class RogueActuator(rogue: IRogue) extends IRogueActuator {
 
   private def readGameOverScreen(screen: String): Either[String, Int] = {
     screen match {
-      case RogueActuator.scoreRegex(score) =>
-        Right(score.toInt) // TODO Catch error?
+      case RogueActuator.scoreRegex(score) => try {
+        Right(score.toInt)
+      } catch {
+        case e: NumberFormatException => Left(s"Could nat parse screen: $screen")
+      }
       case _ => Left(s"Could not parse screen: $screen")
     }
   }
