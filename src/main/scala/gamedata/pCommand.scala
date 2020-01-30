@@ -106,12 +106,6 @@ object pCommand {
   }
 
   object Read {
-    def apply(inventory: pInventory, slot: Slot): Read = inventory.items(slot) match {
-      case Some(scroll: Scroll) => Read(slot, scroll)
-      case Some(item) => throw new Error(s"Tried to read $item")
-      case None => throw new Error(s"Tried to read empty slot $slot")
-    }
-
     def apply(slot: Slot, scroll: Scroll): Read = Read(pLift.Known(slot), scroll)
 
     def apply(slot: Slot): Read = Read(pLift.Known(slot), Scroll.UNKNOWN)

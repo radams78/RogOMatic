@@ -1,6 +1,7 @@
 package view
 
-import gamedata.{Fact, pInventory}
+import gamedata.Fact
+import gamestate.Inventory
 import rogue.Command
 
 /** Interface for the IO view. The implementations should be Humble Object */
@@ -15,7 +16,7 @@ trait IView {
   def displayFact(fact: Fact): Unit
 
   /** Display the PC's inventory */
-  def displayInventory(inventory: pInventory): Unit
+  def displayInventory(inventory: Inventory): Unit
 
   /** Display the current screen exactly as received from Rogue */
   def displayScreen(screen: String): Unit

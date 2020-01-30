@@ -1,6 +1,7 @@
 package rogue
 
-import gamedata.{Report, pInventory}
+import gamedata.Report
+import gamestate.Inventory
 import rogue.Event.Event
 
 import scala.annotation.tailrec
@@ -46,7 +47,7 @@ class RogueActuator(rogue: IRogue) extends IRogueActuator {
             rogue.sendKeypress('i')
             val screen: String = rogue.getScreen
             rogue.sendKeypress(' ')
-            pInventory.parseInventoryScreen(screen)
+            Inventory.parseInventoryScreen(screen)
           }
           report <- Report.GameOn.build(screen, inventory, events + event)
         } yield report

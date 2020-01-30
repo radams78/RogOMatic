@@ -1,6 +1,7 @@
 package mock
 
-import gamedata.{Fact, pInventory}
+import gamedata.Fact
+import gamestate.Inventory
 import org.scalatest.Assertions
 import rogue.Command
 import view.IView
@@ -29,7 +30,7 @@ class MockUser(initial: MockUserState) extends IView with Assertions {
 
   override def displayGameOver(finalScore: Int): Unit = state = state.display(Displayable.GameOver(finalScore))
 
-  override def displayInventory(inventory: pInventory): Unit = state = state.display(Displayable.Inventory(inventory))
+  override def displayInventory(inventory: Inventory): Unit = state = state.display(Displayable.Inventory(inventory))
 
   override def displayScreen(screen: String): Unit = state = state.display(Displayable.Screen(screen))
 
@@ -47,7 +48,7 @@ private object Displayable {
 
   case class GameOver(finalScore: Int) extends Displayable
 
-  case class Inventory(inventory: pInventory) extends Displayable
+  case class Inventory(inventory: gamestate.Inventory) extends Displayable
 
   case class Screen(screen: String) extends Displayable
 
@@ -85,7 +86,7 @@ private object MockUserState {
   }
 
   object Command {
-    def apply(expectedScreen: String, expectedInventory: pInventory, expectedKnowledge: Set[Fact], command: rogue.Command, next: MockUserState): MockUserState.Command =
+    def apply(expectedScreen: String, expectedInventory: Inventory, expectedKnowledge: Set[Fact], command: rogue.Command, next: MockUserState): MockUserState.Command =
       new MockUserState.Command(Set(Displayable.Screen(expectedScreen), Displayable.Inventory(expectedInventory)) ++ expectedKnowledge.map(Displayable.Fact),
         command, next)
   }
@@ -145,12 +146,12 @@ trait MockUserBuilder {
    *
    * Wait until you have seen [[expectedScreen]] and [[expectedInventory]].
    * Perform the command [[command]] */
-  class Command(expectedScreen: String, expectedInventory: pInventory, expectedKnowledge: Set[Fact], command: rogue.Command) extends MockUserBuilder {
+  class Command(expectedScreen: String, expectedInventory: gamestate.Inventory, expectedKnowledge: Set[Fact], command: rogue.Command) extends MockUserBuilder {
     override def build(mockUserState: MockUserState): MockUser =
       outer.build(MockUserState.Command(expectedScreen, expectedInventory, expectedKnowledge, command, mockUserState))
   }
 
-  def Command(expectedScreen: String, expectedInventory: pInventory, expectedKnowledge: Set[Fact], command: rogue.Command): MockUserBuilder =
+  def Command(expectedScreen: String, expectedInventory: gamestate.Inventory, expectedKnowledge: Set[Fact], command: rogue.Command): MockUserBuilder =
     new Command(expectedScreen, expectedInventory, expectedKnowledge, command)
 
   /** Add the following instructions to the list.

@@ -1,7 +1,7 @@
 package view
 
-import domain.pLift
 import gamedata._
+import gamestate.Inventory
 import rogue.Command
 
 import scala.io.StdIn
@@ -10,17 +10,15 @@ import scala.io.StdIn
 class TextView extends IView {
   override def displayScreen(screen: String): Unit = println(screen)
 
-  override def displayInventory(inventory: pInventory): Unit = {
+  override def displayInventory(inventory: Inventory): Unit = {
     for ((slot, item) <- inventory.items.toList.sortBy(_._1)) println(s"$slot) $item")
     inventory.wielding match {
-      case pLift.UNKNOWN => println("pWeapon: UNKNOWN")
-      case pLift.Known(None) => ()
-      case pLift.Known(Some(weapon)) => println(s"pWeapon: $weapon")
+      case None => ()
+      case Some(weapon) => println(s"pWeapon: $weapon")
     }
     inventory.wearing match {
-      case pLift.UNKNOWN => println("Armor: UNKNOWN")
-      case pLift.Known(None) => ()
-      case pLift.Known(Some(armor)) => println(s"Armor: $armor")
+      case None => ()
+      case Some(armor) => println(s"Armor: $armor")
     }
   }
 

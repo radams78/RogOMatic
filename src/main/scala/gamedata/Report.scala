@@ -1,6 +1,7 @@
 package gamedata
 
 import gamedata.ProvidesKnowledge._
+import gamestate.Inventory
 import rogue.Event.Event
 
 /** Report returned from parsing screens from Rogue */
@@ -14,11 +15,11 @@ object Report {
   /** Game is still in progress
    *
    * @param events Set of events reported by message lines */
-  case class GameOn(override val screen: String, inventory: pInventory, events: Set[Event], lastCommand: pCommand) extends Report {
+  case class GameOn(override val screen: String, inventory: Inventory, events: Set[Event], lastCommand: pCommand) extends Report {
   }
 
   object GameOn {
-    def build(screen: String, inventory: pInventory, events: Set[Event]): Either[String, GameOn] = {
+    def build(screen: String, inventory: Inventory, events: Set[Event]): Either[String, GameOn] = {
       for (inferences <- {
         events.foldLeft[Either[String, pCommand]](Right(pCommand.UNKNOWN))({ case (x, event) => x match {
           case Right(cmd) => cmd.merge(event.inference)

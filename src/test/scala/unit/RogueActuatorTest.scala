@@ -2,6 +2,7 @@ package unit
 
 import gamedata._
 import gamedata.item.pItem
+import gamestate.Inventory
 import mock._
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
@@ -22,7 +23,7 @@ class RogueActuatorTest extends AnyFlatSpec with Matchers {
   it should "display the first inventory of the game" in {
     val player: IRogueActuator = new RogueActuator(ZeroMoveGame.emptyInventoryGame)
     player.start() match {
-      case Right(report: Report.GameOn) => report.inventory should be(pInventory(Map[Slot, pItem](), None, None))
+      case Right(report: Report.GameOn) => report.inventory should be(Inventory(Map[Slot, pItem](), None, None))
       case Right(report) => fail(s"Incorrect report type returned: $report")
       case Left(err) => fail(err)
     }

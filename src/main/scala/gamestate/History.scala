@@ -5,7 +5,6 @@ import gamedata.UsesKnowledge._
 import gamedata._
 import gamedata.item.magic.potion.Potion.Potion
 import gamedata.item.magic.scroll.Scroll.Scroll
-import gamedata.pInventory._
 import rogue.Command
 
 /** The history of the game, holding all commands sent to Rogue and all reports retrieved from Rogue */
@@ -26,17 +25,17 @@ object History {
       case Command.DOWNRIGHT => Right(pCommand.DOWNRIGHT)
       case Command.REST => Right(pCommand.REST)
       case Command.DOWNSTAIRS => Right(pCommand.DOWNSTAIRS)
-      case Command.Quaff(slot) => inventory.items(slot) match {
+      case Command.Quaff(slot) => inventory.item(slot) match {
         case Some(potion: Potion) => Right(pCommand.Quaff(slot, potion))
         case Some(item) => Left(s"Tried to quaff $item")
         case None => Left(s"Tried to quaff empty slot")
       }
-      case Command.Read(slot) => inventory.items(slot) match {
+      case Command.Read(slot) => inventory.item(slot) match {
         case Some(scroll: Scroll) => Right(pCommand.Read(slot, scroll))
         case Some(item) => Left(s"Tried to read $item")
         case None => Left(s"Tried to read empty slot")
       }
-      case Command.Throw(dir, slot) => inventory.items(slot) match {
+      case Command.Throw(dir, slot) => inventory.item(slot) match {
         case Some(item) => Right(pCommand.Throw(dir, slot, item))
         case None => Left(s"Tried to throw empty slot")
       }
@@ -52,7 +51,7 @@ object History {
       })
 
     /** Current inventory */
-    def inventory: pInventory
+    def inventory: Inventory
 
     /** Last screen displayed by Rogue */
     def screen: String
@@ -78,7 +77,7 @@ object History {
   case class FirstMove(report: Report.GameOn) extends GameOn {
     override def screen: String = report.screen
 
-    override def inventory: pInventory = report.inventory
+    override def inventory: Inventory = report.inventory
 
     override def knowledge: Set[Fact] = report.implications
 
@@ -86,7 +85,7 @@ object History {
   }
 
   /** The history of a game with one or more moves that is not yet finished */
-  case class NextMove(history: GameOn, command: pCommand, report: Report.GameOn, override val inventory: pInventory) extends GameOn {
+  case class NextMove(history: GameOn, command: pCommand, report: Report.GameOn, override val inventory: Inventory) extends GameOn {
     override def screen: String = report.screen
 
     override def knowledge: Set[Fact] = history.knowledge.union(

@@ -4,13 +4,14 @@ import gamedata._
 import gamedata.item.armor.{Armor, ArmorType}
 import gamedata.item.weapon.{WeaponType, pWeapon}
 import gamedata.item.{weapon, _}
+import gamestate.Inventory
 import org.scalatest.EitherValues
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
 class pInventoryTest extends AnyFlatSpec with Matchers with EitherValues {
   "a displayed inventory" should "be correctly parsed" in {
-    pInventory.parseInventoryScreen(
+    Inventory.parseInventoryScreen(
       """                                                a) some food
         |                                                b) +1 ring mail [4] being worn
         |                                                c) a +1,+1 mace in hand
@@ -38,7 +39,7 @@ class pInventoryTest extends AnyFlatSpec with Matchers with EitherValues {
         |""".stripMargin.split("\n")
         .map(_.padTo(80, ' '))
         .mkString("\n")
-    ) should be(Right(pInventory(
+    ) should be(Right(Inventory(
       items = Map(
         Slot.A -> Food(1),
         Slot.B -> Armor(ArmorType.RING_MAIL, +1),

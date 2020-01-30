@@ -8,6 +8,7 @@ import gamedata.item.magic.wand
 import gamedata.item.magic.wand.{Material, Wand, WandShape}
 import gamedata.item.weapon.{MeleeType, WeaponType, pMissile, pWeapon}
 import gamedata.item.{weapon, _}
+import gamestate.Inventory
 import rogue.Command
 
 /** Sample data for a game of Rogue used in testing. The game lasts three turns, and involves several different
@@ -67,7 +68,7 @@ object TestGame {
       |Level: 1  Gold: 0      Hp: 2(12)    Str: 16(16) Arm: 4  Exp: 1/0
       |""".stripMargin)
 
-  val firstInventory: pInventory = pInventory(
+  val firstInventory: Inventory = Inventory(
     items = Map(
       Slot.A -> Food(1),
       Slot.B -> Armor(ArmorType.RING_MAIL, +1),
@@ -218,7 +219,7 @@ object TestGame {
       |Level: 1  Gold: 0      Hp: 2(12)    Str: 16(16) Arm: 4  Exp: 1/0
       |""".stripMargin)
 
-  val fourthInventory: pInventory = pInventory(
+  val fourthInventory: Inventory = Inventory(
     items = Map(
       Slot.A -> Food(1),
       Slot.B -> Armor(ArmorType.RING_MAIL, +1),
