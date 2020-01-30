@@ -2,8 +2,7 @@ package gamedata
 
 import domain.Domain._
 import domain.{Domain, pLift}
-import gamedata.item.pItem
-
+import gamedata.item.{InSlot, pItem}
 
 /** Partial information about the PC's inventory */
 case class pInventory(private val items: Map[Slot, pLift[Option[pItem]]],
@@ -46,31 +45,21 @@ object pInventory {
       oi match {
         case pLift.UNKNOWN => Set()
         case pLift.Known(None) => Set(InSlot(s, None))
-        case pLift.Known(Some(i)) => i.implications + InSlot(s, Some(i))
+        case pLift.Known(Some(i)) => i.implications + item.InSlot(s, Some(i))
       }
     }).toSet
   }
 
   implicit def usesKnowledge: UsesKnowledge[pInventory] = (self: pInventory, fact: Fact) => {
-    val _items: Either[String, Map[Slot, pLift[Option[pItem]]]] = self.items.foldLeft[Either[String, Map[Slot, pLift[Option[pItem]]]]](
-      Right(Map())
-    )({
-      case (Left(err), _) => Left(err)
-      case (Right(_items), (slot, pLift.Known(Some(i)))) => for (j <- i.infer(fact)) yield _items + (slot -> pLift.Known(Some(j)))
-      case (Right(_items), (slot, i)) => Right(_items + (slot -> i))
-    })
+    val _items: Either[String, Map[Slot, pLift[Option[pItem]]]] =
+      self.items.foldLeft[Either[String, Map[Slot, pLift[Option[pItem]]]]](
+        Right(Map())
+      )({
+        case (Left(err), _) => Left(err)
+        case (Right(_items), (slot, pLift.Known(Some(i)))) => for (j <- i.infer(fact)) yield _items + (slot -> pLift.Known(Some(j)))
+        case (Right(_items), (slot, i)) => Right(_items + (slot -> i))
+      })
     for (__items <- _items) yield new pInventory(__items, self.wearing, self.wielding)
   }
 }
 
-case class InSlot(slot: Slot, item: Option[pItem]) extends Fact {
-  override def after(command: pCommand): Either[String, Set[Fact]] = if (command.consumes(slot)) {
-    item match {
-      case None => Left(s"Performed command $command while $slot is empty")
-      case Some(i) => i.consumeOne match {
-        case pLift.UNKNOWN => Right(Set())
-        case pLift.Known(i) => Right(Set(InSlot(slot, i)))
-      }
-    }
-  } else Right(Set(this))
-}

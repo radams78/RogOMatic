@@ -6,7 +6,7 @@ import gamedata.item.magic.potion.Potion
 import gamedata.item.magic.potion.Potion._
 import gamedata.item.magic.scroll.Scroll
 import gamedata.item.magic.scroll.Scroll.Scroll
-import gamedata.item.pItem
+import gamedata.item.{InSlot, pItem}
 
 /** Partial information about a move that can be made by the player in Rogue.
  *
@@ -89,7 +89,7 @@ object pCommand {
 
     override def implications: Set[Fact] = scroll.implications.++(slot match {
       case pLift.UNKNOWN => Set()
-      case pLift.Known(s) => Set(InSlot(s, Some(scroll)))
+      case pLift.Known(s) => Set(item.InSlot(s, Some(scroll)))
     })
 
     override def _infer(fact: Fact): Either[String, Read] = fact match {
@@ -127,7 +127,7 @@ object pCommand {
       case _ => Left(s"Incompatible commands: $this and $that")
     }
 
-    override def implications: Set[Fact] = item.implications.+(InSlot(slot, Some(item)))
+    override def implications: Set[Fact] = item.implications.+(gamedata.item.InSlot(slot, Some(item)))
 
     override def _infer(fact: Fact): Either[String, pCommand] = fact match {
       case InSlot(s, Some(i)) =>
