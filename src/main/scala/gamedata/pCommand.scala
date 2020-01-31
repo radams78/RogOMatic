@@ -89,7 +89,10 @@ object pCommand {
 
     override def implications: Set[Fact] = scroll.implications.++(slot match {
       case pLift.UNKNOWN => Set()
-      case pLift.Known(s) => Set(item.InSlot(s, Some(scroll)))
+      case pLift.Known(s) => scroll.consumeOne match {
+        case pLift.UNKNOWN => Set()
+        case pLift.Known(i) => Set(InSlot(s, i))
+      } // TODO Duplication
     })
 
     override def _infer(fact: Fact): Either[String, Read] = fact match {

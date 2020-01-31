@@ -1,5 +1,6 @@
 package mock
 
+import gamedata.ProvidesKnowledge._
 import gamedata._
 import gamedata.item.armor.{Armor, ArmorType}
 import gamedata.item.magic.scroll.Scroll.ScrollKnowledge
@@ -303,9 +304,10 @@ object TestGame {
 
   /** A mock user who plays this game of Rogue */
   def user: MockUser = MockUser.Start
-    .Command(TestGame.firstScreen, TestGame.firstInventory, Set(), Command.RIGHT)
-    .Command(TestGame.secondScreen, TestGame.firstInventory, Set(), Command.Read(Slot.F))
-    .Command(TestGame.fourthScreen, TestGame.fourthInventory, Set(ScrollKnowledge("coph rech", ScrollPower.REMOVE_CURSE)), Command.LEFT)
+    .Command(TestGame.firstScreen, TestGame.firstInventory, TestGame.firstInventory.implications, Command.RIGHT)
+    .Command(TestGame.secondScreen, TestGame.firstInventory, TestGame.firstInventory.implications, Command.Read(Slot.F))
+    .Command(TestGame.fourthScreen, TestGame.fourthInventory,
+      TestGame.fourthInventory.implications ++ Set(ScrollKnowledge("coph rech", ScrollPower.REMOVE_CURSE)), Command.LEFT)
     .GameOver(0)
     .End
 }

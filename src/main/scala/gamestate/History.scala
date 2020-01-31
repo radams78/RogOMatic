@@ -85,16 +85,8 @@ object History {
   }
 
   /** The history of a game with one or more moves that is not yet finished */
-  case class NextMove(history: GameOn, command: pCommand, report: Report.GameOn, override val inventory: Inventory) extends GameOn {
+  case class NextMove(history: GameOn, command: pCommand, report: Report.GameOn, override val inventory: Inventory, override val knowledge: Set[Fact]) extends GameOn {
     override def screen: String = report.screen
-
-    override def knowledge: Set[Fact] = history.knowledge.union(
-      report.implications.union(
-        inventory.implications.union(
-          command.implications
-        )
-      )
-    )
 
     override def lastCommand: Option[pCommand] = Some(command)
   }
@@ -106,8 +98,8 @@ object History {
       facts <- history.implicationsAfter(lastCommand)
       inventory <- report.inventory.infer(facts)
       inventory <- inventory.infer(lastCommand)
-    } yield NextMove(history, lastCommand, report, inventory)
-
+    } yield NextMove(history, lastCommand, report, inventory,
+      facts.union(report.implications.union(inventory.implications.union(lastCommand.implications)))) // TODO Extract
   }
 
   /** The complete history of a finished game of Rogue */
