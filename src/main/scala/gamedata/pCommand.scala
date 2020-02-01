@@ -26,6 +26,7 @@ sealed trait pCommand {
   /** Combine two pieces of information about a command */
   def merge(that: pCommand): Either[String, pCommand]
 
+  /** Combine this object with the information from the given fact */
   def _infer(fact: Fact): Either[String, pCommand] = Right(this)
 }
 
