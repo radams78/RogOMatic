@@ -3,7 +3,7 @@ package gamestate
 import domain.pLift
 import gamedata._
 import gamedata.fact.ProvidesKnowledge._
-import gamedata.fact.{Fact, ProvidesKnowledge}
+import gamedata.fact.{Fact, ProvidesKnowledge, UsesKnowledge}
 import gamedata.item.pItem
 
 import scala.util.matching.UnanchoredRegex
