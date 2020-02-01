@@ -12,16 +12,16 @@ import gamedata.item.{InSlot, pItem}
 /** Partial information about a move that can be made by the player in Rogue.
  *
  * Invariants:
- * - implications is monotone
+ * - _implications is monotone
  * - command <= command.infer(fact)
- * - command.infer(command.implications) == command
- * - command.infer(fact).implications contains fact */
+ * - command.infer(command._implications) == command
+ * - command.infer(fact)._implications contains fact */
 sealed trait pCommand {
   /** True if the command consumes one unit of the stack of items in slot. */
   def consumes(slot: Slot): Boolean = false
 
   /** Facts that are known to be true *after* the command has been performed */
-  def implications: Set[Fact] = Set()
+  def _implications: Set[Fact] = Set()
 
   /** Combine two pieces of information about a command */
   def merge(that: pCommand): Either[String, pCommand]
@@ -49,7 +49,7 @@ object pCommand {
       case _ => Left(s"Incompatible commands: $this and $that")
     }
 
-    override def implications: Set[Fact] = potion.implications.++((slot, potion.consumeOne) match {
+    override def _implications: Set[Fact] = potion.implications.++((slot, potion.consumeOne) match {
       case (pLift.Known(s), pLift.Known(i)) => Set(InSlot(s, i))
       case _ => Set()
     })
@@ -88,7 +88,7 @@ object pCommand {
       case _ => Left(s"Incompatible commands: $this and $that")
     }
 
-    override def implications: Set[Fact] = scroll.implications.++(slot match {
+    override def _implications: Set[Fact] = scroll.implications.++(slot match {
       case pLift.UNKNOWN => Set()
       case pLift.Known(s) => scroll.consumeOne match {
         case pLift.UNKNOWN => Set()
@@ -131,7 +131,7 @@ object pCommand {
       case _ => Left(s"Incompatible commands: $this and $that")
     }
 
-    override def implications: Set[Fact] = item.implications.+(gamedata.item.InSlot(slot, Some(item)))
+    override def _implications: Set[Fact] = item.implications.+(gamedata.item.InSlot(slot, Some(item)))
 
     override def _infer(fact: Fact): Either[String, pCommand] = fact match {
       case InSlot(s, Some(i)) =>
@@ -248,7 +248,7 @@ object pCommand {
 
   implicit def domain: Domain[pCommand] = (x: pCommand, y: pCommand) => x.merge(y)
 
-  implicit def providesKnowledge: ProvidesKnowledge[pCommand] = (self: pCommand) => self.implications
+  implicit def providesKnowledge: ProvidesKnowledge[pCommand] = (self: pCommand) => self._implications
 
   implicit def usesKnowledge: UsesKnowledge[pCommand] = (self: pCommand, fact: Fact) => self._infer(fact)
 }

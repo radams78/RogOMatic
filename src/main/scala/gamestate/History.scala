@@ -46,7 +46,7 @@ object History {
 
     /** Facts that are known to be true after the following command is performed */
     def implicationsAfter(command: pCommand): Either[String, Set[Fact]] =
-      _implications.foldLeft[Either[String, Set[Fact]]](Right(command.implications))({
+      _implications.foldLeft[Either[String, Set[Fact]]](Right(command._implications))({
         case (acc, fact) => for {
           f1 <- acc
           f2 <- fact.after(command)
@@ -102,7 +102,7 @@ object History {
       inventory <- report.inventory.infer(facts)
       inventory <- inventory.infer(lastCommand)
     } yield NextMove(history, lastCommand, report, inventory,
-      facts.union(report.implications.union(inventory.implications.union(lastCommand.implications)))) // TODO Extract
+      facts.union(report.implications.union(inventory.implications.union(lastCommand._implications)))) // TODO Extract
   }
 
   /** The complete history of a finished game of Rogue */

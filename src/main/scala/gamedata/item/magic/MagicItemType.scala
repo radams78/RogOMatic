@@ -24,9 +24,9 @@ trait MagicItemType {
    * This class should extend this trait.
    *
    * Contract:
-   * - implications is monotone
+   * - _implications is monotone
    * - x <= x.infer(fact)
-   * - if x.implications contains fact then x.infer(fact) == x 
+   * - if x._implications contains fact then x.infer(fact) == x 
    * - build(a, p).attribute == Some(a) 
    * - build(a, p).power == Some(p) */
   trait MagicItem extends pItem {

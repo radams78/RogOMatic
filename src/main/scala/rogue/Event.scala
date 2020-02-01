@@ -15,7 +15,7 @@ object Event extends Enumeration {
 
   protected case class Val(message: Regex, inference: pCommand) extends super.Val
 
-  implicit def providesKnowledge: ProvidesKnowledge[Event] = (self: Event) => self.inference.implications
+  implicit def providesKnowledge: ProvidesKnowledge[Event] = (self: Event) => self.inference._implications
 
   /** Empty message line */
   val NONE: Event = Val("^ *$".r, pCommand.UNKNOWN)

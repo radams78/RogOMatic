@@ -15,7 +15,7 @@ import scala.util.matching.Regex
 /** An item that the PC can pick up 
  *
  * Contract:
- * - implications is monotone
+ * - _implications is monotone
  * - x <= x.infer(fact)
  * - if x.impliciations contains fact then x.infer(fact) == x */
 trait pItem {
