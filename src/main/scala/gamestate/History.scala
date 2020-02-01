@@ -14,6 +14,7 @@ object History {
 
   /** The history of a game that is not yet finished */
   trait GameOn extends History {
+    /** Fill in as much information as possible about the given command */
     def elaborate(command: Command): Either[String, pCommand] = command match {
       case Command.UP => Right(pCommand.UP)
       case Command.DOWN => Right(pCommand.DOWN)
@@ -42,8 +43,9 @@ object History {
       case Command.Wield(slot) => Right(pCommand.Wield(slot))
     }
 
+    /** Facts that are known to be true after the following command is performed */
     def implicationsAfter(command: pCommand): Either[String, Set[Fact]] =
-      knowledge.foldLeft[Either[String, Set[Fact]]](Right(command.implications))({
+      _implications.foldLeft[Either[String, Set[Fact]]](Right(command.implications))({
         case (acc, fact) => for {
           f1 <- acc
           f2 <- fact.after(command)
@@ -63,14 +65,14 @@ object History {
     }
 
     /** Set of all facts we can deduce from the history */
-    def knowledge: Set[Fact]
+    def _implications: Set[Fact]
 
     /** Last command performed, or None if it is before the first move of the game */
     def lastCommand: Option[pCommand]
   }
 
   object GameOn {
-    implicit def providesKnowledge: ProvidesKnowledge[GameOn] = (self: GameOn) => self.knowledge
+    implicit def providesKnowledge: ProvidesKnowledge[GameOn] = (self: GameOn) => self._implications
   }
 
   /** The history of a game before the first move is made */
@@ -79,13 +81,13 @@ object History {
 
     override def inventory: Inventory = report.inventory
 
-    override def knowledge: Set[Fact] = report.implications
+    override def _implications: Set[Fact] = report.implications
 
     override def lastCommand: Option[pCommand] = None
   }
 
   /** The history of a game with one or more moves that is not yet finished */
-  case class NextMove(history: GameOn, command: pCommand, report: Report.GameOn, override val inventory: Inventory, override val knowledge: Set[Fact]) extends GameOn {
+  case class NextMove(history: GameOn, command: pCommand, report: Report.GameOn, override val inventory: Inventory, override val _implications: Set[Fact]) extends GameOn {
     override def screen: String = report.screen
 
     override def lastCommand: Option[pCommand] = Some(command)

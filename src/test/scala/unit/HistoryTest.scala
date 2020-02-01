@@ -22,7 +22,7 @@ class HistoryTest extends AnyFlatSpec with Matchers {
     }
   }
 
-  "Reading the new inventory" should "update the knowledge correctly" in {
+  "Reading the new inventory" should "update the _implications correctly" in {
     (for {
       report1 <- Report.GameOn.build("", Inventory(Map(Slot.A -> Food(1), Slot.B -> Scroll(2, "abcde")), None, None), Set())
       report2 <- Report.GameOn.build("", Inventory(Map(Slot.A -> Food(1), Slot.B -> Scroll(1, ScrollPower.REMOVE_CURSE)), None, None), Set(Event.REMOVE_CURSE))
