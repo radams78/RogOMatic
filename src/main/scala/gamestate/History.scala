@@ -65,7 +65,7 @@ object History {
     }
 
     /** Set of all facts we can deduce from the history */
-    def _implications: Set[Fact]
+    protected def _implications: Set[Fact]
 
     /** Last command performed, or None if it is before the first move of the game */
     def lastCommand: Option[pCommand]
