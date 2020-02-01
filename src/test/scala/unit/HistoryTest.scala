@@ -1,6 +1,6 @@
 package unit
 
-import gamedata.ProvidesKnowledge._
+import gamedata.fact.ProvidesKnowledge._
 import gamedata.item.magic.scroll.{Scroll, ScrollPower}
 import gamedata.item.{Food, InSlot}
 import gamedata.{Report, Slot}

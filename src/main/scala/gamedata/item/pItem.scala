@@ -1,8 +1,7 @@
 package gamedata.item
 
 import domain.{Domain, pLift}
-import gamedata.ProvidesKnowledge
-import gamedata.fact.Fact
+import gamedata.fact.{Fact, ProvidesKnowledge}
 import gamedata.item.armor.{Armor, ArmorType}
 import gamedata.item.magic.potion.{Colour, Potion}
 import gamedata.item.magic.ring.{Gem, Ring}

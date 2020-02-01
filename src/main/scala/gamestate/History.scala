@@ -1,9 +1,9 @@
 package gamestate
 
-import gamedata.ProvidesKnowledge._
 import gamedata.UsesKnowledge._
 import gamedata._
-import gamedata.fact.Fact
+import gamedata.fact.ProvidesKnowledge._
+import gamedata.fact.{Fact, ProvidesKnowledge}
 import gamedata.item.magic.potion.Potion.Potion
 import gamedata.item.magic.scroll.Scroll.Scroll
 import rogue.Command

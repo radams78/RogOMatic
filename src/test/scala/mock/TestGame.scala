@@ -1,7 +1,7 @@
 package mock
 
-import gamedata.ProvidesKnowledge._
 import gamedata._
+import gamedata.fact.ProvidesKnowledge._
 import gamedata.item.armor.{Armor, ArmorType}
 import gamedata.item.magic.scroll.Scroll.ScrollKnowledge
 import gamedata.item.magic.scroll.{Scroll, ScrollPower}

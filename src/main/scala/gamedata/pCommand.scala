@@ -2,7 +2,7 @@ package gamedata
 
 import domain.Domain._
 import domain.{Domain, pLift}
-import gamedata.fact.Fact
+import gamedata.fact.{Fact, ProvidesKnowledge}
 import gamedata.item.magic.potion.Potion
 import gamedata.item.magic.potion.Potion._
 import gamedata.item.magic.scroll.Scroll

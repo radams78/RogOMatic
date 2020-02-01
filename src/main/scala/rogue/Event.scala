@@ -1,8 +1,9 @@
 package rogue
 
+import gamedata.fact.ProvidesKnowledge
 import gamedata.item.magic.potion.{Potion, PotionPower}
 import gamedata.item.magic.scroll.{Scroll, ScrollPower}
-import gamedata.{ProvidesKnowledge, pCommand}
+import gamedata.pCommand
 
 import scala.util.matching.Regex
 

@@ -1,6 +1,4 @@
-package gamedata
-
-import gamedata.fact.Fact
+package gamedata.fact
 
 
 trait ProvidesKnowledge[T] {

@@ -1,6 +1,7 @@
 package gamedata
 
-import gamedata.ProvidesKnowledge._
+import gamedata.fact.ProvidesKnowledge
+import gamedata.fact.ProvidesKnowledge._
 import gamestate.Inventory
 import rogue.Event.Event
 

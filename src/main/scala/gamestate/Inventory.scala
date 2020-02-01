@@ -1,9 +1,9 @@
 package gamestate
 
 import domain.pLift
-import gamedata.ProvidesKnowledge._
 import gamedata._
-import gamedata.fact.Fact
+import gamedata.fact.ProvidesKnowledge._
+import gamedata.fact.{Fact, ProvidesKnowledge}
 import gamedata.item.pItem
 
 import scala.util.matching.UnanchoredRegex

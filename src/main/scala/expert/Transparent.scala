@@ -1,6 +1,6 @@
 package expert
 
-import gamedata.ProvidesKnowledge._
+import gamedata.fact.ProvidesKnowledge._
 import gamestate.History
 import rogue.Command
 import view.IView

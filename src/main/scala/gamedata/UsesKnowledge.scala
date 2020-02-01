@@ -1,7 +1,7 @@
 package gamedata
 
-import gamedata.ProvidesKnowledge._
-import gamedata.fact.Fact
+import gamedata.fact.ProvidesKnowledge._
+import gamedata.fact.{Fact, ProvidesKnowledge}
 
 /** Trait for domains for which we can take a [[Fact]] and use it to infer more information about the object */
 trait UsesKnowledge[T] {
