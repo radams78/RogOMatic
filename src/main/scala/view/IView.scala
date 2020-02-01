@@ -1,6 +1,6 @@
 package view
 
-import gamedata.Fact
+import gamedata.fact.Fact
 import gamestate.Inventory
 import rogue.Command
 

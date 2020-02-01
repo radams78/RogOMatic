@@ -1,7 +1,8 @@
 package gamedata.item
 
 import domain.pLift
-import gamedata.{Fact, Slot, pCommand}
+import gamedata.fact.Fact
+import gamedata.{Slot, pCommand}
 
 case class InSlot(slot: Slot, item: Option[pItem]) extends Fact {
   override def after(command: pCommand): Either[String, Set[Fact]] = if (command.consumes(slot)) {

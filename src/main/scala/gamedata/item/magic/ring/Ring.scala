@@ -2,10 +2,11 @@ package gamedata.item.magic.ring
 
 import domain.Domain._
 import domain.{Domain, pLift}
+import gamedata.UsesKnowledge
+import gamedata.fact.Fact
 import gamedata.item.magic.UnstackableMagicItemType
 import gamedata.item.magic.ring.Gem.Gem
 import gamedata.item.magic.ring.RingPower.RingPower
-import gamedata.{Fact, UsesKnowledge}
 
 /** Magic rings */
 object RingType extends UnstackableMagicItemType {

@@ -1,6 +1,6 @@
 package mock
 
-import gamedata.Fact
+import gamedata.fact.Fact
 import gamestate.Inventory
 import org.scalatest.Assertions
 import rogue.Command
@@ -51,7 +51,7 @@ private object Displayable {
 
   case class Screen(screen: String) extends Displayable
 
-  case class Fact(fact: gamedata.Fact) extends Displayable
+  case class Fact(fact: gamedata.fact.Fact) extends Displayable
 
 }
 

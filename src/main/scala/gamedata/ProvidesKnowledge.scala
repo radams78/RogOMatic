@@ -1,8 +1,7 @@
 package gamedata
 
-trait Fact {
-  def after(command: pCommand): Either[String, Set[Fact]]
-}
+import gamedata.fact.Fact
+
 
 trait ProvidesKnowledge[T] {
   def implications(self: T): Set[Fact]

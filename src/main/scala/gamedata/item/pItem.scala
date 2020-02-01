@@ -1,6 +1,8 @@
 package gamedata.item
 
 import domain.{Domain, pLift}
+import gamedata.ProvidesKnowledge
+import gamedata.fact.Fact
 import gamedata.item.armor.{Armor, ArmorType}
 import gamedata.item.magic.potion.{Colour, Potion}
 import gamedata.item.magic.ring.{Gem, Ring}
@@ -8,7 +10,6 @@ import gamedata.item.magic.scroll.Scroll
 import gamedata.item.magic.wand.{Material, Wand, WandShape}
 import gamedata.item.weapon.Missiletype.MissileType
 import gamedata.item.weapon.{WeaponType, pMissile, pWeapon}
-import gamedata.{Fact, ProvidesKnowledge}
 
 import scala.util.matching.Regex
 

@@ -1,6 +1,7 @@
 package domain
 
-import gamedata.{Fact, UsesKnowledge}
+import gamedata.UsesKnowledge
+import gamedata.fact.Fact
 
 sealed trait pLift[+T]
 
