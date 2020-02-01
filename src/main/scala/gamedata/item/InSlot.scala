@@ -4,6 +4,7 @@ import domain.pLift
 import gamedata.fact.Fact
 import gamedata.{Slot, pCommand}
 
+/** A fact that gives the contents of an inventory slot */
 case class InSlot(slot: Slot, item: Option[pItem]) extends Fact {
   override def after(command: pCommand): Either[String, Set[Fact]] = if (command.consumes(slot)) {
     item match {
