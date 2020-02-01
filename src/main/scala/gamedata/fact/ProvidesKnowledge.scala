@@ -1,7 +1,8 @@
 package gamedata.fact
 
-
+/** A typeclass for objects from which facts can be deduced */
 trait ProvidesKnowledge[T] {
+  /** The set of facts that can be deduced from this object */
   def implications(self: T): Set[Fact]
 }
 
