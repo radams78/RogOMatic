@@ -1,6 +1,6 @@
 package gamestate
 
-import domain.pLift
+import domain.pOption
 import gamedata._
 import gamedata.fact.ProvidesKnowledge._
 import gamedata.fact.{Fact, ProvidesKnowledge, UsesKnowledge}
@@ -16,9 +16,9 @@ case class Inventory(private val items: Map[Slot, pItem], wearing: Option[Slot],
   def item(slot: Slot): Option[pItem] = items.get(slot)
 
   def topInventory: pInventory = new pInventory(
-    (for (slot <- Slot.ALL) yield slot -> pLift.Known(item(slot))).toMap,
-    pLift.Known(wearing),
-    pLift.Known(wielding)
+    (for (slot <- Slot.ALL) yield slot -> pOption.Known(item(slot))).toMap,
+    pOption.Known(wearing),
+    pOption.Known(wielding)
   )
 }
 
