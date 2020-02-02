@@ -6,7 +6,12 @@ package domain
  * z contains the union of the information in x and the information in y.
  *
  * This method should return an error message if x and y contain contradictory information, i.e. it is impossible
- * for them both to be partial approximations of the same object. */
+ * for them both to be partial approximations of the same object. 
+ *
+ * A domain should satisfy the following, for all x,y,z:D :-
+ * - merge(x, x) == x
+ * - merge(x, y) == merge(y, x)
+ * - merge(x, y).flatMap(merge(_, z)) == merge(y, z).flatMap(merge(x, _)) */
 trait Domain[D] {
   def merge(x: D, y: D): Either[String, D]
 }
@@ -33,25 +38,5 @@ object Domain {
   })
 }
 
-trait pOption[+D]
 
-object pOption {
-  def Known[D](x: Option[D]): pOption[D] = x match {
-    case None => NONE
-    case scala.Some(d) => Some(d)
-  }
 
-  case object UNKNOWN extends pOption[Nothing]
-
-  case object NONE extends pOption[Nothing]
-
-  case class Some[D](d: D) extends pOption[D]
-
-  implicit def domain[D](implicit s: Domain[D]): Domain[pOption[D]] = (x: pOption[D], y: pOption[D]) => (x, y) match {
-    case (UNKNOWN, y) => Right(y)
-    case (x, UNKNOWN) => Right(x)
-    case (NONE, NONE) => Right(NONE)
-    case (Some(x), Some(y)) => for (z <- s.merge(x, y)) yield Some(z)
-    case _ => Left(s"Incompatible information $x and $y")
-  }
-}
