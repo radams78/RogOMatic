@@ -102,14 +102,12 @@ object History {
       inventory <- report.inventory.infer(facts)
       inventory <- inventory.infer(lastCommand)
     } yield NextMove(history, lastCommand, report, inventory,
-      facts.union(report.implications.union(inventory.implications.union(lastCommand.implications)))) // TODO Extract
+      facts.union(report.implications.union(inventory.implications.union(lastCommand.implications))))
   }
 
   /** The complete history of a finished game of Rogue */
   case class GameOver(history: GameOn, command: Command, report: Report.GameOver) extends History {
     /** Final score */
     def score: Int = report.score
-
   }
-
 }
