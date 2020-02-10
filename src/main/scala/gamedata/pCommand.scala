@@ -29,6 +29,7 @@ sealed trait pCommand {
 
 /** A command that consumes one unit of an item in the PC's inventory */
 trait ConsumesItem extends pCommand {
+  /** Slot that contains item consumed */
   protected def consumedSlot: pLift[Slot]
 
   protected def consumed: pItem
