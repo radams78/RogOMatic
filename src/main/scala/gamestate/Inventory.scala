@@ -26,6 +26,7 @@ case class Inventory(private val items: Map[Slot, pItem], wearingSlot: Option[Sl
     }
   }
 
+  /** Weapon being wielded, if any */
   def wielding: Option[Wieldable] = wieldingSlot match {
     case None => None
     case Some(s) => items(s) match {
