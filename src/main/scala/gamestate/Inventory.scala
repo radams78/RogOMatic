@@ -50,7 +50,7 @@ case class Inventory(private val items: Map[Slot, pItem], wearingSlot: Option[Sl
     }).mkString("") +
       ((wieldingSlot, wielding) match {
         case (None, None) => "Wielding: none\n"
-        case (Some(slot), Some(weapon)) => s"Wielding: $slot) $weapon\n" // TODO
+        case (Some(slot), Some(weapon)) => s"Wielding: $slot) $weapon\n"
       }) +
       ((wearingSlot, wearing) match {
         case (None, None) => "Wearing: none"
