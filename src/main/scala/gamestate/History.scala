@@ -16,7 +16,7 @@ object History {
   /** The history of a game that is not yet finished */
   trait GameOn extends History {
     /** Fill in as much information as possible about the given command */
-    def elaborate(command: Command): Either[String, pCommand] = command match {
+    final def elaborate(command: Command): Either[String, pCommand] = command match {
       case Command.UP => Right(pCommand.UP)
       case Command.DOWN => Right(pCommand.DOWN)
       case Command.LEFT => Right(pCommand.LEFT)
