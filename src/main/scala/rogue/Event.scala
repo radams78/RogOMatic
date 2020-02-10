@@ -1,6 +1,7 @@
 package rogue
 
 import gamedata.fact.ProvidesKnowledge
+import gamedata.fact.ProvidesKnowledge._
 import gamedata.item.magic.potion.{Potion, PotionPower}
 import gamedata.item.magic.scroll.{Scroll, ScrollPower}
 import gamedata.pCommand
@@ -15,7 +16,7 @@ object Event extends Enumeration {
 
   protected case class Val(message: Regex, inference: pCommand) extends super.Val
 
-  implicit def providesKnowledge: ProvidesKnowledge[Event] = (self: Event) => self.inference._implications
+  implicit def providesKnowledge: ProvidesKnowledge[Event] = (self: Event) => self.inference.implications
 
   /** Empty message line */
   val NONE: Event = Val("^ *$".r, pCommand.UNKNOWN)

@@ -27,6 +27,17 @@ sealed trait pCommand {
   def _infer(fact: Fact): Either[String, pCommand] = Right(this)
 }
 
+trait ConsumesItem extends pCommand {
+  protected def consumedSlot: pLift[Slot]
+
+  protected def consumed: pItem
+
+  override final def _implications: Set[Fact] = consumed.implications ++ ((consumedSlot, consumed.consumeOne) match {
+    case (pLift.Known(s), pLift.Known(i)) => Set(InSlot(s, i))
+    case _ => Set()
+  })
+}
+
 object pCommand {
 
   case object UNKNOWN extends pCommand {
@@ -35,7 +46,7 @@ object pCommand {
 
 
   /** Drink a potion */
-  case class Quaff(slot: pLift[Slot], potion: Potion) extends pCommand {
+  case class Quaff(slot: pLift[Slot], potion: Potion) extends ConsumesItem {
     override def merge(that: pCommand): Either[String, pCommand] = that match {
       case Quaff(thatSlot, thatPotion) => for {
         inferredSlot <- slot.merge(thatSlot)
@@ -44,11 +55,6 @@ object pCommand {
       case UNKNOWN => Right(this)
       case _ => Left(s"Incompatible commands: $this and $that")
     }
-
-    override def _implications: Set[Fact] = potion.implications.++((slot, potion.consumeOne) match {
-      case (pLift.Known(s), pLift.Known(i)) => Set(InSlot(s, i))
-      case _ => Set()
-    })
 
     override def _infer(fact: Fact): Either[String, Quaff] = fact match {
       case InSlot(s, Some(i)) =>
@@ -61,6 +67,10 @@ object pCommand {
         for (p <- potion.infer(f))
           yield new Quaff(slot, p)
     }
+
+    override protected def consumedSlot: pLift[Slot] = slot
+
+    override protected def consumed: pItem = potion
   }
 
   object Quaff {
@@ -72,7 +82,7 @@ object pCommand {
   }
 
   /** Read a scroll */
-  case class Read(slot: pLift[Slot], scroll: Scroll) extends pCommand {
+  case class Read(slot: pLift[Slot], scroll: Scroll) extends ConsumesItem {
     override def merge(that: pCommand): Either[String, pCommand] = that match {
       case Read(thatSlot, thatScroll) => for {
         inferredSlot <- slot.merge(thatSlot)
@@ -81,14 +91,6 @@ object pCommand {
       case UNKNOWN => Right(this)
       case _ => Left(s"Incompatible commands: $this and $that")
     }
-
-    override def _implications: Set[Fact] = scroll.implications.++(slot match {
-      case pLift.UNKNOWN => Set()
-      case pLift.Known(s) => scroll.consumeOne match {
-        case pLift.UNKNOWN => Set()
-        case pLift.Known(i) => Set(InSlot(s, i))
-      } // TODO Duplication
-    })
 
     override def _infer(fact: Fact): Either[String, Read] = fact match {
       case InSlot(s, Some(i)) =>
@@ -101,6 +103,10 @@ object pCommand {
         for (s <- scroll.infer(f))
           yield new Read(slot, s)
     }
+
+    override protected def consumedSlot: pLift[Slot] = slot
+
+    override protected def consumed: pItem = scroll
   }
 
   object Read {
