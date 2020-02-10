@@ -4,7 +4,6 @@ import domain.Domain._
 import domain.{Domain, pLift}
 import gamedata.fact.{Fact, UsesKnowledge}
 import gamedata.item.pItem
-import gamedata.pCommand
 
 /** A type of item that has a magic power, and an attribute (e.g. colour, gem, material). When the item is first found,
  * we see only its attribute. When we learn what its power is, we record this [[Fact]] that that attribute is mapped to
@@ -59,9 +58,7 @@ trait MagicItemType {
     }
   }
 
-  case class MagicItemKnowledge(attribute: Attribute, power: Power) extends Fact {
-    override def after(command: pCommand): Either[String, Set[Fact]] = Right(Set(this))
-  }
+  case class MagicItemKnowledge(attribute: Attribute, power: Power) extends Fact
 
 }
 

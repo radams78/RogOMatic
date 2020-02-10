@@ -23,10 +23,10 @@ sealed trait pCommand {
   /** Facts that are known to be true *after* the command has been performed */
   def _implications: Set[Fact] = Set()
 
-  /** Combine two pieces of information about a command */
+  /** Combine two partial versions of a command */
   def merge(that: pCommand): Either[String, pCommand]
 
-  /** Combine this object with the information from the given fact */
+  /** Combine this object with the information that the given fact holds *before* the command is performed */
   def _infer(fact: Fact): Either[String, pCommand] = Right(this)
 }
 
