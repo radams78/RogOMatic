@@ -172,6 +172,7 @@ object pCommand {
   case object UP extends pCommand {
     override def merge(that: pCommand): Either[String, pCommand] = that match {
       case UP => Right(UP)
+      case UNKNOWN => Right(this)
       case _ => Left(s"Incompatible commands: $this and $that")
     }
   }
@@ -206,6 +207,7 @@ object pCommand {
   case object UPLEFT extends pCommand {
     override def merge(that: pCommand): Either[String, pCommand] = that match {
       case UPLEFT => Right(UPLEFT)
+      case UNKNOWN => Right(this)
       case _ => Left(s"Incompatible commands: $this and $that")
     }
   }

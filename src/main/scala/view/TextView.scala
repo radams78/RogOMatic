@@ -2,6 +2,7 @@ package view
 
 import gamedata._
 import gamedata.fact.Fact
+import gamedata.item.InSlot
 import gamestate.Inventory
 import rogue.Command
 
@@ -106,5 +107,7 @@ class TextView extends IView {
     }
   }
 
-  override def displayFact(fact: Fact): Unit = println(fact)
+  override def displayFact(fact: Fact): Unit = fact match {
+    case _: InSlot => ()
+  }
 }
