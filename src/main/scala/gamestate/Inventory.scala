@@ -13,9 +13,9 @@ import scala.util.matching.UnanchoredRegex
 /** An inventory in which we know whether every slot is empty or full.
  *
  * For an inventory in which the status of some slots is unknown, use [[pInventory]] */
-case class Inventory(private val items: Map[Slot, pItem], wearingSlot: Option[Slot], wielding: Option[Slot]) {
+case class Inventory(private val items: Map[Slot, pItem], wearingSlot: Option[Slot], wieldingSlot: Option[Slot]) {
   assert(wearingSlot.forall((slot: Slot) => items(slot).isInstanceOf[Armor]))
-  assert(wielding.forall((slot: Slot) => items(slot).isInstanceOf[Wieldable]))
+  assert(wieldingSlot.forall((slot: Slot) => items(slot).isInstanceOf[Wieldable]))
 
   def wearing: Option[Armor] = wearingSlot match {
     case None => None
@@ -25,13 +25,21 @@ case class Inventory(private val items: Map[Slot, pItem], wearingSlot: Option[Sl
     }
   }
 
+  def wielding: Option[Wieldable] = wieldingSlot match {
+    case None => None
+    case Some(s) => items(s) match {
+      case w: Wieldable => Some(w)
+      case i => throw new Error(s"Item being wielded is not wieldable: $i")
+    }
+  }
+  
   /** Contents of the given slot */
   def item(slot: Slot): Option[pItem] = items.get(slot)
 
   def topInventory: pInventory = new pInventory(
     (for (slot <- Slot.ALL) yield slot -> pOption.Known(item(slot))).toMap,
     pOption.Known(wearingSlot),
-    pOption.Known(wielding)
+    pOption.Known(wieldingSlot)
   )
 
   override def toString: String =
@@ -39,13 +47,13 @@ case class Inventory(private val items: Map[Slot, pItem], wearingSlot: Option[Sl
       case None => ""
       case Some(item) => s"$slot) $item\n"
     }).mkString("") +
-      (wielding match {
+      (wieldingSlot match {
         case None => "Wielding: none\n"
         case Some(weapon) => s"Wielding: $weapon) ${item(weapon).get}\n" // TODO
       }) +
       (wearing match {
         case None => "Wearing: none"
-        case Some(armor) => s"Armor: $wearingSlot) $wearing" // TODO
+        case Some(armor) => s"Armor: $wearingSlot) $armor"
       })
 
 }
@@ -60,7 +68,7 @@ object Inventory {
           _items <- items
           _item <- item.infer(fact)
         } yield _items + (slot -> _item.asInstanceOf[pItem])
-    })) yield Inventory(items, wearingSlot = self.wearingSlot, wielding = self.wielding)
+    })) yield Inventory(items, wearingSlot = self.wearingSlot, wieldingSlot = self.wieldingSlot)
   }
 
   /** Given a screen retrieved from Rogue displaying the inventory, return the corresponding [[pInventory]] */
