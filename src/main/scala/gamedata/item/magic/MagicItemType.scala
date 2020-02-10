@@ -46,7 +46,7 @@ trait MagicItemType {
       case _ => Left(s"Incompatible information: $this and $that")
     }
 
-    override def implications: Set[Fact] = (attribute, power) match {
+    override def _implications: Set[Fact] = (attribute, power) match {
       case (pLift.Known(a), pLift.Known(p)) => Set(MagicItemKnowledge(a, p))
       case _ => Set()
     }

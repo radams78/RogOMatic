@@ -46,7 +46,7 @@ object pInventory {
       oi match {
         case pOption.UNKNOWN => Set()
         case pOption.NONE => Set(InSlot(s, None))
-        case pOption.Some(i) => i.implications + item.InSlot(s, Some(i))
+        case pOption.Some(i) => i._implications + item.InSlot(s, Some(i))
       }
     }).toSet
   }

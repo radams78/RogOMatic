@@ -34,7 +34,7 @@ trait ConsumesItem extends pCommand {
 
   protected def consumed: pItem
 
-  override final def _implications: Set[Fact] = consumed.implications ++ ((consumedSlot, consumed.consumeOne) match {
+  override final def _implications: Set[Fact] = consumed._implications ++ ((consumedSlot, consumed.consumeOne) match {
     case (pLift.Known(s), pLift.Known(i)) => Set(InSlot(s, i))
     case _ => Set()
   })
@@ -131,7 +131,7 @@ object pCommand {
       case _ => Left(s"Incompatible commands: $this and $that")
     }
 
-    override def _implications: Set[Fact] = item.implications.+(gamedata.item.InSlot(slot, Some(item)))
+    override def _implications: Set[Fact] = item._implications.+(gamedata.item.InSlot(slot, Some(item)))
 
     override def _infer(fact: Fact): Either[String, pCommand] = fact match {
       case InSlot(s, Some(i)) =>

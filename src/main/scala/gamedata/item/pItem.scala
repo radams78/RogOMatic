@@ -25,12 +25,12 @@ trait pItem {
 
   def merge(that: pItem): Either[String, pItem]
 
-  def implications: Set[Fact] = Set()
+  def _implications: Set[Fact] = Set()
 }
 
 object pItem {
 
-  implicit def providesKnowledge: ProvidesKnowledge[pItem] = (self: pItem) => self.implications
+  implicit def providesKnowledge: ProvidesKnowledge[pItem] = (self: pItem) => self._implications
 
   /** Unknown item
    *
@@ -40,7 +40,7 @@ object pItem {
   case object UNKNOWN extends pItem {
     override def merge(that: pItem): Either[String, pItem] = Right(that)
 
-    override def implications: Set[Fact] = Set()
+    override def _implications: Set[Fact] = Set()
 
     override def consumeOne: pLift[Option[pItem]] = pLift.UNKNOWN
   }
