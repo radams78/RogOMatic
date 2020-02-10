@@ -18,7 +18,7 @@ import gamedata.item.{InSlot, pItem}
  * - command.infer(fact)._implications contains fact */
 sealed trait pCommand {
   /** Facts that are known to be true *after* the command has been performed */
-  def _implications: Set[Fact] = Set()
+  protected def _implications: Set[Fact] = Set()
 
   /** Combine two partial versions of a command */
   def merge(that: pCommand): Either[String, pCommand]
