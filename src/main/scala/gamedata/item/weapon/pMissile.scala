@@ -27,6 +27,13 @@ case class pMissile(quantity: pLift[Int], missiletype: pLift[MissileType], plusT
     case pLift.Known(1) => pLift.Known(None)
     case pLift.Known(q) => pLift.Known(Some(pMissile(pLift.Known(q - 1), missiletype, plusToHit, plusDamage)))
   }
+
+  override def toString: String = s"$quantity $plusToHit,$plusDamage ${
+    missiletype match {
+      case pLift.UNKNOWN => "unknown"
+      case pLift.Known(mt) => if (quantity == pLift.Known(1)) mt.singular else mt.plural
+    }
+  }"
 }
 
 object pMissile {

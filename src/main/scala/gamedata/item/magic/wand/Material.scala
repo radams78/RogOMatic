@@ -37,6 +37,8 @@ object Material extends ParsableEnum {
   val PALM: Material = Val("palm")
   val WOOD: Material = Val("wooden")
 
-  protected case class Val(override val name: String) extends super.Val(name)
+  protected case class Val(override val name: String) extends super.Val(name) {
+    override def toString(): String = name
+  }
 
 }

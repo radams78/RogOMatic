@@ -6,9 +6,13 @@ sealed trait pLift[+T]
 
 object pLift {
 
-  case object UNKNOWN extends pLift[Nothing]
+  case object UNKNOWN extends pLift[Nothing] {
+    override def toString: String = "unknown"
+  }
 
-  case class Known[T](t: T) extends pLift[T]
+  case class Known[T](t: T) extends pLift[T] {
+    override def toString: String = t.toString
+  }
 
   implicit def domain[T](implicit s: Domain[T]): Domain[pLift[T]] = (x: pLift[T], y: pLift[T]) => (x, y) match {
     case (UNKNOWN, y) => Right(y)

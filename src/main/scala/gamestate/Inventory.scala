@@ -4,7 +4,9 @@ import domain.pOption
 import gamedata._
 import gamedata.fact.ProvidesKnowledge._
 import gamedata.fact.{Fact, ProvidesKnowledge, UsesKnowledge}
+import gamedata.item.armor.Armor
 import gamedata.item.pItem
+import gamedata.item.weapon.Wieldable
 
 import scala.util.matching.UnanchoredRegex
 
@@ -12,6 +14,9 @@ import scala.util.matching.UnanchoredRegex
  *
  * For an inventory in which the status of some slots is unknown, use [[pInventory]] */
 case class Inventory(private val items: Map[Slot, pItem], wearing: Option[Slot], wielding: Option[Slot]) {
+  assert(wearing.forall((slot: Slot) => items(slot).isInstanceOf[Armor]))
+  assert(wielding.forall((slot: Slot) => items(slot).isInstanceOf[Wieldable]))
+
   /** Contents of the given slot */
   def item(slot: Slot): Option[pItem] = items.get(slot)
 
@@ -20,6 +25,21 @@ case class Inventory(private val items: Map[Slot, pItem], wearing: Option[Slot],
     pOption.Known(wearing),
     pOption.Known(wielding)
   )
+
+  override def toString: String =
+    (for (slot <- Slot.ALL) yield item(slot) match {
+      case None => ""
+      case Some(item) => s"$slot) $item\n"
+    }).mkString("") +
+      (wielding match {
+        case None => "Wielding: none\n"
+        case Some(weapon) => s"Wielding: $weapon) ${item(weapon).get}\n" // TODO
+      }) +
+      (wearing match {
+        case None => "Wearing: none"
+        case Some(armor) => s"Armor: $armor) ${item(armor).get}" // TODO
+      })
+
 }
 
 object Inventory {
@@ -32,7 +52,7 @@ object Inventory {
           _items <- items
           _item <- item.infer(fact)
         } yield _items + (slot -> _item.asInstanceOf[pItem])
-    })) yield Inventory(items, self.wielding, self.wearing)
+    })) yield Inventory(items, wearing = self.wearing, wielding = self.wielding)
   }
 
   /** Given a screen retrieved from Rogue displaying the inventory, return the corresponding [[pInventory]] */

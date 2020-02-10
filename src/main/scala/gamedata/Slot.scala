@@ -25,5 +25,5 @@ object Slot {
 
   implicit def domain: Domain[Slot] = Domain.flatDomain
 
-  val ALL: Set[Slot] = ('a' to 'x').map(Slot(_)).toSet
+  val ALL: Seq[Slot] = ('a' to 'x').map(Slot(_))
 }

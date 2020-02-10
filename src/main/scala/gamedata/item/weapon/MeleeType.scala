@@ -10,7 +10,9 @@ object MeleeType extends ParsableEnum {
   val LONG_SWORD: MeleeType = Val("long sword")
   val TWO_HANDED_SWORD: MeleeType = Val("two-handed sword")
 
-  protected case class Val(override val name: String) extends super.Val(name) with WeaponType
+  protected case class Val(override val name: String) extends super.Val(name) with WeaponType {
+    override def toString(): String = name
+  }
 
   override implicit def valueToVal(x: MeleeType): Val = x.asInstanceOf[Val]
 

@@ -8,7 +8,9 @@ object ShooterType extends ParsableEnum {
 
   val SHORT_BOW: ShooterType = Val("short bow")
 
-  protected case class Val(override val name: String) extends super.Val(name) with WeaponType
+  protected case class Val(override val name: String) extends super.Val(name) with WeaponType {
+    override def toString(): String = name
+  }
 
   override implicit def valueToVal(x: ShooterType): Val = x.asInstanceOf[Val]
 

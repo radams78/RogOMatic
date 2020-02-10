@@ -47,7 +47,9 @@ private object Displayable {
 
   case class GameOver(finalScore: Int) extends Displayable
 
-  case class Inventory(inventory: gamestate.Inventory) extends Displayable
+  case class Inventory(inventory: gamestate.Inventory) extends Displayable {
+    override def toString: String = inventory.toString
+  }
 
   case class Screen(screen: String) extends Displayable
 
@@ -75,7 +77,8 @@ private object MockUserState {
                 next: MockUserState) extends MockUserState {
     override def display(displayable: Displayable): MockUserState =
       if (expected contains displayable) new Command(expected - displayable, command, next)
-      else fail(s"Unexpected data to display in state $name: $displayable")
+      else fail(s"Unexpected data to display in state $name: $displayable\n"
+        + s"Expectations: ${(for (d <- expected) yield d.toString).mkString("\n")}")
 
     override def getCommand: (rogue.Command, MockUserState) =
       if (expected.isEmpty) (command, next)
