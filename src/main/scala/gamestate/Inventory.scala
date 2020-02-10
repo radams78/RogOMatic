@@ -13,16 +13,24 @@ import scala.util.matching.UnanchoredRegex
 /** An inventory in which we know whether every slot is empty or full.
  *
  * For an inventory in which the status of some slots is unknown, use [[pInventory]] */
-case class Inventory(private val items: Map[Slot, pItem], wearing: Option[Slot], wielding: Option[Slot]) {
-  assert(wearing.forall((slot: Slot) => items(slot).isInstanceOf[Armor]))
+case class Inventory(private val items: Map[Slot, pItem], wearingSlot: Option[Slot], wielding: Option[Slot]) {
+  assert(wearingSlot.forall((slot: Slot) => items(slot).isInstanceOf[Armor]))
   assert(wielding.forall((slot: Slot) => items(slot).isInstanceOf[Wieldable]))
+
+  def wearing: Option[Armor] = wearingSlot match {
+    case None => None
+    case Some(s) => items(s) match {
+      case a: Armor => Some(a)
+      case i => throw new Error(s"Item being worn is not armor: $i")
+    }
+  }
 
   /** Contents of the given slot */
   def item(slot: Slot): Option[pItem] = items.get(slot)
 
   def topInventory: pInventory = new pInventory(
     (for (slot <- Slot.ALL) yield slot -> pOption.Known(item(slot))).toMap,
-    pOption.Known(wearing),
+    pOption.Known(wearingSlot),
     pOption.Known(wielding)
   )
 
@@ -37,7 +45,7 @@ case class Inventory(private val items: Map[Slot, pItem], wearing: Option[Slot],
       }) +
       (wearing match {
         case None => "Wearing: none"
-        case Some(armor) => s"Armor: $armor) ${item(armor).get}" // TODO
+        case Some(armor) => s"Armor: $wearingSlot) $wearing" // TODO
       })
 
 }
@@ -52,7 +60,7 @@ object Inventory {
           _items <- items
           _item <- item.infer(fact)
         } yield _items + (slot -> _item.asInstanceOf[pItem])
-    })) yield Inventory(items, wearing = self.wearing, wielding = self.wielding)
+    })) yield Inventory(items, wearingSlot = self.wearingSlot, wielding = self.wielding)
   }
 
   /** Given a screen retrieved from Rogue displaying the inventory, return the corresponding [[pInventory]] */
