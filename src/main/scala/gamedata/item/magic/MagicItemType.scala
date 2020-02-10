@@ -32,6 +32,7 @@ trait MagicItemType {
     /** Quantity of items in the stack, if known */
     def quantity: pLift[Int]
 
+    /** Attribute describing item when unidentified */
     def attribute: pLift[Attribute]
 
     def power: pLift[Power]
