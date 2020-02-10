@@ -27,6 +27,7 @@ sealed trait pCommand {
   def _infer(fact: Fact): Either[String, pCommand] = Right(this)
 }
 
+/** A command that consumes one unit of an item in the PC's inventory */
 trait ConsumesItem extends pCommand {
   protected def consumedSlot: pLift[Slot]
 
