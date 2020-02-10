@@ -14,8 +14,6 @@ object ArmorType extends ParsableEnum {
   val SPLINT_MAIL: ArmorType = Val("splint mail")
   val PLATE_MAIL: ArmorType = Val("plate mail")
 
-  protected case class Val(override val name: String) extends super.Val(name) {
-    override def toString(): String = name
-  }
+  protected case class Val(override val name: String) extends super.Val(name)
 
 }
