@@ -17,6 +17,7 @@ case class Inventory(private val items: Map[Slot, pItem], wearingSlot: Option[Sl
   assert(wearingSlot.forall((slot: Slot) => items(slot).isInstanceOf[Armor]))
   assert(wieldingSlot.forall((slot: Slot) => items(slot).isInstanceOf[Wieldable]))
 
+  /** Armor being worn, if any */
   def wearing: Option[Armor] = wearingSlot match {
     case None => None
     case Some(s) => items(s) match {
