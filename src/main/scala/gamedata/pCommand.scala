@@ -17,9 +17,6 @@ import gamedata.item.{InSlot, pItem}
  * - command.infer(command._implications) == command
  * - command.infer(fact)._implications contains fact */
 sealed trait pCommand {
-  /** True if the command consumes one unit of the stack of items in slot. */
-  def consumes(slot: Slot): Boolean = false
-
   /** Facts that are known to be true *after* the command has been performed */
   def _implications: Set[Fact] = Set()
 
@@ -39,8 +36,6 @@ object pCommand {
 
   /** Drink a potion */
   case class Quaff(slot: pLift[Slot], potion: Potion) extends pCommand {
-    override def consumes(_slot: Slot): Boolean = slot == pLift.Known(_slot)
-
     override def merge(that: pCommand): Either[String, pCommand] = that match {
       case Quaff(thatSlot, thatPotion) => for {
         inferredSlot <- slot.merge(thatSlot)
@@ -78,8 +73,6 @@ object pCommand {
 
   /** Read a scroll */
   case class Read(slot: pLift[Slot], scroll: Scroll) extends pCommand {
-    override def consumes(_slot: Slot): Boolean = slot == pLift.Known(_slot)
-
     override def merge(that: pCommand): Either[String, pCommand] = that match {
       case Read(thatSlot, thatScroll) => for {
         inferredSlot <- slot.merge(thatSlot)
@@ -120,8 +113,6 @@ object pCommand {
 
   /** Throw an item */
   case class Throw(dir: Direction, slot: Slot, item: pItem) extends pCommand {
-    override def consumes(_slot: Slot): Boolean = slot == _slot
-
     override def merge(that: pCommand): Either[String, pCommand] = that match {
       case Throw(thatDir, thatSlot, thatItem) => for {
         inferredDir <- dir.merge(thatDir)
