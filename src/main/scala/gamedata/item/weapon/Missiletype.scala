@@ -2,6 +2,7 @@ package gamedata.item.weapon
 
 import gamedata.ParsableEnum
 
+/** The set of all types of missiles */
 object Missiletype extends ParsableEnum {
   type MissileType = Value
 
