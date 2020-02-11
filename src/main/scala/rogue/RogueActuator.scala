@@ -1,8 +1,7 @@
 package rogue
 
-import gamedata.Report
+import gamedata.{Event, Report}
 import gamestate.Inventory
-import rogue.Event.Event
 
 import scala.annotation.tailrec
 import scala.util.matching.Regex
@@ -36,20 +35,20 @@ class RogueActuator(rogue: IRogue) extends IRogueActuator {
       case RogueActuator.moreRegex(message) =>
         Event.interpretMessage(message) match {
           case Left(err) => Left(err)
-          case Right(event) =>
+          case Right(_events) =>
             rogue.sendKeypress(' ')
-            getReport(events + event)
+            getReport(events ++ _events)
         }
       case message =>
         for {
-          event <- Event.interpretMessage(message)
+          _events <- Event.interpretMessage(message)
           inventory <- {
             rogue.sendKeypress('i')
             val screen: String = rogue.getScreen
             rogue.sendKeypress(' ')
             Inventory.parseInventoryScreen(screen)
           }
-          report <- Report.GameOn.build(screen, inventory, events + event)
+          report <- Report.GameOn.build(screen, inventory, events ++ _events)
         } yield report
     }
   }

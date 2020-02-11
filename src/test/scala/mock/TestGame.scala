@@ -81,8 +81,8 @@ object TestGame {
       Slot.H -> wand.Wand(WandShape.STAFF, Material.REDWOOD),
       Slot.I -> weapon.pMissile(7, WeaponType.ARROW)
     ),
-    wearing = Some(Slot.B),
-    wielding = Some(Slot.C)
+    wearingSlot = Some(Slot.B),
+    wieldingSlot = Some(Slot.C)
   )
 
   val secondScreen: String = MockRogue.makeScreen(
@@ -231,8 +231,8 @@ object TestGame {
       Slot.H -> Wand(WandShape.STAFF, Material.REDWOOD),
       Slot.I -> weapon.pMissile(7, WeaponType.ARROW)
     ),
-    wearing = Some(Slot.B),
-    wielding = Some(Slot.C)
+    wearingSlot = Some(Slot.B),
+    wieldingSlot = Some(Slot.C)
   )
 
   val deathScreen: String = MockRogue.makeScreen(

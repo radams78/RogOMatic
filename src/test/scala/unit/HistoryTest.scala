@@ -3,11 +3,11 @@ package unit
 import gamedata.fact.ProvidesKnowledge._
 import gamedata.item.magic.scroll.{Scroll, ScrollPower}
 import gamedata.item.{Food, InSlot}
-import gamedata.{Report, Slot}
+import gamedata.{Event, Report, Slot}
 import gamestate.{History, Inventory}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import rogue.{Command, Event}
+import rogue.Command
 
 class HistoryTest extends AnyFlatSpec with Matchers {
   "Reading the new inventory" should "update the inventory correctly" in {

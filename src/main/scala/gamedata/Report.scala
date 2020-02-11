@@ -3,7 +3,6 @@ package gamedata
 import gamedata.fact.ProvidesKnowledge
 import gamedata.fact.ProvidesKnowledge._
 import gamestate.Inventory
-import rogue.Event.Event
 
 /** Report returned from parsing screens from Rogue */
 trait Report {

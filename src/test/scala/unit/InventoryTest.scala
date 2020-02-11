@@ -47,8 +47,8 @@ class InventoryTest extends AnyFlatSpec with Matchers with EitherValues {
         Slot.D -> weapon.pWeapon(WeaponType.SHORT_BOW, +1, +0),
         Slot.E -> weapon.pWeapon(31, WeaponType.ARROW, +0, +0)
       ),
-      wearing = Some(Slot.B),
-      wielding = Some(Slot.C)
+      wearingSlot = Some(Slot.B),
+      wieldingSlot = Some(Slot.C)
     )))
   }
 }
