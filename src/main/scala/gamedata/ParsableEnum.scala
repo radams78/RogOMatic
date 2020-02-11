@@ -17,7 +17,9 @@ trait ParsableEnum extends Enumeration {
 
   implicit def domain: Domain[Value] = Domain.flatDomain
 
-  protected class Val(val name: String) extends super.Val
+  protected class Val(val name: String) extends super.Val {
+    override def toString(): String = name
+  }
 
   implicit def valueToVal(x: Value): Val = x.asInstanceOf[Val]
 
