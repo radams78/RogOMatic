@@ -13,6 +13,7 @@ import scala.util.parsing.combinator._
 
 /** An event indicated by a message in the message line */
 sealed trait Event {
+  /** Partial information that we can infer about the previous command given that this event happened */
   def inference: pCommand = pCommand.UNKNOWN
 }
 
