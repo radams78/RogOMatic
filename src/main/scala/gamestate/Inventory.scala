@@ -18,19 +18,19 @@ case class Inventory(private val items: Map[Slot, pItem], wearingSlot: Option[Sl
   assert(wieldingSlot.forall((slot: Slot) => items(slot).isInstanceOf[Wieldable]))
 
   /** Armor being worn, if any */
-  def wearing: Option[Armor] = wearingSlot match {
+  def wearing: Option[(Slot, Armor)] = wearingSlot match {
     case None => None
     case Some(s) => items(s) match {
-      case a: Armor => Some(a)
+      case a: Armor => Some(s, a)
       case i => throw new Error(s"Item being worn is not armor: $i")
     }
   }
 
   /** Weapon being wielded, if any */
-  def wielding: Option[Wieldable] = wieldingSlot match {
+  def wielding: Option[(Slot, Wieldable)] = wieldingSlot match {
     case None => None
     case Some(s) => items(s) match {
-      case w: Wieldable => Some(w)
+      case w: Wieldable => Some(s, w)
       case i => throw new Error(s"Item being wielded is not wieldable: $i")
     }
   }
@@ -49,13 +49,13 @@ case class Inventory(private val items: Map[Slot, pItem], wearingSlot: Option[Sl
       case None => ""
       case Some(item) => s"$slot) $item\n"
     }).mkString("") +
-      ((wieldingSlot, wielding) match {
-        case (None, None) => "Wielding: none\n"
-        case (Some(slot), Some(weapon)) => s"Wielding: $slot) $weapon\n"
+      (wielding match {
+        case None => "Wielding: none\n"
+        case Some((slot, weapon)) => s"Wielding: $slot) $weapon\n"
       }) +
-      ((wearingSlot, wearing) match {
-        case (None, None) => "Wearing: none"
-        case (Some(slot), Some(armor)) => s"Armor: $slot) $armor"
+      (wearing match {
+        case None => "Wearing: none"
+        case Some((slot, armor)) => s"Armor: $slot) $armor"
       })
 
 }
