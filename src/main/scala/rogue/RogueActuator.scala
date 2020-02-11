@@ -24,7 +24,7 @@ class RogueActuator(rogue: IRogue) extends IRogueActuator {
   }
 
   @tailrec
-  private def getReport(events: Set[Event]): Either[String, Report] = {
+  private def getReport(acc: Set[Event]): Either[String, Report] = {
     val screen: String = rogue.getScreen
     val lines: Array[String] = screen.split("\n").map(_.padTo(80, ' '))
     if (!lines.last.exists(_ != ' ')) return {
@@ -35,20 +35,20 @@ class RogueActuator(rogue: IRogue) extends IRogueActuator {
       case RogueActuator.moreRegex(message) =>
         Event.interpretMessage(message) match {
           case Left(err) => Left(err)
-          case Right(_events) =>
+          case Right(events) =>
             rogue.sendKeypress(' ')
-            getReport(events ++ _events)
+            getReport(acc ++ events)
         }
       case message =>
         for {
-          _events <- Event.interpretMessage(message)
+          events <- Event.interpretMessage(message)
           inventory <- {
             rogue.sendKeypress('i')
             val screen: String = rogue.getScreen
             rogue.sendKeypress(' ')
             Inventory.parseInventoryScreen(screen)
           }
-          report <- Report.GameOn.build(screen, inventory, events ++ _events)
+          report <- Report.GameOn.build(screen, inventory, acc ++ events)
         } yield report
     }
   }
