@@ -12,20 +12,7 @@ import scala.io.StdIn
 class TextView extends IView {
   override def displayScreen(screen: String): Unit = println(screen)
 
-  override def displayInventory(inventory: Inventory): Unit = {
-    for (slot <- Slot.ALL) inventory.item(slot) match {
-      case None => ()
-      case Some(item) => println(s"$slot) $item")
-    }
-    inventory.wielding match {
-      case None => ()
-      case Some(weapon) => println(s"Wielding: $weapon")
-    }
-    inventory.wearing match {
-      case None => ()
-      case Some(armor) => println(s"Armor: $armor")
-    }
-  }
+  override def displayInventory(inventory: Inventory): Unit = println(inventory)
 
   override def displayError(s: String): Unit = println(s"ERROR: $s")
 
