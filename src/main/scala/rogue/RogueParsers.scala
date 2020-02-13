@@ -14,23 +14,26 @@ import gamedata.item.magic.wand.{Material, Wand, WandShape}
 import gamedata.item.weapon.Missiletype.MissileType
 import gamedata.item.weapon.{Missiletype, WeaponType, pWeapon}
 import gamedata.item.{Bonus, Food}
-import gamedata.{Event, MonsterType, Slot}
+import gamedata.{Event, MonsterType, ParsableEnum, Slot}
 
 import scala.language.postfixOps
 import scala.util.parsing.combinator.RegexParsers
 
 object RogueParsers extends RegexParsers {
   private val article: Parser[Unit] = ("an" | "a") ^^^ ()
-  private val posInt: Parser[Int] = """\d+""".r ^^ {
-    _.toInt
-  }
+  private val posInt: Parser[Int] =
+    """\d+""".r ^^ {
+      _.toInt
+    }
   private val bonus: Parser[Bonus] = """[-+]\d+""".r ^^ { bonus: String => Bonus(bonus.toInt) }
   private val slot: Parser[Slot] = accept("slot", { case c: Char => Slot(c) })
 
-  private val armorType: Parser[ArmorType] =
-    ArmorType.values.foldLeft[Parser[ArmorType]](failure("Unrecognised armor type"))(
-      { case (parser, armorType) => parser | armorType.name ^^^ armorType }
+  def enum(e: ParsableEnum): Parser[e.Value] =
+    e.values.foldLeft[Parser[e.Value]](RogueParsers.failure(s"Unrecognised ${e.name}"))(
+      { case (parser, value) => parser | value.toString ^^^ value }
     )
+
+  private val armorType: Parser[ArmorType] = enum(ArmorType)
   private val missileType: Parser[MissileType] =
     ("darts" | "dart") ^^^ Missiletype.DART |
       ("arrows" | "arrow") ^^^ Missiletype.ARROW |
@@ -43,21 +46,11 @@ object RogueParsers extends RegexParsers {
     "mace" ^^^ WeaponType.MACE |
     "long sword" ^^^ WeaponType.LONG_SWORD |
     "two-handed sword" ^^^ WeaponType.TWO_HANDED_SWORD
-  private val gem: Parser[Gem] =
-    Gem.values.foldLeft[Parser[Gem]](failure("Unrecognised gem"))({ case (parser, gem) => parser | gem.name ^^^ gem })
-  private val colour: Parser[Colour] =
-    Colour.values.foldLeft[Parser[Colour]](failure("Unrecognised colour"))(
-      { case (parser, colour) => parser | colour.name ^^^ colour }
-    )
-  private val material: Parser[Material] =
-    Material.values.foldLeft[Parser[Material]](failure("Unrecognised material"))(
-      { case (parser, material) => parser | material.name ^^^ material }
-    )
-  private val wandShape: Parser[WandShape] = "wand" ^^^ WandShape.WAND | "staff" ^^^ WandShape.STAFF
-  private val monsterType: Parser[MonsterType] =
-    MonsterType.values.foldLeft[Parser[MonsterType]](failure("Unrecognised monster type"))(
-      { case (parser, monsterType) => parser | monsterType.name ^^^ monsterType }
-    )
+  private val gem: Parser[Gem] = enum(Gem)
+  private val colour: Parser[Colour] = enum(Colour)
+  private val material: Parser[Material] = enum(Material)
+  private val wandShape: Parser[WandShape] = enum(WandShape)
+  private val monsterType: Parser[MonsterType] = enum(MonsterType)
 
   val pItem: Parser[gamedata.item.pItem] =
     "some food" ^^^ Food(1) |
