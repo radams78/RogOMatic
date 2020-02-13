@@ -26,7 +26,7 @@ object RogueParsers extends RegexParsers {
       _.toInt
     }
   private val bonus: Parser[Bonus] = """[-+]\d+""".r ^^ { bonus: String => Bonus(bonus.toInt) }
-  private val slot: Parser[Slot] = accept("slot", { case c: Char => Slot(c) })
+  val slot: Parser[Slot] = accept("slot", { case c: Char => Slot(c) })
 
   def enum(e: ParsableEnum): Parser[e.Value] =
     e.values.foldLeft[Parser[e.Value]](RogueParsers.failure(s"Unrecognised ${e.name}"))(

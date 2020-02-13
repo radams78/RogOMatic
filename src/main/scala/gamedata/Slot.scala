@@ -1,6 +1,7 @@
 package gamedata
 
 import domain.Domain
+import rogue.RogueParsers
 
 /** The set of slots in the PC's inventory */
 case class Slot(label: Char) extends Ordered[Slot] {
@@ -20,8 +21,7 @@ object Slot {
   val H: Slot = Slot('h')
   val I: Slot = Slot('i')
 
-  def parse(slot: String): Either[String, Slot] =
-    if (slot.length == 1 && slot.head.isLower) Right(Slot(slot.head)) else Left(s"Unrecognised inventory slot: $slot") // TODO Remove
+  def parse(slot: String): Either[String, Slot] = RogueParsers.useParser(RogueParsers.slot, slot)
 
   implicit def domain: Domain[Slot] = Domain.flatDomain
 
