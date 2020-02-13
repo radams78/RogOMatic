@@ -4,11 +4,6 @@ import domain.{Domain, pLift}
 import gamedata.fact.{Fact, ProvidesKnowledge}
 import rogue.RogueParsers
 
-import scala.util.matching.Regex
-import scala.util.matching.Regex.Match
-import scala.util.parsing.combinator.RegexParsers
-import scala.util.parsing.input.Reader
-
 /** An item that the PC can pick up 
  *
  * Contract:
@@ -25,7 +20,7 @@ trait pItem {
   def _implications: Set[Fact] = Set()
 }
 
-object pItem extends RegexParsers {
+object pItem {
 
   implicit def providesKnowledge: ProvidesKnowledge[pItem] = (self: pItem) => self._implications
 
@@ -41,19 +36,6 @@ object pItem extends RegexParsers {
 
     override def consumeOne: pLift[Option[pItem]] = pLift.UNKNOWN
   }
-
-
-  private def regexParser[T](regex: Regex, process: (Match, Reader[Char], Reader[Char], String) => ParseResult[T]): Parser[T] = Parser((msg: Input) => {
-    val source: CharSequence = msg.source
-    val offset: Int = msg.offset
-    val start: Int = handleWhiteSpace(source, offset)
-    regex.findPrefixMatchOf(source.subSequence(start, source.length())) match {
-      case Some(matched) => process(matched, msg.drop(start + matched.end - offset), msg, source.toString)
-      case None =>
-        val found: String = if (start == source.length()) "end of source" else "'" + source.charAt(start) + "'"
-        Failure("string matching regex '" + regex + "' expected but " + found + " found", msg.drop(start - offset))
-    }
-  }) // TODO Duplication
 
   def parse(description: String): Either[String, pItem] = RogueParsers.parseAll(RogueParsers.pItem, description) match {
     case RogueParsers.Success(item: pItem, _) => Right(item)
