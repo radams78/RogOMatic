@@ -21,10 +21,9 @@ import scala.util.parsing.combinator.RegexParsers
 
 object RogueParsers extends RegexParsers {
   private val article: Parser[Unit] = ("an" | "a") ^^^ ()
-  private val posInt: Parser[Int] =
-    """\d+""".r ^^ {
-      _.toInt
-    }
+  private val posInt: Parser[Int] = """\d+""".r ^^ {
+    _.toInt
+  }
   private val bonus: Parser[Bonus] = """[-+]\d+""".r ^^ { bonus: String => Bonus(bonus.toInt) }
   private val slot: Parser[Slot] = accept("slot", { case c: Char => Slot(c) })
 
