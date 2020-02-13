@@ -84,4 +84,10 @@ object RogueParsers extends RegexParsers {
       pItem ~ "(" ~ slot ~ ")" ^^ { case item ~ _ ~ slot ~ _ => Event.PickedUp(slot, item) }
 
   val events: Parser[Seq[Event]] = event *
+
+  def useParser[T](parser: Parser[T], input: String): Either[String, T] = parseAll(parser, input) match {
+    case Success(t, _) => Right(t)
+    case Failure(msg, _) => Left(msg)
+    case Error(err, _) => Left(err)
+  }
 }

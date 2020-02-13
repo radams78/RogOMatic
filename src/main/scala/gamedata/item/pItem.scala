@@ -32,16 +32,10 @@ object pItem {
   case object UNKNOWN extends pItem {
     override def merge(that: pItem): Either[String, pItem] = Right(that)
 
-    override def _implications: Set[Fact] = Set()
-
     override def consumeOne: pLift[Option[pItem]] = pLift.UNKNOWN
   }
 
-  def parse(description: String): Either[String, pItem] = RogueParsers.parseAll(RogueParsers.pItem, description) match {
-    case RogueParsers.Success(item: pItem, _) => Right(item)
-    case RogueParsers.Failure(msg, _) => Left(s"Could not parse $description: $msg")
-    case RogueParsers.Error(err, _) => Left(s"Error when parsing $description: $err")
-  }
+  def parse(description: String): Either[String, pItem] = RogueParsers.useParser(RogueParsers.pItem, description)
 
   implicit def domain: Domain[pItem] = (x: pItem, y: pItem) => x.merge(y)
 }
