@@ -19,5 +19,14 @@ object pWeapon {
   def apply(quantity: Int, missileType: MissileType, plusToHit: Int, plusDamage: Int): pMissile =
     pMissile(quantity, missileType, Bonus(plusToHit), Bonus(plusDamage))
 
+  def apply(quantity: Int, missileType: MissileType, plusToHit: Bonus, plusDamage: Bonus): pMissile =
+    pMissile(quantity, missileType, plusToHit, plusDamage) // TODO Duplication
+
+  def apply(weaponType: WeaponType, plusToHit: Bonus, plusDamage: Bonus): pWeapon = weaponType match {
+    case wt: MeleeType => Melee(wt, plusToHit, plusDamage)
+    case wt: MissileType => pMissile(1, wt, plusToHit, plusDamage)
+    case wt: ShooterType => pShooter(wt, plusToHit, plusDamage)
+  } // TODO Duplication
+
   def apply(quantity: Int, missileType: MissileType): pMissile = pMissile(quantity, missileType)
 }

@@ -1,8 +1,6 @@
 package gamedata.item.weapon
 
-import gamedata.item.weapon.MeleeType.MeleeType
 import gamedata.item.weapon.Missiletype.MissileType
-import gamedata.item.weapon.ShooterType.ShooterType
 
 /** The set of weapon types in the game of Rogue */
 trait WeaponType
@@ -14,15 +12,15 @@ object WeaponType {
 
   val DART: MissileType = Missiletype.DART
 
-  val LONG_SWORD: MeleeType = MeleeType.LONG_SWORD
+  val LONG_SWORD: WeaponType = MeleeType.LONG_SWORD
 
-  val MACE: MeleeType = MeleeType.MACE
+  val MACE: WeaponType = MeleeType.MACE
 
-  val SHORT_BOW: ShooterType = ShooterType.SHORT_BOW
+  val SHORT_BOW: WeaponType = ShooterType.SHORT_BOW
 
   val SHURIKEN: MissileType = Missiletype.SHURIKEN
 
-  val TWO_HANDED_SWORD: MeleeType = MeleeType.TWO_HANDED_SWORD
+  val TWO_HANDED_SWORD: WeaponType = MeleeType.TWO_HANDED_SWORD
 
   /** Given the name of a weapon, return the appropriate [[WeaponType]], or an error message if weapon type could not
    * be recognised */

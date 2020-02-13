@@ -21,7 +21,7 @@ object Slot {
   val I: Slot = Slot('i')
 
   def parse(slot: String): Either[String, Slot] =
-    if (slot.length == 1 && slot.head.isLower) Right(Slot(slot.head)) else Left(s"Unrecognised inventory slot: $slot")
+    if (slot.length == 1 && slot.head.isLower) Right(Slot(slot.head)) else Left(s"Unrecognised inventory slot: $slot") // TODO Remove
 
   implicit def domain: Domain[Slot] = Domain.flatDomain
 

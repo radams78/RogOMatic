@@ -34,7 +34,7 @@ class RogueActuator(rogue: IRogue) extends IRogueActuator {
     lines.head match {
       case RogueActuator.moreRegex(message) =>
         Event.interpretMessage(message) match {
-          case Left(err) => Left(err)
+          case Left(err) => Left(s"Error when parsing message line $message: $err")
           case Right(events) =>
             rogue.sendKeypress(' ')
             getReport(acc ++ events)

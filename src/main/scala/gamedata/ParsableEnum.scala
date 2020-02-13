@@ -13,7 +13,7 @@ trait ParsableEnum extends Enumeration {
     values.find(_.name == description) match {
       case Some(value) => Right(value)
       case None => Left(s"Unrecognised $name: $description")
-    }
+    } // TODO Remove
 
   implicit def domain: Domain[Value] = Domain.flatDomain
 

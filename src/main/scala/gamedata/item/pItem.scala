@@ -2,15 +2,12 @@ package gamedata.item
 
 import domain.{Domain, pLift}
 import gamedata.fact.{Fact, ProvidesKnowledge}
-import gamedata.item.armor.{Armor, ArmorType}
-import gamedata.item.magic.potion.{Colour, Potion}
-import gamedata.item.magic.ring.{Gem, Ring}
-import gamedata.item.magic.scroll.Scroll
-import gamedata.item.magic.wand.{Material, Wand, WandShape}
-import gamedata.item.weapon.Missiletype.MissileType
-import gamedata.item.weapon.{WeaponType, pMissile, pWeapon}
+import rogue.RogueParsers
 
 import scala.util.matching.Regex
+import scala.util.matching.Regex.Match
+import scala.util.parsing.combinator.RegexParsers
+import scala.util.parsing.input.Reader
 
 /** An item that the PC can pick up 
  *
@@ -28,7 +25,7 @@ trait pItem {
   def _implications: Set[Fact] = Set()
 }
 
-object pItem {
+object pItem extends RegexParsers {
 
   implicit def providesKnowledge: ProvidesKnowledge[pItem] = (self: pItem) => self._implications
 
@@ -45,41 +42,23 @@ object pItem {
     override def consumeOne: pLift[Option[pItem]] = pLift.UNKNOWN
   }
 
-  private val rationsRegex: Regex = """(\d+) rations of food""".r
-  private val identifiedArmorRegex: Regex = """([-+]\d+) (\w+(?: \w+)?) \[\d+\]""".r
-  private val identifiedWeaponRegex: Regex = """a(?:n?) ([-+]\d+),([-+]\d+) ([-\w]+(?: \w+)?)""".r
-  private val identifiedWeaponsRegex: Regex = """(\d+) ([-+]\d+),([-+]\d+) ([-\w]+(?: \w+)?)""".r
-  private val unidentifiedWeaponsRegex: Regex = """(\d+) ([-\w]+(?: \w+)?)""".r
-  private val ringRegex: Regex = """a(?:n?) ([-\w]+) ring""".r
-  private val potionRegex: Regex = """a(?:n?) ([-\w]+) potion""".r
-  private val scrollRegex: Regex = """a scroll entitled: '(\w+(?: \w+)*)'""".r
-  private val wandRegex: Regex = """a(?:n?) (\w+) (wand|staff)""".r
 
-  /** Given a description from a displayed inventory, return the corresponding [[pItem]] */
-  def parse(description: String): Either[String, pItem] = description match {
-    case "some food" => Right(Food(1))
-    case rationsRegex(quantity) => Right(Food(quantity.toInt))
-    case identifiedArmorRegex(bonus, armorType) => for (at <- ArmorType.parse(armorType)) yield Armor(at, Bonus(bonus.toInt))
-    case identifiedWeaponRegex(plusToHit, plusDamage, weaponType) =>
-      for (wt <- WeaponType.parse(weaponType)) yield pWeapon(wt, plusToHit.toInt, plusDamage.toInt)
-    case unidentifiedWeaponsRegex(quantity, missileType) =>
-      for (wt <- WeaponType.parse(missileType)) yield wt match {
-        case wt: MissileType => pMissile(quantity.toInt, wt)
-        case _ => return Left(s"Expected missile type but received $wt in $description")
-      }
-    case identifiedWeaponsRegex(quantity, plusToHit, plusDamage, weaponType) =>
-      for (wt <- WeaponType.parse(weaponType)) yield wt match {
-        case wt: MissileType => weapon.pMissile(quantity.toInt, wt, plusToHit.toInt, plusDamage.toInt)
-        case _ => return Left(s"Expected missile type but received $wt in $description")
-      }
-    case ringRegex(gem) => for (g <- Gem.parse(gem)) yield Ring(g)
-    case potionRegex(colour) => for (c <- Colour.parse(colour)) yield Potion(1, c)
-    case scrollRegex(title) => Right(Scroll(1, title))
-    case wandRegex(material, wandType) => for {
-      wt <- WandShape.parse(wandType)
-      m <- Material.parse(material)
-    } yield Wand(wt, m)
-    case description => for (at <- ArmorType.parse(description)) yield Armor(at)
+  private def regexParser[T](regex: Regex, process: (Match, Reader[Char], Reader[Char], String) => ParseResult[T]): Parser[T] = Parser((msg: Input) => {
+    val source: CharSequence = msg.source
+    val offset: Int = msg.offset
+    val start: Int = handleWhiteSpace(source, offset)
+    regex.findPrefixMatchOf(source.subSequence(start, source.length())) match {
+      case Some(matched) => process(matched, msg.drop(start + matched.end - offset), msg, source.toString)
+      case None =>
+        val found: String = if (start == source.length()) "end of source" else "'" + source.charAt(start) + "'"
+        Failure("string matching regex '" + regex + "' expected but " + found + " found", msg.drop(start - offset))
+    }
+  }) // TODO Duplication
+
+  def parse(description: String): Either[String, pItem] = RogueParsers.parseAll(RogueParsers.pItem, description) match {
+    case RogueParsers.Success(item: pItem, _) => Right(item)
+    case RogueParsers.Failure(msg, _) => Left(s"Could not parse $description: $msg")
+    case RogueParsers.Error(err, _) => Left(s"Error when parsing $description: $err")
   }
 
   implicit def domain: Domain[pItem] = (x: pItem, y: pItem) => x.merge(y)
