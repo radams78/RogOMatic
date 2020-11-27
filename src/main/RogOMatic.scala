@@ -4,6 +4,8 @@ import rogue.IRogue
 import view.IView
 
 class RogOMatic(rogue : IRogue, view : IView) {
-  def startGame(): Unit = view.notify(rogue.readScreen)
+  val sensor: Sensor = new Sensor(rogue)
+  sensor.subscribe(view)
 
+  def startGame(): Unit = sensor.broadcastAll()
 }
