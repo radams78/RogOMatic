@@ -14,6 +14,7 @@ class RogOMaticTest extends AnyFunSuite {
 
       override def sendKeypress(keypress: Char): Unit = fail("Keypress received")
     }
+    
     object MockView extends IView {
       var seenFirstScreen: Boolean = false
 

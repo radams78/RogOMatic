@@ -1,37 +1,39 @@
-package integration
+package unit
 
 import controller.Controller
 import gamedata.Command
-import main.RogOMatic
-import org.scalatest.GivenWhenThen
-import org.scalatest.featurespec.AnyFeatureSpec
+import org.scalatest.funsuite.AnyFunSuite
 import rogue.IRogue
-import view.IView
 
-class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen {
-  Feature("Transparent Mode") {
-    Scenario("User quits immediately") {
-      Given("a new game of Rogue")
-      val rogue: MockRogue = new MockRogue()
-      val user: MockUser = new MockUser()
-      val controller: Controller = new Controller(rogue)
-      val rogomatic: RogOMatic = new RogOMatic(rogue, user)
-      rogomatic.startGame()
-
-      Then("the user should see the first screen")
-      assert(user.seenFirstScreen)
-
-      When("the user enters the command to quit")
-      controller.performCommand(Command.QUIT)
-
-      Then("Rogue should receive the command to quit")
-      assert(rogue.receivedQuitCommand)
-
-      And("the user should see the game over message")
-      assert(user.seenGameOverScreen)
-    }
-
+class ControllerTest extends AnyFunSuite {
+  test("Performing a command should send the command to Rogue") {
     class MockRogue extends IRogue {
+      private val screen1: Array[String] =
+        """
+          |
+          |
+          |
+          |
+          |
+          |
+          |
+          |                               ----------+---------
+          |                               |.........@....%...|
+          |                               +........?.........|
+          |                               |...............*..|
+          |                               |..!...............|
+          |                               |..................+
+          |                               -------+------------
+          |
+          |
+          |
+          |
+          |
+          |
+          |
+          |
+          |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
+          |""".stripMargin.split("\n").map(_.padTo(80, ' '))
 
       private trait MockRogueState {
         def readScreen: Seq[String]
@@ -193,108 +195,9 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen {
       override def readScreen: Seq[String] = state.readScreen
     }
 
-    class MockUser extends IView {
-
-      private trait MockUserState {
-        def seenGameOverScreen: Boolean = false
-
-        def seenFirstScreen: Boolean = false
-
-        def notify(screen: Seq[String]): MockUserState
-
-        def notifyGameOver(score: Int): MockUserState
-      }
-
-      private object StateOne extends MockUserState {
-        override def notify(screen: Seq[String]): MockUserState = if (screen == screen1.toSeq) StateTwo else
-          fail("Unexpected screen:\n" + screen + "Expected:\n" +
-            """                                                a) some food
-              |                                                b) +1 ring mail [4] being worn
-              |                                                c) a +1,+1 mace in hand
-              |                                                d) a +1,+0 short bow
-              |                                                e) 32 +0,+0 arrows
-              |                                                --press space to continue--
-              |
-              |
-              |                               ----------+---------
-              |                               |.........@....%...|
-              |                               +........?.........|
-              |                               |...............*..|
-              |                               |..!...............|
-              |                               |..................+
-              |                               -------+------------
-              |
-              |
-              |
-              |
-              |
-              |
-              |
-              |
-              |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
-              |"""
-          )
-
-        override def notifyGameOver(score: Int): MockUserState =
-          fail("Received game over message unexpectedly")
-      }
-
-      private object StateTwo extends MockUserState {
-        override def notify(screen: Seq[String]): MockUserState =
-          fail("Received screen after game should be over")
-
-        override def notifyGameOver(score: Int): MockUserState = StateThree
-
-        override def seenFirstScreen: Boolean = true
-      }
-
-      private object StateThree extends MockUserState {
-        override def notify(screen: Seq[String]): MockUserState =
-          fail("Received screen after game should be over")
-
-        override def notifyGameOver(score: Int): MockUserState =
-          fail("Received game over message twice")
-
-        override def seenFirstScreen: Boolean = true
-
-        override def seenGameOverScreen: Boolean = true
-      }
-
-      private var state: MockUserState = StateOne: MockUserState
-
-      def notify(screen: Seq[String]): Unit = state = state.notify(screen)
-
-      def seenFirstScreen: Boolean = state.seenFirstScreen
-
-      def seenGameOverScreen: Boolean = state.seenGameOverScreen
-    }
-
+    val rogue: MockRogue = new MockRogue()
+    val controller: Controller = new Controller(rogue)
+    controller.performCommand(Command.QUIT)
+    assert(rogue.receivedQuitCommand)
   }
-
-  val screen1: Array[String] =
-    """
-      |
-      |
-      |
-      |
-      |
-      |
-      |
-      |                               ----------+---------
-      |                               |.........@....%...|
-      |                               +........?.........|
-      |                               |...............*..|
-      |                               |..!...............|
-      |                               |..................+
-      |                               -------+------------
-      |
-      |
-      |
-      |
-      |
-      |
-      |
-      |
-      |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
-      |""".stripMargin.split("\n").map(_.padTo(80, ' '))
 }
