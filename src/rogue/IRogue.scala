@@ -1,4 +1,4 @@
-package integration
+package rogue
 
 trait IRogue {
   def readScreen : Seq[String]

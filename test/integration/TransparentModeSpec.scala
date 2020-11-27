@@ -1,7 +1,12 @@
 package integration
 
+import controller.Controller
+import gamedata.Command
+import main.RogOMatic
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
+import rogue.IRogue
+import view.IView
 
 class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen {
   Feature("Transparent Mode") {

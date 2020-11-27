@@ -1,7 +1,9 @@
 package unit
 
-import integration.{IRogue, IView, RogOMatic}
+import main.RogOMatic
 import org.scalatest.funsuite.AnyFunSuite
+import rogue.IRogue
+import view.IView
 
 class RogOMaticTest extends AnyFunSuite {
   test("RogOMatic should pass the first screen to the view") {
