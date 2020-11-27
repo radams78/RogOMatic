@@ -7,8 +7,10 @@ import view.IView
 
 class RogOMaticTest extends AnyFunSuite {
   test("RogOMatic should pass the first screen to the view") {
+    val firstScreen: Seq[String] = Seq("The first screen")
+
     object MockRogue extends IRogue {
-      override def readScreen: Seq[String] = Seq("The first screen")
+      override def readScreen: Seq[String] = firstScreen
 
       override def sendKeypress(keypress: Char): Unit = fail("Keypress received")
     }
@@ -16,7 +18,7 @@ class RogOMaticTest extends AnyFunSuite {
       var seenFirstScreen: Boolean = false
 
       override def notify(screen: Seq[String]): Unit = {
-        assert(screen == Seq("The first screen"))
+        assert(screen == firstScreen)
         seenFirstScreen = true
       }
     }

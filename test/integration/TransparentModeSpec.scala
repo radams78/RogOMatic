@@ -47,32 +47,7 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen {
       }
 
       private object StateOne extends MockRogueState {
-        override def readScreen: Seq[String] =
-          """
-            |
-            |
-            |
-            |
-            |
-            |
-            |
-            |                               ----------+---------
-            |                               |.........@....%...|
-            |                               +........?.........|
-            |                               |...............*..|
-            |                               |..!...............|
-            |                               |..................+
-            |                               -------+------------
-            |
-            |
-            |
-            |
-            |
-            |
-            |
-            |
-            |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
-            |""".stripMargin.split("\n").map(_.padTo(80, ' '))
+        override def readScreen: Seq[String] = screen1
 
         override def transitions: Map[Char, MockRogueState] = Map('i' -> StateTwo, 'Q' -> StateThree)
       }
@@ -231,32 +206,7 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen {
       }
 
       private object StateOne extends MockUserState {
-        override def notify(screen: Seq[String]): MockUserState = if (screen ==
-          """
-            |
-            |
-            |
-            |
-            |
-            |
-            |
-            |                               ----------+---------
-            |                               |.........@....%...|
-            |                               +........?.........|
-            |                               |...............*..|
-            |                               |..!...............|
-            |                               |..................+
-            |                               -------+------------
-            |
-            |
-            |
-            |
-            |
-            |
-            |
-            |
-            |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
-            |""".stripMargin.split("\n").map(_.padTo(80, ' ')).toSeq) StateTwo else
+        override def notify(screen: Seq[String]): MockUserState = if (screen == screen1.toSeq) StateTwo else
           fail("Unexpected screen:\n" + screen + "Expected:\n" +
             """                                                a) some food
               |                                                b) +1 ring mail [4] being worn
@@ -320,4 +270,31 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen {
     }
 
   }
+
+  val screen1: Array[String] =
+    """
+      |
+      |
+      |
+      |
+      |
+      |
+      |
+      |                               ----------+---------
+      |                               |.........@....%...|
+      |                               +........?.........|
+      |                               |...............*..|
+      |                               |..!...............|
+      |                               |..................+
+      |                               -------+------------
+      |
+      |
+      |
+      |
+      |
+      |
+      |
+      |
+      |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
+      |""".stripMargin.split("\n").map(_.padTo(80, ' '))
 }
