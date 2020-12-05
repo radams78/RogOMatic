@@ -2,6 +2,8 @@ package integration
 
 import rogue.IRogue
 
+/** Handle input and output with Rogue */
+// TODO Split into two?
 class RoguePlayer(rogue: IRogue) extends IRoguePlayer {
   private var observers : Set[IModelObserver] = Set()
   
