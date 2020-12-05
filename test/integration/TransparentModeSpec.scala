@@ -2,13 +2,13 @@ package integration
 
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
-import rogue.{IRogue, Sensor}
+import rogue.IRogue
 
 class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen {
   Feature("Transparent Mode") {
     Scenario("User quits immediately") {
       Given("a new game of Rogue")
-      val screen1: Array[String] =
+      val screen1: String =
         """
           |
           |
@@ -33,7 +33,10 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen {
           |
           |
           |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
-          |""".stripMargin.split("\n").map(_.padTo(80, ' '))
+          |"""
+          
+      val screen1lines: Array[String] =
+        screen1.stripMargin.split("\n").map(_.padTo(80, ' '))
 
       object MockRogue extends IRogue {
 
@@ -51,7 +54,7 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen {
         }
 
         private object StateOne extends MockRogueState {
-          override def readScreen: Seq[String] = screen1
+          override def readScreen: Seq[String] = screen1lines
 
           override def transitions: Map[Char, MockRogueState] = Map('i' -> StateTwo, 'Q' -> StateThree)
         }
@@ -283,7 +286,7 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen {
 
       val player : IRoguePlayer = new RoguePlayer(MockRogue)
       player.addObserver(MockView)
-      var controller: IController = new MockController(player)
+      val controller: IController = new MockController(player)
       player.startGame()
       
       Then("the user should see the first screen")
