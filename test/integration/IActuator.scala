@@ -1,5 +1,0 @@
-package integration
-
-trait IActuator {
-
-}

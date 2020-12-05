@@ -1,6 +1,6 @@
 package unit
 
-import integration.{IRoguePlayer, IRoguePlayerObserver, RoguePlayer}
+import model.{IRoguePlayer, IRoguePlayerObserver, RoguePlayer}
 import org.scalatest.flatspec.AnyFlatSpec
 import rogue.IRogue
 

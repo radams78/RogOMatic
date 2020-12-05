@@ -1,4 +1,4 @@
-package integration
+package model
 
 /** An object that can observe an [[IRoguePlayer]] */
 trait IRoguePlayerObserver {

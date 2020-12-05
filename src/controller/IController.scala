@@ -1,4 +1,4 @@
-package integration
+package controller
 
 import gamedata.Command
 
