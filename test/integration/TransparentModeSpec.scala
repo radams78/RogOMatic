@@ -64,32 +64,35 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen {
         }
 
         private object StateTwo extends MockRogueState {
-          override def readScreen: Seq[String] =
-            """                                                a) some food
-              |                                                b) +1 ring mail [4] being worn
-              |                                                c) a +1,+1 mace in hand
-              |                                                d) a +1,+0 short bow
-              |                                                e) 32 +0,+0 arrows
-              |                                                --press space to continue--
-              |
-              |
-              |                               ----------+---------
-              |                               |.........@....%...|
-              |                               +........?.........|
-              |                               |...............*..|
-              |                               |..!...............|
-              |                               |..................+
-              |                               -------+------------
-              |
-              |
-              |
-              |
-              |
-              |
-              |
-              |
-              |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
-              |""".stripMargin.split("\n").map(_.padTo(80, ' '))
+          override def readScreen: Seq[String] = {
+            val screen2: String =
+              """                                                a) some food
+                |                                                b) +1 ring mail [4] being worn
+                |                                                c) a +1,+1 mace in hand
+                |                                                d) a +1,+0 short bow
+                |                                                e) 32 +0,+0 arrows
+                |                                                --press space to continue--
+                |
+                |
+                |                               ----------+---------
+                |                               |.........@....%...|
+                |                               +........?.........|
+                |                               |...............*..|
+                |                               |..!...............|
+                |                               |..................+
+                |                               -------+------------
+                |
+                |
+                |
+                |
+                |
+                |
+                |
+                |
+                |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
+                |"""
+            screen2.stripMargin.split("\n").map(_.padTo(80, ' '))
+          }
 
           override def transitions: Map[Char, MockRogueState] = Map(' ' -> StateOne)
         }
