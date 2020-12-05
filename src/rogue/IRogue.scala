@@ -1,6 +1,7 @@
 package rogue
 
 trait IRogue {
-  def readScreen : Seq[String]
-  def sendKeypress(keypress : Char) : Unit
+  def sendKeypress(keypress: Char): Unit
+
+  def readScreen: Seq[String]
 }

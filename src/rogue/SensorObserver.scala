@@ -1,0 +1,5 @@
+package rogue
+
+trait SensorObserver {
+
+}
