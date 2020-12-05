@@ -3,7 +3,9 @@ package model
 import gamedata.Command
 import rogue.IRogue
 
-/** Handle input and output with Rogue */
+/** Handle input and output with Rogue 
+ * 
+ * @param rogue The Rogue process */
 // TODO Split into two?
 
 
