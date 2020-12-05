@@ -7,12 +7,12 @@ import rogue.IRogue
 
 
 class RoguePlayer(rogue: IRogue) extends IRoguePlayer {
-  private var observers : Set[IModelObserver] = Set()
+  private var observers : Set[IRoguePlayerObserver] = Set()
   
   override def startGame(): Unit =
     for (observer <- observers) observer.notify(rogue.readScreen)
 
-  override def addObserver(observer: IModelObserver): Unit =
+  override def addObserver(observer: IRoguePlayerObserver): Unit =
     observers = observers + observer
 
   override def performCommand(command: Command): Unit = ()

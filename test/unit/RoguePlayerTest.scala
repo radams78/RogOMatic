@@ -1,6 +1,6 @@
 package unit
 
-import integration.{IRoguePlayer, IModelObserver, RoguePlayer}
+import integration.{IRoguePlayer, IRoguePlayerObserver, RoguePlayer}
 import org.scalatest.flatspec.AnyFlatSpec
 import rogue.IRogue
 
@@ -13,7 +13,7 @@ class RoguePlayerTest extends AnyFlatSpec {
       override def readScreen: Seq[String] = Seq("The first screen")
     }
     
-    object MockObserver extends IModelObserver {
+    object MockObserver extends IRoguePlayerObserver {
       def seenFirstScreen: Boolean = _seenFirstScreen
 
       private var _seenFirstScreen : Boolean = false
