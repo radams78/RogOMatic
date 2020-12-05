@@ -1,5 +1,6 @@
 package integration
 
+import gamedata.Command
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
 import rogue.IRogue

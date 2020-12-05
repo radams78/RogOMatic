@@ -1,5 +1,6 @@
 package integration
 
+import gamedata.Command
 import rogue.IRogue
 
 /** Handle input and output with Rogue */

@@ -1,4 +1,4 @@
-package integration
+package gamedata
 
 trait Command {
   def keypresses: Seq[Char]
