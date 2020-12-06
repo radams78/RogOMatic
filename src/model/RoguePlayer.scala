@@ -18,5 +18,5 @@ class RoguePlayer(rogue: IRogue) extends IRoguePlayer {
   override def addObserver(observer: IRoguePlayerObserver): Unit =
     observers = observers + observer
 
-  override def performCommand(command: Command): Unit = ()
+  override def performCommand(command: Command): Unit = rogue.sendKeypress('h')
 }

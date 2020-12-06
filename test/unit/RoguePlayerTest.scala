@@ -1,7 +1,9 @@
 package unit
 
+import gamedata.Command
 import model.{IRoguePlayer, IRoguePlayerObserver, RoguePlayer}
 import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers._
 import rogue.IRogue
 
 class RoguePlayerTest extends AnyFlatSpec {
@@ -28,5 +30,25 @@ class RoguePlayerTest extends AnyFlatSpec {
     model.addObserver(MockObserver)
     model.startGame()
     assert(MockObserver.seenFirstScreen)
+  }
+
+  "A RoguePlayer" should "pass on commands to Rogue" in {
+    class MockRogue extends IRogue {
+      private var _receivedKeypress = false
+
+      def receivedCommand(): Boolean = _receivedKeypress
+
+      override def sendKeypress(keypress: Char): Unit = {
+        keypress should be('h')
+        _receivedKeypress = true
+      }
+
+      override def readScreen: Seq[String] = fail("readScreen called unexpectedly")
+    }
+
+    val rogue : MockRogue = new MockRogue()
+    val player = new RoguePlayer(rogue)
+    player.performCommand(Command.LEFT)
+    rogue should be(Symbol("receivedCommand"))
   }
 }

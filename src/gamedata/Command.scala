@@ -10,4 +10,8 @@ object Command {
     override def keypresses: Seq[Char] = Seq('Q', 'y', ' ', ' ')
   }
 
+  object LEFT extends Command {
+    override def keypresses: Seq[Char] = Seq('h')
+  }
+
 }

@@ -5,6 +5,8 @@ import gamedata.Command
 import model.{IRoguePlayer, RoguePlayer}
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
+import org.scalatest.matchers.must.Matchers.be
+import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import rogue.IRogue
 import view.IView
 
@@ -207,7 +209,7 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen {
         override def readScreen: Seq[String] = state.readScreen
       }
 
-      object MockUser {
+      object MockUser extends IView {
 
         private trait MockUserState {
           def seenGameOverScreen: Boolean = false
@@ -220,34 +222,11 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen {
         }
 
         private object StateOne extends MockUserState {
-          override def notify(screen: Seq[String]): MockUserState = if (screen == screen1.toSeq) StateTwo else
-            fail("Unexpected screen:\n" + screen + "Expected:\n" +
-              """                                                a) some food
-                |                                                b) +1 ring mail [4] being worn
-                |                                                c) a +1,+1 mace in hand
-                |                                                d) a +1,+0 short bow
-                |                                                e) 32 +0,+0 arrows
-                |                                                --press space to continue--
-                |
-                |
-                |                               ----------+---------
-                |                               |.........@....%...|
-                |                               +........?.........|
-                |                               |...............*..|
-                |                               |..!...............|
-                |                               |..................+
-                |                               -------+------------
-                |
-                |
-                |
-                |
-                |
-                |
-                |
-                |
-                |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
-                |"""
-            )
+          override def notify(screen: Seq[String]): MockUserState = {
+            screen should be(screen1lines)
+            StateTwo
+          }
+
 
           override def notifyGameOver(score: Int): MockUserState =
             fail("Received game over message unexpectedly")
@@ -276,15 +255,11 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen {
 
         private var state: MockUserState = StateOne: MockUserState
 
-        def notify(screen: Seq[String]): Unit = state = state.notify(screen)
+        override def notify(screen: Seq[String]): Unit = state = state.notify(screen)
 
         def seenFirstScreen: Boolean = state.seenFirstScreen
 
         def seenGameOverScreen: Boolean = state.seenGameOverScreen
-      }
-
-      object MockView extends IView {
-        override def notify(screen: Seq[String]): Unit = MockUser.notify(screen)
       }
 
       class MockController(player: IRoguePlayer) extends IController {
@@ -292,15 +267,14 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen {
       }
 
       val player : IRoguePlayer = new RoguePlayer(MockRogue)
-      player.addObserver(MockView)
-      val controller: IController = new MockController(player)
+      player.addObserver(MockUser)
       player.startGame()
       
       Then("the user should see the first screen")
       assert(MockUser.seenFirstScreen)
 
       When("the user enters the command to quit")
-      controller.performCommand(Command.QUIT)
+      player.performCommand(Command.QUIT)
 
       Then("Rogue should receive the command to quit")
       assert(MockRogue.receivedQuitCommand)
