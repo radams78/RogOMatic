@@ -20,20 +20,20 @@ class RoguePlayerTest extends AnyFlatSpec {
 
       private var _seenFirstScreen : Boolean = false
 
-      override def notify(screen: Seq[String]): Unit = 
-        if (screen == Seq("The first screen")) 
-          _seenFirstScreen = true 
-        else fail("Sent unexpected screen: " + screen)
+      override def notify(screen: Seq[String]): Unit = {
+        screen should be(Seq("The first screen"))
+        _seenFirstScreen = true
+      }
     }
     
     val model : IRoguePlayer = new RoguePlayer(MockRogue)
     model.addObserver(MockObserver)
     model.startGame()
-    assert(MockObserver.seenFirstScreen)
+    MockObserver should be(Symbol("seenFirstScreen"))
   }
 
   "A RoguePlayer" should "pass on commands to Rogue" in {
-    class MockRogue extends IRogue {
+    object MockRogue extends IRogue {
       private var _receivedKeypress = false
 
       def receivedCommand(): Boolean = _receivedKeypress
@@ -46,9 +46,8 @@ class RoguePlayerTest extends AnyFlatSpec {
       override def readScreen: Seq[String] = fail("readScreen called unexpectedly")
     }
 
-    val rogue : MockRogue = new MockRogue()
-    val player = new RoguePlayer(rogue)
+    val player = new RoguePlayer(MockRogue)
     player.performCommand(Command.LEFT)
-    rogue should be(Symbol("receivedCommand"))
+    MockRogue should be(Symbol("receivedCommand"))
   }
 }
