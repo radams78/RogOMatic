@@ -50,4 +50,40 @@ class RoguePlayerTest extends AnyFlatSpec {
     player.performCommand(Command.LEFT)
     MockRogue should be(Symbol("receivedCommand"))
   }
+
+  "A RoguePlayer" should "read the screen after performing a command" in {
+    object MockRogue extends IRogue {
+      private var _receivedKeypress = false
+
+      def receivedCommand(): Boolean = _receivedKeypress
+
+      override def sendKeypress(keypress: Char): Unit = {
+        keypress should be('h')
+        _receivedKeypress = true
+      }
+
+      override def readScreen: Seq[String] = {
+        _receivedKeypress should be(true)
+        Seq("The screen")
+      }
+    }
+
+    object MockObserver extends IRoguePlayerObserver {
+      private var _seenScreen = false
+
+      def seenScreen: Boolean = _seenScreen
+
+      /** Notify all observers that this is the screen displayed by Rogue */
+      override def notify(screen: Seq[String]): Unit = {
+        screen should be(Seq("The screen"))
+        _seenScreen = true
+      }
+    }
+
+    val player = new RoguePlayer(MockRogue)
+    player.addObserver(MockObserver)
+    player.performCommand(Command.LEFT)
+    MockObserver should be(Symbol("seenScreen"))
+  }
+
 }

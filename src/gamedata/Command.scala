@@ -7,7 +7,7 @@ trait Command {
 object Command {
 
   object QUIT extends Command {
-    override def keypresses: Seq[Char] = Seq('Q', 'y', ' ', ' ')
+    override def keypresses: Seq[Char] = Seq('Q', 'y', ' ')
   }
 
   object LEFT extends Command {
