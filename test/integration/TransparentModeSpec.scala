@@ -1,6 +1,5 @@
 package integration
 
-import controller.IController
 import gamedata.Command
 import model.{IRoguePlayer, RoguePlayer}
 import org.scalatest.GivenWhenThen
@@ -260,10 +259,6 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen {
         def seenFirstScreen: Boolean = state.seenFirstScreen
 
         def seenGameOverScreen: Boolean = state.seenGameOverScreen
-      }
-
-      class MockController(player: IRoguePlayer) extends IController {
-        def performCommand(command: Command): Unit = player.performCommand(command: Command)
       }
 
       val player : IRoguePlayer = new RoguePlayer(MockRogue)

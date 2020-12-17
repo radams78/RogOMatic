@@ -8,11 +8,13 @@ import rogue.IRogue
 
 class RoguePlayerTest extends AnyFlatSpec {
   "A model" should "pass its first screen on to any observers" in {
+    val firstScreen = Seq("The first screen")
+
     object MockRogue extends IRogue {
       override def sendKeypress(keypress: Char): Unit = 
         fail("Keypress detected")
 
-      override def readScreen: Seq[String] = Seq("The first screen")
+      override def readScreen: Seq[String] = firstScreen
     }
     
     object MockObserver extends IRoguePlayerObserver {
@@ -21,7 +23,7 @@ class RoguePlayerTest extends AnyFlatSpec {
       private var _seenFirstScreen : Boolean = false
 
       override def notify(screen: Seq[String]): Unit = {
-        screen should be(Seq("The first screen"))
+        screen should be(firstScreen)
         _seenFirstScreen = true
       }
     }

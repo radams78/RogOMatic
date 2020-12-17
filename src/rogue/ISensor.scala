@@ -1,5 +1,0 @@
-package rogue
-
-trait ISensor {
-
-}
