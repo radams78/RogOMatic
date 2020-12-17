@@ -43,6 +43,122 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen {
       val screen1lines: Array[String] =
         screen1.stripMargin.split("\n").map(_.padTo(80, ' '))
 
+      val screen2: String =
+        """                                                a) some food
+          |                                                b) +1 ring mail [4] being worn
+          |                                                c) a +1,+1 mace in hand
+          |                                                d) a +1,+0 short bow
+          |                                                e) 32 +0,+0 arrows
+          |                                                --press space to continue--
+          |
+          |
+          |                               ----------+---------
+          |                               |.........@....%...|
+          |                               +........?.........|
+          |                               |...............*..|
+          |                               |..!...............|
+          |                               |..................+
+          |                               -------+------------
+          |
+          |
+          |
+          |
+          |
+          |
+          |
+          |
+          |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
+          |"""
+
+      val screen2lines = screen2.stripMargin.split("\n").map(_.padTo(80, ' '))
+
+      val screen3 =
+        """really quit?
+          |
+          |
+          |
+          |
+          |
+          |
+          |
+          |                               ----------+---------
+          |                               |.........@....%...|
+          |                               +........?.........|
+          |                               |...............*..|
+          |                               |..!...............|
+          |                               |..................+
+          |                               -------+------------
+          |
+          |
+          |
+          |
+          |
+          |
+          |
+          |
+          |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
+          |"""
+
+      val screen3lines = screen3.stripMargin.split("\n").map(_.padTo(80, ' '))
+
+      val screen4 =
+        """quit with 0 gold-more-
+          |
+          |
+          |
+          |
+          |
+          |
+          |
+          |                               ----------+---------
+          |                               |.........@....%...|
+          |                               +........?.........|
+          |                               |...............*..|
+          |                               |..!...............|
+          |                               |..................+
+          |                               -------+------------
+          |
+          |
+          |
+          |
+          |
+          |
+          |
+          |
+          |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
+          |"""
+
+      val screen4lines = screen4.stripMargin.split("\n").map(_.padTo(80, ' '))
+
+      val screen5 =
+        """-more-
+          |
+          |
+          |                              Top  Ten  Rogueists
+          |
+          |
+          |
+          |
+          |Rank   Score   Name
+          |
+          | 1      1224   robin: died of starvation on level 11
+          |
+          |
+          |
+          |
+          |
+          |
+          |
+          |
+          |
+          |
+          |
+          |
+          |
+          |"""
+
+      val screen5lines = screen5.stripMargin.split("\n").map(_.padTo(80, ' '))
+
       object MockRogue extends IRogue {
 
         private trait MockRogueState {
@@ -65,128 +181,25 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen {
         }
 
         private object StateTwo extends MockRogueState {
-          override def readScreen: Seq[String] = {
-            val screen2: String =
-              """                                                a) some food
-                |                                                b) +1 ring mail [4] being worn
-                |                                                c) a +1,+1 mace in hand
-                |                                                d) a +1,+0 short bow
-                |                                                e) 32 +0,+0 arrows
-                |                                                --press space to continue--
-                |
-                |
-                |                               ----------+---------
-                |                               |.........@....%...|
-                |                               +........?.........|
-                |                               |...............*..|
-                |                               |..!...............|
-                |                               |..................+
-                |                               -------+------------
-                |
-                |
-                |
-                |
-                |
-                |
-                |
-                |
-                |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
-                |"""
-            screen2.stripMargin.split("\n").map(_.padTo(80, ' '))
-          }
+          override def readScreen: Seq[String] = screen2lines
 
           override def transitions: Map[Char, MockRogueState] = Map(' ' -> StateOne)
         }
 
         private object StateThree extends MockRogueState {
-          override def readScreen: Seq[String] =
-            """really quit? 
-              |
-              |
-              |
-              |
-              |
-              |
-              |
-              |                               ----------+---------
-              |                               |.........@....%...|
-              |                               +........?.........|
-              |                               |...............*..|
-              |                               |..!...............|
-              |                               |..................+
-              |                               -------+------------
-              |
-              |
-              |
-              |
-              |
-              |
-              |
-              |
-              |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
-              |""".stripMargin.split("\n").map(_.padTo(80, ' '))
+          override def readScreen: Seq[String] = screen3lines
 
           override def transitions: Map[Char, MockRogueState] = Map('y' -> StateFour)
         }
 
         private object StateFour extends MockRogueState {
-          override def readScreen: Seq[String] =
-            """quit with 0 gold-more-
-              |
-              |
-              |
-              |
-              |
-              |
-              |
-              |                               ----------+---------
-              |                               |.........@....%...|
-              |                               +........?.........|
-              |                               |...............*..|
-              |                               |..!...............|
-              |                               |..................+
-              |                               -------+------------
-              |
-              |
-              |
-              |
-              |
-              |
-              |
-              |
-              |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
-              |""".stripMargin.split("\n").map(_.padTo(80, ' '))
+          override def readScreen: Seq[String] = screen4lines
 
           override def transitions: Map[Char, MockRogueState] = Map(' ' -> StateFive)
         }
 
         private object StateFive extends MockRogueState {
-          override def readScreen: Seq[String] =
-            """-more-
-              |
-              |
-              |                              Top  Ten  Rogueists
-              |
-              |
-              |
-              |
-              |Rank   Score   Name
-              |
-              | 1      1224   robin: died of starvation on level 11
-              |
-              |
-              |
-              |
-              |
-              |
-              |
-              |
-              |
-              |
-              |
-              |
-              |
-              |""".stripMargin.split("\n").map(_.padTo(80, ' '))
+          override def readScreen: Seq[String] = screen5lines
 
           override def transitions: Map[Char, MockRogueState] = Map(' ' -> StateSix)
         }
@@ -222,7 +235,7 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen {
 
         private object StateOne extends MockUserState {
           override def notify(screen: Seq[String]): MockUserState = {
-            screen should be(screen1lines)
+            assert(screen === screen1lines || screen === screen2lines)
             StateTwo
           }
 
@@ -232,8 +245,10 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen {
         }
 
         private object StateTwo extends MockUserState {
-          override def notify(screen: Seq[String]): MockUserState =
-            fail("Received screen after game should be over")
+          override def notify(screen: Seq[String]): MockUserState = {
+            assert(screen === screen1lines || screen === screen2lines || screen === screen3lines || screen === screen4lines || screen === screen5lines)
+            this
+          }
 
           override def notifyGameOver(score: Int): MockUserState = StateThree
 
