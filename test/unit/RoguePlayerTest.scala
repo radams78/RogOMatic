@@ -28,7 +28,7 @@ class RoguePlayerTest extends AnyFlatSpec {
     }
     
     val player : IRoguePlayer = new RoguePlayer(MockRogue)
-    player.addObserver(MockObserver)
+    player.addScreenObserver(MockObserver)
     player.startGame()
     MockObserver should be(Symbol("seenFirstScreen"))
   }
@@ -82,7 +82,7 @@ class RoguePlayerTest extends AnyFlatSpec {
     }
 
     val player = new RoguePlayer(MockRogue)
-    player.addObserver(MockObserver)
+    player.addScreenObserver(MockObserver)
     player.performCommand(Command.LEFT)
     MockObserver should be(Symbol("seenScreen"))
   }

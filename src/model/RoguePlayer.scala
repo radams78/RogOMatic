@@ -17,23 +17,36 @@ class RoguePlayer(rogue: IRogue) extends IRoguePlayer {
   override def startGame(): Unit =
     notifyScreen()
 
-  private def notifyScreen(): Unit = {
-    for (observer <- screenObservers) observer.notify(rogue.readScreen)
-  }
-
-  override def addObserver(observer: IScreenObserver): Unit = screenObservers += observer
-
-  def addGameOverObserver(observer: IGameOverObserver): Unit = gameOverObservers += observer
-
   override def performCommand(command: Command): Unit = {
     for (keypress <- command.keypresses) rogue.sendKeypress(keypress)
     readScreen()
   }
 
+  override def addScreenObserver(observer: IScreenObserver): Unit = screenObservers += observer
+
+  override def addGameOverObserver(observer: IGameOverObserver): Unit = gameOverObservers += observer
+
   private def readScreen(): Unit = {
     notifyScreen()
-    if (rogue.readScreen.last == " " * 80)
-      for (observer <- gameOverObservers)
-        observer.notifyGameOver(0)
+    notifyGameOverObserversIfNecessary()
   }
+
+  private def notifyGameOverObserversIfNecessary(): Unit = {
+    if (isStatusLineBlank)
+      notifyGameOverObservers()
+  }
+
+  private def notifyGameOverObservers(): Unit = {
+    for (observer <- gameOverObservers)
+      observer.notifyGameOver(0)
+  }
+
+  private def isStatusLineBlank = {
+    rogue.readScreen.last.forall(_ == ' ')
+  }
+
+  private def notifyScreen(): Unit = {
+    for (observer <- screenObservers) observer.notify(rogue.readScreen)
+  }
+
 }

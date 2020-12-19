@@ -277,7 +277,7 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen {
       }
 
       val player : IRoguePlayer = new RoguePlayer(MockRogue)
-      player.addObserver(MockUser)
+      player.addScreenObserver(MockUser)
       player.startGame()
       
       Then("the user should see the first screen")
