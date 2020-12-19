@@ -31,6 +31,10 @@ class RoguePlayer(rogue: IRogue) extends IRoguePlayer {
     notifyGameOverObserversIfNecessary()
   }
 
+  private def notifyScreen(): Unit = {
+    for (observer <- screenObservers) observer.notify(rogue.readScreen)
+  }
+
   private def notifyGameOverObserversIfNecessary(): Unit = {
     if (isStatusLineBlank)
       notifyGameOverObservers()
@@ -44,9 +48,4 @@ class RoguePlayer(rogue: IRogue) extends IRoguePlayer {
   private def isStatusLineBlank = {
     rogue.readScreen.last.forall(_ == ' ')
   }
-
-  private def notifyScreen(): Unit = {
-    for (observer <- screenObservers) observer.notify(rogue.readScreen)
-  }
-
 }
