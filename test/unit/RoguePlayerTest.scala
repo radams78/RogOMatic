@@ -1,7 +1,7 @@
 package unit
 
 import gamedata.Command
-import model.{IGameOverObserver, IRoguePlayer, IRoguePlayerObserver, RoguePlayer}
+import model.{IGameOverObserver, IRoguePlayer, IScreenObserver, RoguePlayer}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers._
 import rogue.IRogue
@@ -16,7 +16,7 @@ class RoguePlayerTest extends AnyFlatSpec {
       override def readScreen: Seq[String] = firstScreen
     }
     
-    object MockObserver extends IRoguePlayerObserver {
+    object MockObserver extends IScreenObserver {
       def seenFirstScreen: Boolean = _seenFirstScreen
 
       private var _seenFirstScreen : Boolean = false
@@ -69,7 +69,7 @@ class RoguePlayerTest extends AnyFlatSpec {
       }
     }
 
-    object MockObserver extends IRoguePlayerObserver {
+    object MockObserver extends IScreenObserver {
       private var _seenScreen = false
 
       def seenScreen: Boolean = _seenScreen

@@ -1,8 +1,8 @@
 package view
 
-import model.IRoguePlayerObserver
+import model.IScreenObserver
 
 /** A view that displays info to the user */
-trait IView extends IRoguePlayerObserver {
+trait IView extends IScreenObserver {
   def notify(screen: Seq[String]): Unit
 }

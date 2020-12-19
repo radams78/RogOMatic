@@ -9,6 +9,6 @@ trait IRoguePlayer {
 
   def startGame(): Unit
 
-  def addObserver(observer: IRoguePlayerObserver): Unit
+  def addObserver(observer: IScreenObserver): Unit
 
 }
