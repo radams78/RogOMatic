@@ -15,7 +15,7 @@ class RoguePlayer(rogue: IRogue) extends IRoguePlayer {
   private var gameOverObservers : Set[IGameOverObserver] = Set()
 
   override def startGame(): Unit =
-    notifyScreen()
+    readScreen()
 
   override def performCommand(command: Command): Unit = {
     for (keypress <- command.keypresses) rogue.sendKeypress(keypress)
