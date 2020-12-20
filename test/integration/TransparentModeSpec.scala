@@ -1,11 +1,9 @@
 package integration
 
 import gamedata.Command
-import model.{IRoguePlayer, RoguePlayer}
+import model.{IRoguePlayer, IScreenObserver, RoguePlayer}
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
-import org.scalatest.matchers.must.Matchers.be
-import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import rogue.IRogue
 import view.IView
 
@@ -160,6 +158,8 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen {
       val screen5lines = screen5.stripMargin.split("\n").map(_.padTo(80, ' '))
 
       object MockRogue extends IRogue {
+        def addScreenObserver(observer: IScreenObserver): Unit = _screenObserver = Some(observer)
+
 
         private trait MockRogueState {
           def readScreen: Seq[String]
@@ -218,7 +218,9 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen {
 
         override def sendKeypress(keypress: Char): Unit = state = state.sendKeypress(keypress)
 
-        override def readScreen: Seq[String] = state.readScreen
+        var _screenObserver: Option[IScreenObserver] = None
+
+        override def startGame(): Unit = for (observer <- _screenObserver) observer.notify(state.readScreen)
       }
 
       object MockUser extends IView {
@@ -277,7 +279,7 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen {
       }
 
       val player : IRoguePlayer = new RoguePlayer(MockRogue)
-      player.addScreenObserver(MockUser)
+      MockRogue.addScreenObserver(MockUser)
       player.startGame()
       
       Then("the user should see the first screen")

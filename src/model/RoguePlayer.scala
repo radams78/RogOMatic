@@ -9,30 +9,23 @@ import rogue.IRogue
 // TODO Split into two?
 
 
-class RoguePlayer(rogue: IRogue) extends IRoguePlayer {
+class RoguePlayer(rogue: IRogue) extends IRoguePlayer with IScreenObserver {
+  rogue.addScreenObserver(this)
 
-  private var screenObservers : Set[IScreenObserver] = Set()
+  private var screen: Option[Seq[String]] = None
   private var gameOverObservers : Set[IGameOverObserver] = Set()
 
-  override def startGame(): Unit =
-    readScreen()
+  override def startGame(): Unit = rogue.startGame()
 
   override def performCommand(command: Command): Unit = {
     for (keypress <- command.keypresses) rogue.sendKeypress(keypress)
     readScreen()
   }
 
-  override def addScreenObserver(observer: IScreenObserver): Unit = screenObservers += observer
-
   override def addGameOverObserver(observer: IGameOverObserver): Unit = gameOverObservers += observer
 
   private def readScreen(): Unit = {
-    notifyScreen()
     notifyGameOverObserversIfNecessary()
-  }
-
-  private def notifyScreen(): Unit = {
-    for (observer <- screenObservers) observer.notify(rogue.readScreen)
   }
 
   private def notifyGameOverObserversIfNecessary(): Unit = {
@@ -45,7 +38,10 @@ class RoguePlayer(rogue: IRogue) extends IRoguePlayer {
       observer.notifyGameOver(0)
   }
 
-  private def isStatusLineBlank = {
-    rogue.readScreen.last.forall(_ == ' ')
+  private def isStatusLineBlank: Boolean = {
+    screen.exists(_.last.forall(_ == ' '))
   }
+
+  /** Notify all observers that this is the screen displayed by Rogue */
+  override def notify(_screen: Seq[String]): Unit = screen = Some(_screen)
 }

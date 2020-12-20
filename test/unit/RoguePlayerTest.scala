@@ -11,9 +11,13 @@ class RoguePlayerTest extends AnyFlatSpec {
     val firstScreen = Seq("The first screen")
 
     object MockRogue extends IRogue {
+      private var _screenObserver : Option[IScreenObserver] = None
+
+      def addScreenObserver(observer: IScreenObserver): Unit = _screenObserver = Some(observer)
+
       override def sendKeypress(keypress: Char): Unit = fail("Keypress detected")
 
-      override def readScreen: Seq[String] = firstScreen
+      override def startGame(): Unit = for (observer <- _screenObserver) observer.notify(firstScreen)
     }
     
     object MockObserver extends IScreenObserver {
@@ -28,7 +32,7 @@ class RoguePlayerTest extends AnyFlatSpec {
     }
     
     val player : IRoguePlayer = new RoguePlayer(MockRogue)
-    player.addScreenObserver(MockObserver)
+    MockRogue.addScreenObserver(MockObserver)
     player.startGame()
     MockObserver should be(Symbol("seenFirstScreen"))
   }
@@ -44,7 +48,11 @@ class RoguePlayerTest extends AnyFlatSpec {
         _receivedKeypress = true
       }
 
-      override def readScreen: Seq[String] = Seq("The screen")
+      var _screenObserver: Option[IScreenObserver] = None
+
+      override def addScreenObserver(observer: IScreenObserver): Unit = _screenObserver = Some(observer)
+
+      override def startGame(): Unit = ()
     }
 
     val player = new RoguePlayer(MockRogue)
@@ -61,12 +69,14 @@ class RoguePlayerTest extends AnyFlatSpec {
       override def sendKeypress(keypress: Char): Unit = {
         keypress should be('h')
         _receivedKeypress = true
+        for (observer <- _screenObserver) observer.notify(Seq("The screen"))
       }
 
-      override def readScreen: Seq[String] = {
-        _receivedKeypress should be(true)
-        Seq("The screen")
-      }
+      var _screenObserver: Option[IScreenObserver] = None
+
+      override def addScreenObserver(observer: IScreenObserver): Unit = _screenObserver = Some(observer)
+
+      override def startGame(): Unit = ()
     }
 
     object MockObserver extends IScreenObserver {
@@ -82,7 +92,7 @@ class RoguePlayerTest extends AnyFlatSpec {
     }
 
     val player = new RoguePlayer(MockRogue)
-    player.addScreenObserver(MockObserver)
+    MockRogue.addScreenObserver(MockObserver)
     player.performCommand(Command.LEFT)
     MockObserver should be(Symbol("seenScreen"))
   }
@@ -243,10 +253,11 @@ class RoguePlayerTest extends AnyFlatSpec {
 
         def receivedQuitCommand: Boolean = false
 
-        final def sendKeypress(keypress: Char): MockRogueState =
+        final def sendKeypress(keypress: Char): MockRogueState = {
           transitions.getOrElse(keypress,
             fail("Unexpected keypress '" + keypress + "'")
           )
+        }
       }
 
       private object StateOne extends MockRogueState {
@@ -291,9 +302,16 @@ class RoguePlayerTest extends AnyFlatSpec {
 
       def receivedQuitCommand: Boolean = state.receivedQuitCommand
 
-      override def sendKeypress(keypress: Char): Unit = state = state.sendKeypress(keypress)
+      override def sendKeypress(keypress: Char): Unit = {
+        state = state.sendKeypress(keypress)
+        for (observer <- _screenObserver) observer.notify(state.readScreen)
+      }
 
-      override def readScreen: Seq[String] = state.readScreen
+      var _screenObserver : Option[IScreenObserver] = None
+
+      override def addScreenObserver(observer: IScreenObserver): Unit = _screenObserver = Some(observer)
+
+      override def startGame(): Unit = for (observer <- _screenObserver) observer.notify(state.readScreen)
     }
 
     object MockObserver extends IGameOverObserver {
