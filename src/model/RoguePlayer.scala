@@ -20,8 +20,6 @@ class RoguePlayer(rogue: IRogue) extends IRoguePlayer with IScreenObserver {
     readScreen()
   }
 
-  override def addGameOverObserver(observer: IGameOverObserver): Unit = gameOverObservers += observer
-
   private def readScreen(): Unit = {
     notifyGameOverObserversIfNecessary()
   }

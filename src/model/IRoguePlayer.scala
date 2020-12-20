@@ -6,6 +6,4 @@ import gamedata.Command
 trait IRoguePlayer {
   /** Send the given command to Rogue */
   def performCommand(command: Command): Unit
-
-  def addGameOverObserver(observer: IGameOverObserver): Unit
 }
