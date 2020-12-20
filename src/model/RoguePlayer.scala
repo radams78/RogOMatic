@@ -15,8 +15,6 @@ class RoguePlayer(rogue: IRogue) extends IRoguePlayer with IScreenObserver {
   private var screen: Option[Seq[String]] = None
   private var gameOverObservers : Set[IGameOverObserver] = Set()
 
-  override def startGame(): Unit = rogue.startGame()
-
   override def performCommand(command: Command): Unit = {
     for (keypress <- command.keypresses) rogue.sendKeypress(keypress)
     readScreen()
