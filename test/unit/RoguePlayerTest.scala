@@ -1,7 +1,7 @@
 package unit
 
 import gamedata.Command
-import model.{IGameOverObserver, IRoguePlayer, IScreenObserver, RoguePlayer}
+import model.{IScreenObserver, RoguePlayer}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers._
 import rogue.IRogue
