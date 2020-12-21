@@ -2,13 +2,11 @@ package unit
 
 import model.{IGameOverObserver, Sensor}
 import org.scalatest.flatspec.AnyFlatSpec
-import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should.Matchers
-import rogue.{IRogue, IScreenObserver}
 
 class SensorTest extends AnyFlatSpec with Matchers {
   "A sensor" should "recognize a game over screen" in {
-    val sensor = new Sensor
+    val sensor: Sensor = new Sensor
 
     val screen4 =
       """quit with 10 gold-more-
@@ -69,13 +67,10 @@ class SensorTest extends AnyFlatSpec with Matchers {
     val screen5lines = screen5.stripMargin.split("\n").map(_.padTo(80, ' '))
 
     object MockObserver extends IGameOverObserver {
-      private var _seenGameOverScreen = false
+      private var _seenGameOverScreen: Boolean = false
 
       def seenGameOverScreen: Boolean = _seenGameOverScreen
 
-      /** Notify the observer that the game is over
-       *
-       * @param score The final score */
       override def notifyGameOver(score: Int): Unit = {
         score should be(10)
         _seenGameOverScreen = true
