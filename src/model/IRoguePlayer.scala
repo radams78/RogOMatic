@@ -2,8 +2,10 @@ package model
 
 import gamedata.Command
 
-/** Handle input and output with Rogue */
+/** Interface for sending commands to Rogue */
 trait IRoguePlayer {
-  /** Send the given command to Rogue */
+  /** Send the given command to Rogue
+   *
+   * @param command Command to be sent to Rogue */
   def performCommand(command: Command): Unit
 }
