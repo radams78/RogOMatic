@@ -1,12 +1,11 @@
 package integration
 
 import gamedata.Command
-import model.Sensor
+import model.{IGameOverObserver, Sensor}
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 import rogue.{IRogue, IScreenObserver}
-import view.IView
 
 class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matchers {
   Feature("Transparent Mode") {
@@ -224,7 +223,7 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
         override def startGame(): Unit = for (observer <- _screenObserver) observer.notify(state.readScreen)
       }
 
-      object MockUser extends IView {
+      object MockUser extends IScreenObserver with IGameOverObserver {
 
         private trait MockUserState {
           def seenGameOverScreen: Boolean = false
