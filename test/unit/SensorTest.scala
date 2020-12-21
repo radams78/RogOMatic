@@ -64,7 +64,7 @@ class SensorTest extends AnyFlatSpec with Matchers {
         |
         |"""
 
-    val screen5lines = screen5.stripMargin.split("\n").map(_.padTo(80, ' '))
+    val screen5lines = screen5.stripMargin.split("\n").padTo(24,"").map(_.padTo(80, ' '))
 
     object MockObserver extends IGameOverObserver {
       private var _seenGameOverScreen: Boolean = false
