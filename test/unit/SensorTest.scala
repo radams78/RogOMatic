@@ -9,21 +9,11 @@ class SensorTest extends AnyFlatSpec with Matchers {
     val sensor: Sensor = new Sensor
 
     val screen4 =
-      """quit with 10 gold-more-
-        |
-        |
-        |
-        |
-        |
-        |
-        |
-        |                               ----------+---------
-        |                               |.........@....%...|
-        |                               +........?.........|
-        |                               |...............*..|
-        |                               |..!...............|
-        |                               |..................+
-        |                               -------+------------
+      """quit with 20 gold-more-
+        |                                                      --------------------
+        |                                                      +..%......@..*S....|
+        |                                                      |............./....|
+        |                                                      -------+------------
         |
         |
         |
@@ -32,7 +22,17 @@ class SensorTest extends AnyFlatSpec with Matchers {
         |
         |
         |
-        |Level: 1  Gold: 10      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
+        |
+        |
+        |
+        |
+        |
+        |
+        |
+        |
+        |
+        |
+        |Level: 1  Gold: 20      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
         |"""
 
     val screen4lines = screen4.stripMargin.split("\n").map(_.padTo(80, ' '))
@@ -48,7 +48,7 @@ class SensorTest extends AnyFlatSpec with Matchers {
         |
         |Rank   Score   Name
         |
-        | 1      1224   robin: died of starvation on level 11
+        | 1         0   robin: quit on level 1
         |
         |
         |
@@ -72,7 +72,7 @@ class SensorTest extends AnyFlatSpec with Matchers {
       def seenGameOverScreen: Boolean = _seenGameOverScreen
 
       override def notifyGameOver(score: Int): Unit = {
-        score should be(10)
+        score should be(20)
         _seenGameOverScreen = true
       }
     }
