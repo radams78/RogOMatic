@@ -280,10 +280,7 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen {
       MockRogue.addScreenObserver(MockUser)
       MockRogue.startGame()
 
-      Then("the user should see the first screen")
-      assert(MockUser.seenFirstScreen)
-
-      When("the user enters the command to quit")
+      And("the user enters the command to quit")
       Command.QUIT.perform(MockRogue)
 
       Then("Rogue should receive the command to quit")
