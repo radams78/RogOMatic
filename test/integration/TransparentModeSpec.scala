@@ -1,12 +1,14 @@
 package integration
 
 import gamedata.Command
+import model.Sensor
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
+import org.scalatest.matchers.should.Matchers
 import rogue.{IRogue, IScreenObserver}
 import view.IView
 
-class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen {
+class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matchers {
   Feature("Transparent Mode") {
     Scenario("User quits immediately") {
       Given("a new game of Rogue")
@@ -275,19 +277,30 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen {
         def seenFirstScreen: Boolean = state.seenFirstScreen
 
         def seenGameOverScreen: Boolean = state.seenGameOverScreen
+
+        /** Notify the observer that the game is over
+         *
+         * @param score The final score */
+        override def notifyGameOver(score: Int): Unit = state = state.notifyGameOver(score)
       }
 
+      val sensor = new Sensor
+      MockRogue.addScreenObserver(sensor)
       MockRogue.addScreenObserver(MockUser)
+      sensor.addGameOverObserver(MockUser)
       MockRogue.startGame()
 
-      And("the user enters the command to quit")
+      Then("the user should see the first screen")
+      MockUser should be(Symbol("seenFirstScreen"))
+
+      When("the user enters the command to quit")
       Command.QUIT.perform(MockRogue)
 
       Then("Rogue should receive the command to quit")
-      assert(MockRogue.receivedQuitCommand)
+      MockRogue should be(Symbol("receivedQuitCommand"))
 
       And("the user should see the game over message")
-      assert(MockUser.seenGameOverScreen)
+      MockUser should be(Symbol("seenGameOverScreen"))
     }
 
   }

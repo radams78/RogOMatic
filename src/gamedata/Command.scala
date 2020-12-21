@@ -16,7 +16,7 @@ object Command {
   }
 
   /** Command to quit the game */
-  val QUIT : Command = new KeypressCommand(Seq('Q', 'y', ' '))
+  val QUIT : Command = new KeypressCommand(Seq('Q', 'y', ' ', ' '))
 
   /** Command to move left */
   val LEFT : Command = new KeypressCommand(Seq('h'))
