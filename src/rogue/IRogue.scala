@@ -1,7 +1,5 @@
 package rogue
 
-import model.IScreenObserver
-
 /** Interface for the Rogue process.
  *
  * The Rogue process is an observable that broadcasts the screen every time it updates. Subscribe all the observers

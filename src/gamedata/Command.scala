@@ -1,17 +1,17 @@
 package gamedata
 
+import rogue.IRogue
+
 trait Command {
-  def keypresses: Seq[Char]
+  def perform(rogue: IRogue): Unit
 }
 
 object Command {
-
-  object QUIT extends Command {
-    override def keypresses: Seq[Char] = Seq('Q', 'y', ' ')
+  private class KeypressCommand(keypresses : Seq[Char]) extends Command {
+    override def perform(rogue: IRogue): Unit = keypresses.foreach(rogue.sendKeypress)
   }
 
-  object LEFT extends Command {
-    override def keypresses: Seq[Char] = Seq('h')
-  }
+  val QUIT : Command = new KeypressCommand(Seq('Q', 'y', ' '))
 
+  val LEFT : Command = new KeypressCommand(Seq('h'))
 }

@@ -1,10 +1,9 @@
 package integration
 
 import gamedata.Command
-import model.{IRoguePlayer, IScreenObserver, RoguePlayer}
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
-import rogue.IRogue
+import rogue.{IRogue, IScreenObserver}
 import view.IView
 
 class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen {
@@ -278,7 +277,6 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen {
         def seenGameOverScreen: Boolean = state.seenGameOverScreen
       }
 
-      val player : IRoguePlayer = new RoguePlayer(MockRogue)
       MockRogue.addScreenObserver(MockUser)
       MockRogue.startGame()
 
@@ -286,7 +284,7 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen {
       assert(MockUser.seenFirstScreen)
 
       When("the user enters the command to quit")
-      player.performCommand(Command.QUIT)
+      Command.QUIT.perform(MockRogue)
 
       Then("Rogue should receive the command to quit")
       assert(MockRogue.receivedQuitCommand)

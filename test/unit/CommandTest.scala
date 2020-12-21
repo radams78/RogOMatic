@@ -1,13 +1,12 @@
 package unit
 
 import gamedata.Command
-import model.{IScreenObserver, RoguePlayer}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers._
-import rogue.IRogue
+import rogue.{IRogue, IScreenObserver}
 
-class RoguePlayerTest extends AnyFlatSpec {
-  "A RoguePlayer" should "pass on commands to Rogue" in {
+class CommandTest extends AnyFlatSpec {
+  "A command" should "send its keypresses to Rogue" in {
     object MockRogue extends IRogue {
       private var _receivedKeypress = false
 
@@ -23,8 +22,7 @@ class RoguePlayerTest extends AnyFlatSpec {
       override def startGame(): Unit = ()
     }
 
-    val player = new RoguePlayer(MockRogue)
-    player.performCommand(Command.LEFT)
+    Command.LEFT.perform(MockRogue)
     MockRogue should be(Symbol("receivedCommand"))
   }
 }
