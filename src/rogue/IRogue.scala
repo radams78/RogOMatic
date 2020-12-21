@@ -1,6 +1,6 @@
 package rogue
 
-import model.{IScreenObserver, RoguePlayer}
+import model.IScreenObserver
 
 trait IRogue {
   def addScreenObserver(observer: IScreenObserver): Unit
