@@ -5,7 +5,7 @@ import model.{IGameOverObserver, Sensor}
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
-import rogue.{IRogue, IScreenObserver}
+import rogue.{IRogue, IScreenObserver, Screen}
 
 class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matchers {
   Feature("Transparent Mode") {
@@ -38,8 +38,7 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
           |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
           |"""
           
-      val screen1lines: Array[String] =
-        screen1.stripMargin.split("\n").map(_.padTo(80, ' '))
+      val screen1lines: Screen = Screen.makeScreen(screen1)
 
       val screen2: String =
         """                                                a) some food
@@ -68,7 +67,7 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
           |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
           |"""
 
-      val screen2lines = screen2.stripMargin.split("\n").map(_.padTo(80, ' '))
+      val screen2lines = Screen.makeScreen(screen2)
 
       val screen3 =
         """really quit?
@@ -97,7 +96,7 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
           |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
           |"""
 
-      val screen3lines = screen3.stripMargin.split("\n").map(_.padTo(80, ' '))
+      val screen3lines = Screen.makeScreen(screen3)
 
       val screen4 =
         """quit with 0 gold-more-
@@ -126,7 +125,7 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
           |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
           |"""
 
-      val screen4lines = screen4.stripMargin.split("\n").map(_.padTo(80, ' '))
+      val screen4lines = Screen.makeScreen(screen4)
 
       val screen5 =
         """-more-
@@ -155,14 +154,14 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
           |
           |"""
 
-      val screen5lines = screen5.stripMargin.split("\n").map(_.padTo(80, ' '))
+      val screen5lines = Screen.makeScreen(screen5)
 
       object MockRogue extends IRogue {
         def addScreenObserver(observer: IScreenObserver): Unit = _screenObserver = Some(observer)
 
 
         private trait MockRogueState {
-          def readScreen: Seq[String]
+          def readScreen: Screen
 
           def transitions: Map[Char, MockRogueState]
 
@@ -175,37 +174,37 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
         }
 
         private object StateOne extends MockRogueState {
-          override def readScreen: Seq[String] = screen1lines
+          override def readScreen: Screen = screen1lines
 
           override def transitions: Map[Char, MockRogueState] = Map('i' -> StateTwo, 'Q' -> StateThree)
         }
 
         private object StateTwo extends MockRogueState {
-          override def readScreen: Seq[String] = screen2lines
+          override def readScreen: Screen = screen2lines
 
           override def transitions: Map[Char, MockRogueState] = Map(' ' -> StateOne)
         }
 
         private object StateThree extends MockRogueState {
-          override def readScreen: Seq[String] = screen3lines
+          override def readScreen: Screen = screen3lines
 
           override def transitions: Map[Char, MockRogueState] = Map('y' -> StateFour)
         }
 
         private object StateFour extends MockRogueState {
-          override def readScreen: Seq[String] = screen4lines
+          override def readScreen: Screen = screen4lines
 
           override def transitions: Map[Char, MockRogueState] = Map(' ' -> StateFive)
         }
 
         private object StateFive extends MockRogueState {
-          override def readScreen: Seq[String] = screen5lines
+          override def readScreen: Screen = screen5lines
 
           override def transitions: Map[Char, MockRogueState] = Map(' ' -> StateSix)
         }
 
         private object StateSix extends MockRogueState {
-          override def readScreen: Seq[String] = fail("Attempted to read screen after Rogue process ended")
+          override def readScreen: Screen = fail("Attempted to read screen after Rogue process ended")
 
           override def transitions: Map[Char, MockRogueState] = Map()
 
@@ -230,13 +229,13 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
 
           def seenFirstScreen: Boolean = false
 
-          def notify(screen: Seq[String]): MockUserState
+          def notify(screen: Screen): MockUserState
 
           def notifyGameOver(score: Int): MockUserState
         }
 
         private object StateOne extends MockUserState {
-          override def notify(screen: Seq[String]): MockUserState = {
+          override def notify(screen: Screen): MockUserState = {
             assert(screen === screen1lines || screen === screen2lines)
             StateTwo
           }
@@ -247,7 +246,7 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
         }
 
         private object StateTwo extends MockUserState {
-          override def notify(screen: Seq[String]): MockUserState = {
+          override def notify(screen: Screen): MockUserState = {
             assert(screen === screen1lines || screen === screen2lines || screen === screen3lines || screen === screen4lines || screen === screen5lines)
             this
           }
@@ -258,7 +257,7 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
         }
 
         private object StateThree extends MockUserState {
-          override def notify(screen: Seq[String]): MockUserState =
+          override def notify(screen: Screen): MockUserState =
             fail("Received screen after game should be over")
 
           override def notifyGameOver(score: Int): MockUserState =
@@ -271,7 +270,7 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
 
         private var state: MockUserState = StateOne: MockUserState
 
-        override def notify(screen: Seq[String]): Unit = state = state.notify(screen)
+        override def notify(screen: Screen): Unit = state = state.notify(screen)
 
         def seenFirstScreen: Boolean = state.seenFirstScreen
 

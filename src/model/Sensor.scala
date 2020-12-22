@@ -1,6 +1,6 @@
 package model
 
-import rogue.IScreenObserver
+import rogue.{IScreenObserver, Screen}
 
 import scala.util.matching.Regex
 
@@ -14,16 +14,11 @@ class Sensor extends IScreenObserver {
   /** Add an observer that listens for the message that the game is over */
   def addGameOverObserver(observer: IGameOverObserver): Unit = observers :+= observer
 
-  override def notify(screen: Seq[String]): Unit = {
-    for (score <- scoreLine.findFirstMatchIn(
-      screen.headOption
-        .getOrElse(throw new BadScreenFormatException("Notified of empty screen"))
-    )) {
+  override def notify(screen: Screen): Unit = {
+    for (score <- scoreLine.findFirstMatchIn(screen.firstLine)) {
       _score = Some(score.group("score").toInt)
     }
-    if (screen.lastOption
-    .getOrElse(throw new BadScreenFormatException("Notified of empty screen"))
-    .forall(_ == ' '))
+    if (screen.lastLine.forall(_ == ' '))
       for (observer <- observers)
         observer.notifyGameOver(_score.getOrElse(throw new BadGameOverException("Game over screen received without final score")))
   }

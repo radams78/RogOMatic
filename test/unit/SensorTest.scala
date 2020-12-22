@@ -3,7 +3,7 @@ package unit
 import model.{IGameOverObserver, Sensor}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import services.ScreenFactory
+import rogue.Screen
 
 class SensorTest extends AnyFlatSpec with Matchers {
   "A sensor" should "recognize a game over screen" in {
@@ -36,7 +36,7 @@ class SensorTest extends AnyFlatSpec with Matchers {
         |Level: 1  Gold: 20      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
         |"""
 
-    val screen4lines = ScreenFactory.makeScreen(screen4)
+    val screen4lines = Screen.makeScreen(screen4)
 
     val screen5 =
       """-more-
@@ -65,7 +65,7 @@ class SensorTest extends AnyFlatSpec with Matchers {
         |
         |"""
 
-    val screen5lines = ScreenFactory.makeScreen(screen5)
+    val screen5lines = Screen.makeScreen(screen5)
 
     object MockObserver extends IGameOverObserver {
       private var _seenGameOverScreen: Boolean = false
