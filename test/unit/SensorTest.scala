@@ -35,7 +35,7 @@ class SensorTest extends AnyFlatSpec with Matchers {
         |Level: 1  Gold: 20      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
         |"""
 
-    val screen4lines = screen4.stripMargin.split("\n").map(_.padTo(80, ' '))
+    val screen4lines = makeScreen(screen4)
 
     val screen5 =
       """-more-
@@ -83,4 +83,11 @@ class SensorTest extends AnyFlatSpec with Matchers {
     MockObserver should be(Symbol("seenGameOverScreen"))
   }
 
+  private def makeScreen(screenContents: String) = {
+    screenContents
+      .stripMargin
+      .split("\n")
+      .padTo(24, "")
+      .map(_.padTo(80, ' '))
+  }
 }
