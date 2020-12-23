@@ -7,6 +7,11 @@ class Screen(private val lines : Seq[String]) {
   lazy val firstLine : String = lines.head
 
   lazy val lastLine : String = lines.last
+
+  override def equals(obj: Any): Boolean = obj match {
+    case screen : Screen => lines == screen.lines
+    case _ => false
+  }
 }
 
 object Screen {
