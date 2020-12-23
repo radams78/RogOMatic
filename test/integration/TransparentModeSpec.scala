@@ -10,7 +10,6 @@ import rogue.{IRogue, IScreenObserver, Screen}
 class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matchers {
   Feature("Transparent Mode") {
     Scenario("User quits immediately") {
-      Given("a new game of Rogue")
       val screen1: String =
         """
           |
@@ -282,6 +281,7 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
         override def notifyGameOver(score: Int): Unit = state = state.notifyGameOver(score)
       }
 
+      Given("a new game of Rogue")
       val sensor = new Sensor
       MockRogue.addScreenObserver(sensor)
       MockRogue.addScreenObserver(MockUser)
