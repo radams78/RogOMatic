@@ -14,13 +14,21 @@ class Sensor extends IScreenObserver {
   /** Add an observer that listens for the message that the game is over */
   def addGameOverObserver(observer: IGameOverObserver): Unit = observers :+= observer
 
-  override def notify(screen: Screen): Unit = {
+  override def notify(screen: Screen): Unit = parseScreen(screen)
+
+  private def parseScreen(screen: Screen): Unit = {
+
     for (score <- scoreLine.findFirstMatchIn(screen.firstLine)) {
       _score = Some(score.group("score").toInt)
     }
-    if (screen.lastLine.forall(_ == ' '))
+    if (isGameOverSreen(screen))
       for (observer <- observers)
         observer.notifyGameOver(_score.getOrElse(throw new BadGameOverException("Game over screen received without final score")))
+
+  }
+
+  private def isGameOverSreen(screen: Screen) = {
+    screen.lastLine.forall(_ == ' ')
   }
 }
 
