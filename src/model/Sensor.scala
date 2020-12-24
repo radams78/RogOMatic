@@ -18,15 +18,20 @@ class Sensor extends IScreenObserver {
 
   private def parseScreen(screen: Screen): Unit = {
 
-    for (score <- scoreLine.findFirstMatchIn(screen.firstLine)) {
-      _score = Some(score.group("score").toInt)
-    }
     if (isGameOverSreen(screen))
-      parseGameOverScreen()
+      parseGameOverScreen(screen)
+    else
+      parseNormalScreen(screen)
 
   }
 
-  private def parseGameOverScreen(): Unit = {
+  private def parseNormalScreen(screen: Screen): Unit = {
+    for (score <- scoreLine.findFirstMatchIn(screen.firstLine)) {
+      _score = Some(score.group("score").toInt)
+    }
+  }
+
+  private def parseGameOverScreen(screen: Screen): Unit = {
     for (observer <- observers)
       observer.notifyGameOver(_score.getOrElse(throw new BadGameOverException("Game over screen received without final score")))
   }
