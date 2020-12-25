@@ -53,9 +53,6 @@ class Sensor extends IScreenObserver {
 }
 
 object Sensor {
+  // Regex for parsing message about final score
   private val scoreLine: Regex = """with (?<score>\d+) gold""".r
 }
-
-class BadScreenFormatException(message: String) extends Exception(message)
-
-class BadGameOverException(message: String) extends Exception(message)
