@@ -40,7 +40,7 @@ class SensorTest extends AnyFlatSpec with Matchers {
 
       def seenScore: Boolean = _seenScore
 
-      override def notify(score: Int): Unit = {
+      override def notifyScore(score: Int): Unit = {
         score should be(20)
         _seenScore = true
       }

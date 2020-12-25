@@ -47,7 +47,7 @@ class Sensor extends IScreenObserver {
 
   private def notifyScore(score: Int): Unit = {
     for (observer <- scoreObservers)
-      observer.notify(score)
+      observer.notifyScore(score)
   }
 
 }

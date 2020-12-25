@@ -236,7 +236,7 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
         /** Notify the observer that the game is over */
         override def notifyGameOver(): Unit = _seenGameOverScreen = true
 
-        override def notify(score: Int): Unit = _score = Some(score)
+        override def notifyScore(score: Int): Unit = _score = Some(score)
       }
 
       Given("a new game of Rogue")
