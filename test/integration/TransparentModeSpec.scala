@@ -97,7 +97,7 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
 
       val screen3 = Screen.makeScreen(screen3contents)
 
-      val screen4 =
+      val screen4contents =
         """quit with 0 gold-more-
           |
           |
@@ -124,7 +124,7 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
           |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
           |"""
 
-      val screen4lines = Screen.makeScreen(screen4)
+      val screen4lines = Screen.makeScreen(screen4contents)
 
       val screen5 =
         """-more-
