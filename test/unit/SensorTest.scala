@@ -7,8 +7,6 @@ import rogue.Screen
 
 class SensorTest extends AnyFlatSpec with Matchers {
   "A sensor" should "report the final score" in {
-    val sensor: Sensor = new Sensor
-
     val screenContents: String =
       """quit with 20 gold-more-
         |
@@ -35,23 +33,23 @@ class SensorTest extends AnyFlatSpec with Matchers {
         |                                                      -------------------
         |Level: 1  Gold: 20      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0""".stripMargin
 
-      val screen = Screen.makeScreen(screenContents)
+    val screen = Screen.makeScreen(screenContents)
 
-      object MockObserver extends IScoreObserver {
-        private var _seenScore = false
+    object MockObserver extends IScoreObserver {
+      private var _seenScore = false
 
-        def seenScore: Boolean = _seenScore
+      def seenScore: Boolean = _seenScore
 
-        override def notify(score: Int): Unit = {
-          score should be(20)
-          _seenScore = true
-        }
+      override def notify(score: Int): Unit = {
+        score should be(20)
+        _seenScore = true
       }
+    }
 
-      sensor.addScoreObserver(MockObserver)
-      sensor.notify(screen)
-      MockObserver should be(Symbol("seenScore"))
-
+    val sensor: Sensor = new Sensor
+    sensor.addScoreObserver(MockObserver)
+    sensor.notify(screen)
+    MockObserver should be(Symbol("seenScore"))
   }
 
   "A sensor" should "recognize a game over screen" in {
