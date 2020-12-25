@@ -9,8 +9,6 @@ class Sensor extends IScreenObserver {
   private var gameOverObservers: Seq[IGameOverObserver] = Seq()
   private var scoreObservers: Seq[IScoreObserver] = Seq()
 
-  private val scoreLine: Regex = """with (?<score>\d+) gold""".r
-
   /** Add an observer that listens for the message that the game is over */
   def addGameOverObserver(observer: IGameOverObserver): Unit = gameOverObservers :+= observer
 
@@ -28,7 +26,7 @@ class Sensor extends IScreenObserver {
   }
 
   private def parseNormalScreen(screen: Screen): Unit = {
-    for (score <- scoreLine.findFirstMatchIn(screen.firstLine)) {
+    for (score <- Sensor.scoreLine.findFirstMatchIn(screen.firstLine)) {
       for (observer <- scoreObservers)
         observer.notify(score.group("score").toInt)
     }
@@ -42,6 +40,10 @@ class Sensor extends IScreenObserver {
   private def isGameOverSreen(screen: Screen) = {
     screen.lastLine.forall(_ == ' ')
   }
+}
+
+object Sensor {
+  private val scoreLine: Regex = """with (?<score>\d+) gold""".r
 }
 
 class BadScreenFormatException(message: String) extends Exception(message)
