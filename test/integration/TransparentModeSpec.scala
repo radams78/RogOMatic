@@ -39,7 +39,7 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
           
       val screen1: Screen = Screen.makeScreen(screen1contents)
 
-      val screen2: String =
+      val screen2contents: String =
         """                                                a) some food
           |                                                b) +1 ring mail [4] being worn
           |                                                c) a +1,+1 mace in hand
@@ -66,7 +66,7 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
           |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
           |"""
 
-      val screen2lines = Screen.makeScreen(screen2)
+      val screen2lines = Screen.makeScreen(screen2contents)
 
       val screen3 =
         """really quit?
