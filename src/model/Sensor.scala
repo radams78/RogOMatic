@@ -12,6 +12,7 @@ class Sensor extends IScreenObserver {
   /** Add an observer that listens for the message that the game is over */
   def addGameOverObserver(observer: IGameOverObserver): Unit = gameOverObservers :+= observer
 
+  /** Add an observer that listens for the message about the final score */
   def addScoreObserver(observer: IScoreObserver): Unit = scoreObservers :+= observer
 
   override def notify(screen: Screen): Unit = parseScreen(screen)
