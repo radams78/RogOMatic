@@ -80,7 +80,7 @@ class SensorTest extends AnyFlatSpec with Matchers {
         |
         |"""
 
-    val screen5lines = Screen.makeScreen(screenContents)
+    val screen = Screen.makeScreen(screenContents)
 
     object MockObserver extends IGameOverObserver {
       private var _seenGameOverScreen: Boolean = false
@@ -94,7 +94,7 @@ class SensorTest extends AnyFlatSpec with Matchers {
 
     val sensor: Sensor = new Sensor
     sensor.addGameOverObserver(MockObserver)
-    sensor.notify(screen5lines)
+    sensor.notify(screen)
     MockObserver should be(Symbol("seenGameOverScreen"))
   }
 }
