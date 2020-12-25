@@ -10,7 +10,7 @@ import rogue.{IRogue, IScreenObserver, Screen}
 class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matchers {
   Feature("Transparent Mode") {
     Scenario("User quits immediately") {
-      val screen1: String =
+      val screen1contents: String =
         """
           |
           |
@@ -37,7 +37,7 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
           |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
           |"""
           
-      val screen1lines: Screen = Screen.makeScreen(screen1)
+      val screen1lines: Screen = Screen.makeScreen(screen1contents)
 
       val screen2: String =
         """                                                a) some food
