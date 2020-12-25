@@ -124,7 +124,7 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
           |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
           |"""
 
-      val screen4lines = Screen.makeScreen(screen4contents)
+      val screen4 = Screen.makeScreen(screen4contents)
 
       val screen5 =
         """-more-
@@ -190,7 +190,7 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
         }
 
         private object StateFour extends MockRogueState {
-          override def readScreen: Option[Screen] = Some(screen4lines)
+          override def readScreen: Option[Screen] = Some(screen4)
 
           override def transitions: Map[Char, MockRogueState] = Map(' ' -> StateFive)
         }
