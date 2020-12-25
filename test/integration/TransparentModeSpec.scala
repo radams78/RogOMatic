@@ -1,7 +1,7 @@
 package integration
 
 import gamedata.Command
-import model.{IGameOverObserver, Sensor}
+import model.{IGameOverObserver, IScoreObserver, Sensor}
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
@@ -221,62 +221,22 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
         override def startGame(): Unit = for (observer <- _screenObserver) observer.notify(state.readScreen)
       }
 
-      object MockUser extends IScreenObserver with IGameOverObserver {
+      object MockUser extends IScreenObserver with IGameOverObserver with IScoreObserver {
+        private var _seenGameOverScreen: Boolean = false
+        private var _seenFirstScreen: Boolean = false
+        private var _score: Option[Int] = None
 
-        private trait MockUserState {
-          def seenGameOverScreen: Boolean = false
+        def getScore: Int = _score.getOrElse(fail("getScore called before score seen"))
+        def seenGameOverScreen: Boolean = _seenGameOverScreen
+        def seenFirstScreen: Boolean = _seenFirstScreen
 
-          def seenFirstScreen: Boolean = false
-
-          def notify(screen: Screen): MockUserState
-
-          def notifyGameOver: MockUserState
-        }
-
-        private object StateOne extends MockUserState {
-          override def notify(screen: Screen): MockUserState = {
-            assert(screen === screen1lines || screen === screen2lines)
-            StateTwo
-          }
-
-
-          override def notifyGameOver: MockUserState =
-            fail("Received game over message unexpectedly")
-        }
-
-        private object StateTwo extends MockUserState {
-          override def notify(screen: Screen): MockUserState = {
-            assert(screen === screen1lines || screen === screen2lines || screen === screen3lines || screen === screen4lines || screen === screen5lines)
-            this
-          }
-
-          override def notifyGameOver: MockUserState = StateThree
-
-          override def seenFirstScreen: Boolean = true
-        }
-
-        private object StateThree extends MockUserState {
-          override def notify(screen: Screen): MockUserState =
-            fail("Received screen after game should be over")
-
-          override def notifyGameOver: MockUserState =
-            fail("Received game over message twice")
-
-          override def seenFirstScreen: Boolean = true
-
-          override def seenGameOverScreen: Boolean = true
-        }
-
-        private var state: MockUserState = StateOne: MockUserState
-
-        override def notify(screen: Screen): Unit = state = state.notify(screen)
-
-        def seenFirstScreen: Boolean = state.seenFirstScreen
-
-        def seenGameOverScreen: Boolean = state.seenGameOverScreen
+        /** Notify all observers that this is the screen displayed by Rogue */
+        override def notify(screen: Screen): Unit = if (screen == screen1lines) _seenFirstScreen = true
 
         /** Notify the observer that the game is over */
-        override def notifyGameOver(): Unit = state = state.notifyGameOver
+        override def notifyGameOver(): Unit = _seenGameOverScreen = true
+
+        override def notify(score: Int): Unit = _score = Some(score)
       }
 
       Given("a new game of Rogue")
@@ -294,6 +254,9 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
 
       Then("Rogue should receive the command to quit")
       MockRogue should be(Symbol("receivedQuitCommand"))
+
+      And("the user should see the final score")
+      MockUser.getScore should be(0)
 
       And("the user should see the game over message")
       MockUser should be(Symbol("seenGameOverScreen"))
