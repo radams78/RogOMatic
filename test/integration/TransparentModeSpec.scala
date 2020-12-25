@@ -126,7 +126,7 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
 
       val screen4 = Screen.makeScreen(screen4contents)
 
-      val screen5 =
+      val screen5contents =
         """-more-
           |
           |
@@ -153,7 +153,7 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
           |
           |"""
 
-      val screen5lines = Screen.makeScreen(screen5)
+      val screen5lines = Screen.makeScreen(screen5contents)
 
       object MockRogue extends IRogue {
         def addScreenObserver(observer: IScreenObserver): Unit = screenObservers = screenObservers + observer
