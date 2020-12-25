@@ -8,7 +8,6 @@ import scala.util.matching.Regex
 class Sensor extends IScreenObserver {
   private var gameOverObservers: Seq[IGameOverObserver] = Seq()
   private var scoreObservers: Seq[IScoreObserver] = Seq()
-  private var _score : Option[Int] = None
 
   private val scoreLine: Regex = """with (?<score>\d+) gold""".r
 
@@ -28,13 +27,14 @@ class Sensor extends IScreenObserver {
 
   private def parseNormalScreen(screen: Screen): Unit = {
     for (score <- scoreLine.findFirstMatchIn(screen.firstLine)) {
-      _score = Some(score.group("score").toInt)
+      for (observer <- scoreObservers)
+        observer.notify(score.group("score").toInt)
     }
   }
 
   private def parseGameOverScreen(screen: Screen): Unit = {
     for (observer <- gameOverObservers)
-      observer.notifyGameOver(_score.getOrElse(throw new BadGameOverException("Game over screen received without final score")))
+      observer.notifyGameOver()
   }
 
   private def isGameOverSreen(screen: Screen) = {

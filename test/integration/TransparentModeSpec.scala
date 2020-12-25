@@ -230,7 +230,7 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
 
           def notify(screen: Screen): MockUserState
 
-          def notifyGameOver(score: Int): MockUserState
+          def notifyGameOver: MockUserState
         }
 
         private object StateOne extends MockUserState {
@@ -240,7 +240,7 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
           }
 
 
-          override def notifyGameOver(score: Int): MockUserState =
+          override def notifyGameOver: MockUserState =
             fail("Received game over message unexpectedly")
         }
 
@@ -250,7 +250,7 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
             this
           }
 
-          override def notifyGameOver(score: Int): MockUserState = StateThree
+          override def notifyGameOver: MockUserState = StateThree
 
           override def seenFirstScreen: Boolean = true
         }
@@ -259,7 +259,7 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
           override def notify(screen: Screen): MockUserState =
             fail("Received screen after game should be over")
 
-          override def notifyGameOver(score: Int): MockUserState =
+          override def notifyGameOver: MockUserState =
             fail("Received game over message twice")
 
           override def seenFirstScreen: Boolean = true
@@ -275,10 +275,8 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
 
         def seenGameOverScreen: Boolean = state.seenGameOverScreen
 
-        /** Notify the observer that the game is over
-         *
-         * @param score The final score */
-        override def notifyGameOver(score: Int): Unit = state = state.notifyGameOver(score)
+        /** Notify the observer that the game is over */
+        override def notifyGameOver(): Unit = state = state.notifyGameOver
       }
 
       Given("a new game of Rogue")

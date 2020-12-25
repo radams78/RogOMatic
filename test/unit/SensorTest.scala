@@ -72,8 +72,7 @@ class SensorTest extends AnyFlatSpec with Matchers {
 
       def seenGameOverScreen: Boolean = _seenGameOverScreen
 
-      override def notifyGameOver(score: Int): Unit = {
-        score should be(20)
+      override def notifyGameOver(): Unit = {
         _seenGameOverScreen = true
       }
     }
