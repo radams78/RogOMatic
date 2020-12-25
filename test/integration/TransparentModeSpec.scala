@@ -37,7 +37,7 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
           |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
           |"""
           
-      val screen1lines: Screen = Screen.makeScreen(screen1contents)
+      val screen1: Screen = Screen.makeScreen(screen1contents)
 
       val screen2: String =
         """                                                a) some food
@@ -172,7 +172,7 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
         }
 
         private object StateOne extends MockRogueState {
-          override def readScreen: Option[Screen] = Some(screen1lines)
+          override def readScreen: Option[Screen] = Some(screen1)
 
           override def transitions: Map[Char, MockRogueState] = Map('i' -> StateTwo, 'Q' -> StateThree)
         }
@@ -238,7 +238,7 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
         def seenFirstScreen: Boolean = _seenFirstScreen
 
         /** Notify all observers that this is the screen displayed by Rogue */
-        override def notify(screen: Screen): Unit = if (screen == screen1lines) _seenFirstScreen = true
+        override def notify(screen: Screen): Unit = if (screen == screen1) _seenFirstScreen = true
 
         /** Notify the observer that the game is over */
         override def notifyGameOver(): Unit = _seenGameOverScreen = true
