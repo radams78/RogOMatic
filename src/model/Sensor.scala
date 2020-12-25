@@ -26,20 +26,24 @@ class Sensor extends IScreenObserver {
 
   }
 
+  private def isGameOverSreen(screen: Screen) = {
+    screen.lastLine.forall(_ == ' ')
+  }
+
   private def parseNormalScreen(screen: Screen): Unit = {
     for (score <- Sensor.scoreLine.findFirstMatchIn(screen.firstLine)) {
-      for (observer <- scoreObservers)
-        observer.notify(score.group("score").toInt)
+      notifyScore(score.group("score").toInt)
     }
+  }
+
+  private def notifyScore(score: Int): Unit = {
+    for (observer <- scoreObservers)
+      observer.notify(score)
   }
 
   private def parseGameOverScreen(screen: Screen): Unit = {
     for (observer <- gameOverObservers)
       observer.notifyGameOver()
-  }
-
-  private def isGameOverSreen(screen: Screen) = {
-    screen.lastLine.forall(_ == ' ')
   }
 }
 
