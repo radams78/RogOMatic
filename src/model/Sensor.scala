@@ -36,15 +36,16 @@ class Sensor extends IScreenObserver {
     }
   }
 
+  private def parseGameOverScreen(screen: Screen): Unit = {
+    for (observer <- gameOverObservers)
+      observer.notifyGameOver()
+  }
+
   private def notifyScore(score: Int): Unit = {
     for (observer <- scoreObservers)
       observer.notify(score)
   }
 
-  private def parseGameOverScreen(screen: Screen): Unit = {
-    for (observer <- gameOverObservers)
-      observer.notifyGameOver()
-  }
 }
 
 object Sensor {
