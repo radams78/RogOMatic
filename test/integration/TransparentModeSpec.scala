@@ -1,18 +1,16 @@
 package integration
 
-import controller.IController
 import gamedata.Command
-import model.{IRoguePlayer, RoguePlayer}
+import model.{IGameOverObserver, IScoreObserver, Sensor}
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
-import rogue.IRogue
-import view.IView
+import org.scalatest.matchers.should.Matchers
+import rogue.{IRogue, IScreenObserver, Screen}
 
-class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen {
+class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matchers {
   Feature("Transparent Mode") {
     Scenario("User quits immediately") {
-      Given("a new game of Rogue")
-      val screen1: String =
+      val screen1contents: String =
         """
           |
           |
@@ -39,13 +37,129 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen {
           |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
           |"""
           
-      val screen1lines: Array[String] =
-        screen1.stripMargin.split("\n").map(_.padTo(80, ' '))
+      val screen1: Screen = Screen.makeScreen(screen1contents)
+
+      val screen2contents: String =
+        """                                                a) some food
+          |                                                b) +1 ring mail [4] being worn
+          |                                                c) a +1,+1 mace in hand
+          |                                                d) a +1,+0 short bow
+          |                                                e) 32 +0,+0 arrows
+          |                                                --press space to continue--
+          |
+          |
+          |                               ----------+---------
+          |                               |.........@....%...|
+          |                               +........?.........|
+          |                               |...............*..|
+          |                               |..!...............|
+          |                               |..................+
+          |                               -------+------------
+          |
+          |
+          |
+          |
+          |
+          |
+          |
+          |
+          |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
+          |"""
+
+      val screen2 = Screen.makeScreen(screen2contents)
+
+      val screen3contents =
+        """really quit?
+          |
+          |
+          |
+          |
+          |
+          |
+          |
+          |                               ----------+---------
+          |                               |.........@....%...|
+          |                               +........?.........|
+          |                               |...............*..|
+          |                               |..!...............|
+          |                               |..................+
+          |                               -------+------------
+          |
+          |
+          |
+          |
+          |
+          |
+          |
+          |
+          |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
+          |"""
+
+      val screen3 = Screen.makeScreen(screen3contents)
+
+      val screen4contents =
+        """quit with 0 gold-more-
+          |
+          |
+          |
+          |
+          |
+          |
+          |
+          |                               ----------+---------
+          |                               |.........@....%...|
+          |                               +........?.........|
+          |                               |...............*..|
+          |                               |..!...............|
+          |                               |..................+
+          |                               -------+------------
+          |
+          |
+          |
+          |
+          |
+          |
+          |
+          |
+          |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
+          |"""
+
+      val screen4 = Screen.makeScreen(screen4contents)
+
+      val screen5contents =
+        """-more-
+          |
+          |
+          |                              Top  Ten  Rogueists
+          |
+          |
+          |
+          |
+          |Rank   Score   Name
+          |
+          | 1      1224   robin: died of starvation on level 11
+          |
+          |
+          |
+          |
+          |
+          |
+          |
+          |
+          |
+          |
+          |
+          |
+          |
+          |"""
+
+      val screen5 = Screen.makeScreen(screen5contents)
 
       object MockRogue extends IRogue {
+        def addScreenObserver(observer: IScreenObserver): Unit = screenObservers = screenObservers + observer
 
         private trait MockRogueState {
-          def readScreen: Seq[String]
+          def readScreen: Option[Screen]
 
           def transitions: Map[Char, MockRogueState]
 
@@ -58,140 +172,37 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen {
         }
 
         private object StateOne extends MockRogueState {
-          override def readScreen: Seq[String] = screen1lines
+          override def readScreen: Option[Screen] = Some(screen1)
 
           override def transitions: Map[Char, MockRogueState] = Map('i' -> StateTwo, 'Q' -> StateThree)
         }
 
         private object StateTwo extends MockRogueState {
-          override def readScreen: Seq[String] = {
-            val screen2: String =
-              """                                                a) some food
-                |                                                b) +1 ring mail [4] being worn
-                |                                                c) a +1,+1 mace in hand
-                |                                                d) a +1,+0 short bow
-                |                                                e) 32 +0,+0 arrows
-                |                                                --press space to continue--
-                |
-                |
-                |                               ----------+---------
-                |                               |.........@....%...|
-                |                               +........?.........|
-                |                               |...............*..|
-                |                               |..!...............|
-                |                               |..................+
-                |                               -------+------------
-                |
-                |
-                |
-                |
-                |
-                |
-                |
-                |
-                |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
-                |"""
-            screen2.stripMargin.split("\n").map(_.padTo(80, ' '))
-          }
+          override def readScreen: Option[Screen] = Some(screen2)
 
           override def transitions: Map[Char, MockRogueState] = Map(' ' -> StateOne)
         }
 
         private object StateThree extends MockRogueState {
-          override def readScreen: Seq[String] =
-            """really quit? 
-              |
-              |
-              |
-              |
-              |
-              |
-              |
-              |                               ----------+---------
-              |                               |.........@....%...|
-              |                               +........?.........|
-              |                               |...............*..|
-              |                               |..!...............|
-              |                               |..................+
-              |                               -------+------------
-              |
-              |
-              |
-              |
-              |
-              |
-              |
-              |
-              |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
-              |""".stripMargin.split("\n").map(_.padTo(80, ' '))
+          override def readScreen: Option[Screen] = Some(screen3)
 
           override def transitions: Map[Char, MockRogueState] = Map('y' -> StateFour)
         }
 
         private object StateFour extends MockRogueState {
-          override def readScreen: Seq[String] =
-            """quit with 0 gold-more-
-              |
-              |
-              |
-              |
-              |
-              |
-              |
-              |                               ----------+---------
-              |                               |.........@....%...|
-              |                               +........?.........|
-              |                               |...............*..|
-              |                               |..!...............|
-              |                               |..................+
-              |                               -------+------------
-              |
-              |
-              |
-              |
-              |
-              |
-              |
-              |
-              |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
-              |""".stripMargin.split("\n").map(_.padTo(80, ' '))
+          override def readScreen: Option[Screen] = Some(screen4)
 
           override def transitions: Map[Char, MockRogueState] = Map(' ' -> StateFive)
         }
 
         private object StateFive extends MockRogueState {
-          override def readScreen: Seq[String] =
-            """-more-
-              |
-              |
-              |                              Top  Ten  Rogueists
-              |
-              |
-              |
-              |
-              |Rank   Score   Name
-              |
-              | 1      1224   robin: died of starvation on level 11
-              |
-              |
-              |
-              |
-              |
-              |
-              |
-              |
-              |
-              |
-              |
-              |
-              |
-              |""".stripMargin.split("\n").map(_.padTo(80, ' '))
+          override def readScreen: Option[Screen] = Some(screen5)
 
           override def transitions: Map[Char, MockRogueState] = Map(' ' -> StateSix)
         }
 
         private object StateSix extends MockRogueState {
-          override def readScreen: Seq[String] = fail("Attempted to read screen after Rogue process ended")
+          override def readScreen: Option[Screen] = None
 
           override def transitions: Map[Char, MockRogueState] = Map()
 
@@ -202,111 +213,61 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen {
 
         def receivedQuitCommand: Boolean = state.receivedQuitCommand
 
-        override def sendKeypress(keypress: Char): Unit = state = state.sendKeypress(keypress)
-
-        override def readScreen: Seq[String] = state.readScreen
-      }
-
-      object MockUser {
-
-        private trait MockUserState {
-          def seenGameOverScreen: Boolean = false
-
-          def seenFirstScreen: Boolean = false
-
-          def notify(screen: Seq[String]): MockUserState
-
-          def notifyGameOver(score: Int): MockUserState
+        override def sendKeypress(keypress: Char): Unit = {
+          state = state.sendKeypress(keypress)
+          for (observer <- screenObservers) {
+            for (screen <- state.readScreen)
+              observer.notify(screen)
+          }
         }
 
-        private object StateOne extends MockUserState {
-          override def notify(screen: Seq[String]): MockUserState = if (screen == screen1.toSeq) StateTwo else
-            fail("Unexpected screen:\n" + screen + "Expected:\n" +
-              """                                                a) some food
-                |                                                b) +1 ring mail [4] being worn
-                |                                                c) a +1,+1 mace in hand
-                |                                                d) a +1,+0 short bow
-                |                                                e) 32 +0,+0 arrows
-                |                                                --press space to continue--
-                |
-                |
-                |                               ----------+---------
-                |                               |.........@....%...|
-                |                               +........?.........|
-                |                               |...............*..|
-                |                               |..!...............|
-                |                               |..................+
-                |                               -------+------------
-                |
-                |
-                |
-                |
-                |
-                |
-                |
-                |
-                |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
-                |"""
-            )
+        var screenObservers: Set[IScreenObserver] = Set()
 
-          override def notifyGameOver(score: Int): MockUserState =
-            fail("Received game over message unexpectedly")
-        }
-
-        private object StateTwo extends MockUserState {
-          override def notify(screen: Seq[String]): MockUserState =
-            fail("Received screen after game should be over")
-
-          override def notifyGameOver(score: Int): MockUserState = StateThree
-
-          override def seenFirstScreen: Boolean = true
-        }
-
-        private object StateThree extends MockUserState {
-          override def notify(screen: Seq[String]): MockUserState =
-            fail("Received screen after game should be over")
-
-          override def notifyGameOver(score: Int): MockUserState =
-            fail("Received game over message twice")
-
-          override def seenFirstScreen: Boolean = true
-
-          override def seenGameOverScreen: Boolean = true
-        }
-
-        private var state: MockUserState = StateOne: MockUserState
-
-        def notify(screen: Seq[String]): Unit = state = state.notify(screen)
-
-        def seenFirstScreen: Boolean = state.seenFirstScreen
-
-        def seenGameOverScreen: Boolean = state.seenGameOverScreen
+        override def startGame(): Unit = for (observer <- screenObservers)
+          for (screen <- state.readScreen)
+            observer.notify(screen)
       }
 
-      object MockView extends IView {
-        override def notify(screen: Seq[String]): Unit = MockUser.notify(screen)
+      object MockUser extends IScreenObserver with IGameOverObserver with IScoreObserver {
+        private var _seenGameOverScreen: Boolean = false
+        private var _seenFirstScreen: Boolean = false
+        private var _score: Option[Int] = None
+
+        def getScore: Int = _score.getOrElse(fail("getScore called before score seen"))
+        def seenGameOverScreen: Boolean = _seenGameOverScreen
+        def seenFirstScreen: Boolean = _seenFirstScreen
+
+        /** Notify all observers that this is the screen displayed by Rogue */
+        override def notify(screen: Screen): Unit = if (screen == screen1) _seenFirstScreen = true
+
+        /** Notify the observer that the game is over */
+        override def notifyGameOver(): Unit = _seenGameOverScreen = true
+
+        override def notifyScore(score: Int): Unit = _score = Some(score)
       }
 
-      class MockController(player: IRoguePlayer) extends IController {
-        def performCommand(command: Command): Unit = player.performCommand(command: Command)
-      }
+      Given("a new game of Rogue")
+      val sensor = new Sensor
+      MockRogue.addScreenObserver(sensor)
+      MockRogue.addScreenObserver(MockUser)
+      sensor.addGameOverObserver(MockUser)
+      sensor.addScoreObserver(MockUser)
+      MockRogue.startGame()
 
-      val player : IRoguePlayer = new RoguePlayer(MockRogue)
-      player.addObserver(MockView)
-      val controller: IController = new MockController(player)
-      player.startGame()
-      
       Then("the user should see the first screen")
-      assert(MockUser.seenFirstScreen)
+      MockUser should be(Symbol("seenFirstScreen"))
 
       When("the user enters the command to quit")
-      controller.performCommand(Command.QUIT)
+      Command.QUIT.perform(MockRogue)
 
       Then("Rogue should receive the command to quit")
-      assert(MockRogue.receivedQuitCommand)
+      MockRogue should be(Symbol("receivedQuitCommand"))
+
+      And("the user should see the final score")
+      MockUser.getScore should be(0)
 
       And("the user should see the game over message")
-      assert(MockUser.seenGameOverScreen)
+      MockUser should be(Symbol("seenGameOverScreen"))
     }
 
   }
