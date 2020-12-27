@@ -1,7 +1,7 @@
 package integration
 
-import gamedata.Command
-import model.{IGameOverObserver, IScoreObserver, Sensor}
+import gamedata.{Command, Inventory, Slot}
+import model.{IGameOverObserver, IInventoryObserver, IScoreObserver, Sensor}
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
@@ -68,6 +68,18 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
 
       val screen2: Screen = Screen.makeScreen(screen2contents)
 
+      val inventory1 : Inventory = gamedata.Inventory(
+        Map(
+          Slot.A -> Food,
+          Slot.B -> RingMail(+1),
+          Slot.C -> Mace(+1, +1),
+          Slot.D -> ShortBow(+1, +0),
+          Slot.E -> Arrows(32, +0, +0)
+        ),
+        wearing = Slot.B,
+        wielding = Slot.C
+      )
+      
       val screen3contents: String =
         """really quit?
           |
@@ -233,6 +245,12 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
         def seenFirstScreen: Boolean = _seenFirstScreen
         override def notify(screen: Screen): Unit = if (screen == screen1) _seenFirstScreen = true
       }
+
+      object MockInventoryView extends IInventoryObserver {
+        private var _seenFirstInventory : Boolean = false
+        def seenFirstInventory : Boolean = _seenFirstInventory
+        override def notify(inventory : Inventory) : Unit = if (inventory == inventory1) _seenFirstInventory = true
+      }
       
       object MockScoreView extends IScoreObserver {
         private var _score : Option[Int] = None
@@ -250,6 +268,7 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
       val sensor: Sensor = new Sensor
       MockRogue.addScreenObserver(sensor)
       MockRogue.addScreenObserver(MockScreenView)
+      sensor.addInventoryObserver(MockInventoryView)
       sensor.addGameOverObserver(MockGameOverView)
       sensor.addScoreObserver(MockScoreView)
       MockRogue.startGame()
@@ -257,6 +276,9 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
       Then("the user should see the first screen")
       MockScreenView should be(Symbol("seenFirstScreen"))
 
+      And("the user should see the first inventory")
+      MockInventoryView should be(Symbol("seenFirstInventory"))
+      
       When("the user enters the command to quit")
       Command.QUIT.perform(MockRogue)
 

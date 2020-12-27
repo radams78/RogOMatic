@@ -1,0 +1,5 @@
+package gamedata
+
+trait Item {
+
+}

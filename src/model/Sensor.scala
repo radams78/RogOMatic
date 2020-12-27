@@ -6,6 +6,8 @@ import scala.util.matching.Regex
 
 /** Parse the information from the screen of Rogue and notify the relevant observers */
 class Sensor extends IScreenObserver {
+  def addInventoryObserver(observer: IInventoryObserver): Unit = ()
+
   private var gameOverObservers: Seq[IGameOverObserver] = Seq()
   private var scoreObservers: Seq[IScoreObserver] = Seq()
 
@@ -26,7 +28,7 @@ class Sensor extends IScreenObserver {
 
   }
 
-  private def isGameOverSreen(screen: Screen) = {
+  private def isGameOverSreen(screen: Screen): Boolean = {
     screen.lastLine.forall(_ == ' ')
   }
 
