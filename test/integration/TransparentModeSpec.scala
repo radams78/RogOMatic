@@ -35,7 +35,7 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
           |
           |
           |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
-          |"""
+          |""".stripMargin
           
       val screen1: Screen = Screen.makeScreen(screen1contents)
 
@@ -64,11 +64,11 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
           |
           |
           |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
-          |"""
+          |""".stripMargin
 
-      val screen2 = Screen.makeScreen(screen2contents)
+      val screen2: Screen = Screen.makeScreen(screen2contents)
 
-      val screen3contents =
+      val screen3contents: String =
         """really quit?
           |
           |
@@ -93,11 +93,11 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
           |
           |
           |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
-          |"""
+          |""".stripMargin
 
-      val screen3 = Screen.makeScreen(screen3contents)
+      val screen3: Screen = Screen.makeScreen(screen3contents)
 
-      val screen4contents =
+      val screen4contents: String =
         """quit with 0 gold-more-
           |
           |
@@ -122,11 +122,11 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
           |
           |
           |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
-          |"""
+          |""".stripMargin
 
-      val screen4 = Screen.makeScreen(screen4contents)
+      val screen4: Screen = Screen.makeScreen(screen4contents)
 
-      val screen5contents =
+      val screen5contents: String =
         """-more-
           |
           |
@@ -151,9 +151,9 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
           |
           |
           |
-          |"""
+          |""".stripMargin
 
-      val screen5 = Screen.makeScreen(screen5contents)
+      val screen5: Screen = Screen.makeScreen(screen5contents)
 
       object MockRogue extends IRogue {
         def addScreenObserver(observer: IScreenObserver): Unit = screenObservers = screenObservers + observer
@@ -247,7 +247,7 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
       }
 
       Given("a new game of Rogue")
-      val sensor = new Sensor
+      val sensor: Sensor = new Sensor
       MockRogue.addScreenObserver(sensor)
       MockRogue.addScreenObserver(MockUser)
       sensor.addGameOverObserver(MockUser)

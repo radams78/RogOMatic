@@ -20,11 +20,13 @@ class Screen(private val lines : Seq[String]) {
     case screen : Screen => lines == screen.lines
     case _ => false
   }
+
+  override def toString: String = lines.mkString("\n")
 }
 
 object Screen {
-  private val SCREEN_HEIGHT = 24
-  private val SCREEN_WIDTH = 80
+  private val SCREEN_HEIGHT: Int = 24
+  private val SCREEN_WIDTH: Int = 80
 
   /** Create a [[Screen]] from the given string.
    *
@@ -34,7 +36,6 @@ object Screen {
    * @param screenContents The contents of the screen as a single string, with lines separated by \n */
   def makeScreen(screenContents: String): Screen = new Screen(
     screenContents
-      .stripMargin
       .split("\n")
       .padTo(SCREEN_HEIGHT, "")
       .map(_.padTo(SCREEN_WIDTH, ' '))

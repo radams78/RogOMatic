@@ -8,7 +8,10 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="org.scalatest:scalatest_2.13:3.2.2" level="project" />
-    <orderEntry type="library" name="scala-sdk-2.13.4" level="application" />
+    <orderEntry type="library" exported="" name="org.scalatest:scalatest_2.13:3.2.2" level="project" />
+    <orderEntry type="library" exported="" name="scala-sdk-2.13.4" level="application" />
+    <orderEntry type="library" name="scala-sdk-2.13.1" level="application" />
+    <orderEntry type="library" name="org.jetbrains.jediterm:jediterm-pty:2.33" level="project" />
+    <orderEntry type="library" name="org.jetbrains.pty4j:pty4j:0.9.3" level="project" />
   </component>
 </module>
