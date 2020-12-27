@@ -228,34 +228,34 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
             observer.notify(screen)
       }
 
-      object MockUser extends IScreenObserver with IGameOverObserver with IScoreObserver {
-        private var _seenGameOverScreen: Boolean = false
-        private var _seenFirstScreen: Boolean = false
-        private var _score: Option[Int] = None
-
-        def getScore: Int = _score.getOrElse(fail("getScore called before score seen"))
-        def seenGameOverScreen: Boolean = _seenGameOverScreen
+      object MockScreenView extends IScreenObserver {
+        private var _seenFirstScreen : Boolean = false
         def seenFirstScreen: Boolean = _seenFirstScreen
-
-        /** Notify all observers that this is the screen displayed by Rogue */
         override def notify(screen: Screen): Unit = if (screen == screen1) _seenFirstScreen = true
-
-        /** Notify the observer that the game is over */
-        override def notifyGameOver(): Unit = _seenGameOverScreen = true
-
+      }
+      
+      object MockScoreView extends IScoreObserver {
+        private var _score : Option[Int] = None
+        def getScore : Int = _score.getOrElse(fail("getScore called before score seen"))
         override def notifyScore(score: Int): Unit = _score = Some(score)
       }
-
+      
+      object MockGameOverView extends IGameOverObserver {
+        private var _seenGameOverScreen : Boolean = false
+        def seenGameOverScreen : Boolean = _seenGameOverScreen
+        override def notifyGameOver(): Unit = _seenGameOverScreen = true
+      }
+      
       Given("a new game of Rogue")
       val sensor: Sensor = new Sensor
       MockRogue.addScreenObserver(sensor)
-      MockRogue.addScreenObserver(MockUser)
-      sensor.addGameOverObserver(MockUser)
-      sensor.addScoreObserver(MockUser)
+      MockRogue.addScreenObserver(MockScreenView)
+      sensor.addGameOverObserver(MockGameOverView)
+      sensor.addScoreObserver(MockScoreView)
       MockRogue.startGame()
 
       Then("the user should see the first screen")
-      MockUser should be(Symbol("seenFirstScreen"))
+      MockScreenView should be(Symbol("seenFirstScreen"))
 
       When("the user enters the command to quit")
       Command.QUIT.perform(MockRogue)
@@ -264,10 +264,10 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
       MockRogue should be(Symbol("receivedQuitCommand"))
 
       And("the user should see the final score")
-      MockUser.getScore should be(0)
+      MockScoreView.getScore should be(0)
 
       And("the user should see the game over message")
-      MockUser should be(Symbol("seenGameOverScreen"))
+      MockGameOverView should be(Symbol("seenGameOverScreen"))
     }
 
   }
