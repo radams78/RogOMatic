@@ -30,7 +30,7 @@ class Sensor(rogue: IRogue, inventoryParser : IInventoryParser) extends IScreenO
     state.init()
   }
 
-  trait State {
+  private trait State {
     def nextState(screen: Screen): State
 
     def init(): Unit = ()
@@ -39,7 +39,7 @@ class Sensor(rogue: IRogue, inventoryParser : IInventoryParser) extends IScreenO
 
   }
 
-  object Ready extends State {
+  private object Ready extends State {
     def addObserver(observer: IScoreObserver): Unit = scoreObservers = scoreObservers + observer
 
     private var scoreObservers: Set[IScoreObserver] = Set()
@@ -66,7 +66,7 @@ class Sensor(rogue: IRogue, inventoryParser : IInventoryParser) extends IScreenO
     }
   }
 
-  object GameOver extends State {
+  private object GameOver extends State {
     private var gameOverObservers: Set[IGameOverObserver] = Set()
 
     def addObserver(observer: IGameOverObserver): Unit = gameOverObservers = gameOverObservers + observer
@@ -83,7 +83,7 @@ class Sensor(rogue: IRogue, inventoryParser : IInventoryParser) extends IScreenO
     override def nextState(screen: Screen): State = this
   }
 
-  object Inventory extends State {
+  private object Inventory extends State {
     def addObserver(observer: IInventoryObserver): Unit = inventoryObservers = inventoryObservers + observer
 
     private var inventoryObservers: Set[IInventoryObserver] = Set()
@@ -101,7 +101,7 @@ class Sensor(rogue: IRogue, inventoryParser : IInventoryParser) extends IScreenO
     override def nextState(screen: Screen): State = CancelInventory
   }
 
-  object CancelInventory extends State {
+  private object CancelInventory extends State {
     
     override def parseScreen(screen: Screen): Unit = ()
 
