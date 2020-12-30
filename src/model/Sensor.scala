@@ -12,7 +12,7 @@ class Sensor(rogue: IRogue) extends IScreenObserver {
   // TODO Make sets
   private var gameOverObservers: Set[IGameOverObserver] = Set()
   private var inventoryObservers: Set[IInventoryObserver] = Set()
-  private var scoreObservers: Seq[IScoreObserver] = Seq()
+  private var scoreObservers: Set[IScoreObserver] = Set()
   private var state: State = AfterCommand
 
   def addInventoryObserver(observer: IInventoryObserver): Unit = inventoryObservers = inventoryObservers + observer
@@ -21,7 +21,7 @@ class Sensor(rogue: IRogue) extends IScreenObserver {
   def addGameOverObserver(observer: IGameOverObserver): Unit = gameOverObservers = gameOverObservers + observer
 
   /** Add an observer that listens for the message about the final score */
-  def addScoreObserver(observer: IScoreObserver): Unit = scoreObservers :+= observer
+  def addScoreObserver(observer: IScoreObserver): Unit = scoreObservers  = scoreObservers + observer
 
   override def notify(screen: Screen): Unit = {
     state = state.parseScreen(screen)
