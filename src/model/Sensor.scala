@@ -90,18 +90,6 @@ class Sensor(rogue: IRogue, inventoryParser : IInventoryParser) extends IScreenO
       for (observer <- inventoryObservers)
         observer.notify(inventory)
     }
-
-/*        observer.notify(items.Inventory(
-          Map(
-            Slot.A -> Food,
-            Slot.B -> RingMail(+1),
-            Slot.C -> Mace(+1, +1),
-            Slot.D -> ShortBow(+1, +0),
-            Slot.E -> Arrows(32, +0, +0)
-          ),
-          wearing = Slot.B,
-          wielding = Slot.C
-        )) */
   }
 
   object BeforeCommand extends State {
