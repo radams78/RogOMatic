@@ -9,12 +9,11 @@ import scala.util.matching.Regex
 class Sensor(rogue: IRogue, inventoryParser : IInventoryParser) extends IScreenObserver {
   rogue.addScreenObserver(this)
 
-  private var inventoryObservers: Set[IInventoryObserver] = Set()
   private var scoreObservers: Set[IScoreObserver] = Set()
   private var state: State = Ready
 
-  def addInventoryObserver(observer: IInventoryObserver): Unit = inventoryObservers = inventoryObservers + observer
-
+  def addInventoryObserver(observer: IInventoryObserver): Unit = Inventory.addObserver(observer)
+    
   /** Add an observer that listens for the message that the game is over */
   def addGameOverObserver(observer: IGameOverObserver): Unit = GameOver.addGameOverObserver(observer)
   
@@ -77,6 +76,9 @@ class Sensor(rogue: IRogue, inventoryParser : IInventoryParser) extends IScreenO
   }
 
   object Inventory extends State {
+    def addObserver(observer: IInventoryObserver): Unit = inventoryObservers = inventoryObservers + observer
+
+    private var inventoryObservers: Set[IInventoryObserver] = Set()
 
     override def parseScreen(screen: Screen): State = {
       parseInventoryScreen(screen)
