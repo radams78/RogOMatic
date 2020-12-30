@@ -1,6 +1,5 @@
-package model
+package model.gamedata
 
-import model.gamedata.Inventory
 import model.rogue.Screen
 
 /** Interface for a service class that parses inventory screens */

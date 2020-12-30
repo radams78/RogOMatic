@@ -1,6 +1,5 @@
 package model.gamedata
 
-import model.IInventoryParser
 import model.rogue.Screen
 
 object InventoryParser extends IInventoryParser {
