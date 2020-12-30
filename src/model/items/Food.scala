@@ -1,4 +1,4 @@
-package model.gamedata
+package model.items
 
 object Food extends Item {
 

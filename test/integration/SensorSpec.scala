@@ -1,6 +1,6 @@
 package integration
 
-import model.gamedata._
+import model.items._
 import model.rogue.{IRogue, IScreenObserver, Screen}
 import model.{IGameOverObserver, IInventoryObserver, IScoreObserver, Sensor}
 import org.scalatest.flatspec.AnyFlatSpec

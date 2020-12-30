@@ -1,6 +1,6 @@
 package integration
 
-import model.gamedata.{Arrows, Food, Inventory, InventoryParser, Mace, RingMail, ShortBow, Slot}
+import model.items.{Arrows, Food, Inventory, InventoryParser, Mace, RingMail, ShortBow, Slot}
 import model.{Command, IGameOverObserver, IInventoryObserver, IScoreObserver, Sensor}
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec

@@ -1,6 +1,6 @@
 package model
 
-import model.gamedata.Inventory
+import model.items.Inventory
 
 trait IInventoryObserver {
   def notify(inventory: Inventory): Unit

@@ -1,4 +1,4 @@
-import model.gamedata.InventoryParser
+import model.items.InventoryParser
 import model.{IGameOverObserver, IScoreObserver, Sensor}
 import model.rogue.IScreenObserver
 

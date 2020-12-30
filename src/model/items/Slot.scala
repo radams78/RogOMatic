@@ -1,4 +1,4 @@
-package model.gamedata
+package model.items
 
 trait Slot {
 

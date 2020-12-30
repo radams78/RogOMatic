@@ -1,6 +1,6 @@
 package model
 
-import model.gamedata._
+import model.items._
 import model.rogue.{IRogue, IScreenObserver, Screen}
 
 import scala.util.matching.Regex
@@ -91,7 +91,7 @@ class Sensor(rogue: IRogue, inventoryParser : IInventoryParser) extends IScreenO
         observer.notify(inventory)
     }
 
-/*        observer.notify(gamedata.Inventory(
+/*        observer.notify(items.Inventory(
           Map(
             Slot.A -> Food,
             Slot.B -> RingMail(+1),
