@@ -21,14 +21,17 @@ class Sensor(rogue: IRogue, inventoryParser : IInventoryParser) extends IScreenO
   def addScoreObserver(observer: IScoreObserver): Unit = Ready.addObserver(observer)
 
   override def notify(screen: Screen): Unit = {
-    state = state.parseScreen(screen)
+    state.parseScreen(screen)
+    state = state.nextState(screen)
     state.sendKeypressesToRogue()
   }
   
   trait State {
+    def nextState(screen: Screen): State
+
     def sendKeypressesToRogue(): Unit = ()
 
-    def parseScreen(screen: Screen): State
+    def parseScreen(screen: Screen): Unit
 
   }
 
@@ -37,16 +40,11 @@ class Sensor(rogue: IRogue, inventoryParser : IInventoryParser) extends IScreenO
 
     private var scoreObservers: Set[IScoreObserver] = Set()
 
-    override def parseScreen(screen: Screen): State = {
+    override def parseScreen(screen: Screen): Unit =
+      if (! isGameOverScreen(screen)) parseNormalScreen(screen)
 
-      if (isGameOverScreen(screen)) {
-        GameOver
-      } else {
-        parseNormalScreen(screen)
-        Inventory
-      }
-
-    }
+    override def nextState(screen: Screen): State =
+      if (isGameOverScreen(screen)) GameOver else Inventory
 
     private def isGameOverScreen(screen: Screen): Boolean = {
       screen.lastLine.forall(_ == ' ')
@@ -71,12 +69,14 @@ class Sensor(rogue: IRogue, inventoryParser : IInventoryParser) extends IScreenO
 
     override def sendKeypressesToRogue(): Unit = notifyGameOver()
 
-    override def parseScreen(screen: Screen): State = this
+    override def parseScreen(screen: Screen): Unit = ()
 
     private def notifyGameOver(): Unit = {
       for (observer <- gameOverObservers)
         observer.notifyGameOver()
     }
+
+    override def nextState(screen: Screen): State = this
   }
 
   object Inventory extends State {
@@ -84,10 +84,7 @@ class Sensor(rogue: IRogue, inventoryParser : IInventoryParser) extends IScreenO
 
     private var inventoryObservers: Set[IInventoryObserver] = Set()
 
-    override def parseScreen(screen: Screen): State = {
-      parseInventoryScreen(screen)
-      CancelInventory
-    }
+    override def parseScreen(screen: Screen): Unit = parseInventoryScreen(screen)
 
     override def sendKeypressesToRogue(): Unit = rogue.sendKeypress('i')
     
@@ -96,13 +93,17 @@ class Sensor(rogue: IRogue, inventoryParser : IInventoryParser) extends IScreenO
       for (observer <- inventoryObservers)
         observer.notify(inventory)
     }
+
+    override def nextState(screen: Screen): State = CancelInventory
   }
 
   object CancelInventory extends State {
     
-    override def parseScreen(screen: Screen): State = Ready
+    override def parseScreen(screen: Screen): Unit = ()
 
     override def sendKeypressesToRogue(): Unit = rogue.sendKeypress(' ')
+
+    override def nextState(screen: Screen): State = Ready
   }
 
 }
