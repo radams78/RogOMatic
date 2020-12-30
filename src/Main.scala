@@ -1,10 +1,11 @@
+import model.gamedata.InventoryParser
 import model.{IGameOverObserver, IScoreObserver, Sensor}
 import model.rogue.IScreenObserver
 
 object Main {
   def main(args : Array[String]): Unit = {
     val rogue : Rogue = new Rogue
-    val sensor : Sensor = new Sensor(rogue)
+    val sensor : Sensor = new Sensor(rogue, InventoryParser)
     val screenView : IScreenObserver = new ScreenView
     val gameOverView : IGameOverObserver = new GameOverView
     val scoreView : IScoreObserver = new ScoreView

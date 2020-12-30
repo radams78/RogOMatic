@@ -1,6 +1,6 @@
 package unit
 
-import model.gamedata.{Arrows, Food, Inventory, Mace, RingMail, ShortBow, Slot}
+import model.gamedata.{Arrows, Food, Inventory, InventoryParser, Mace, RingMail, ShortBow, Slot}
 import model.{IGameOverObserver, IInventoryObserver, IScoreObserver, Sensor}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
@@ -60,7 +60,7 @@ class SensorTest extends AnyFlatSpec with Matchers {
       }
     }
 
-    val sensor: Sensor = new Sensor(MockRogue)
+    val sensor: Sensor = new Sensor(MockRogue, InventoryParser)
     sensor.addScoreObserver(MockObserver)
     MockRogue.sendKeypress('Q')
     MockObserver should be(Symbol("seenScore"))
@@ -119,7 +119,7 @@ class SensorTest extends AnyFlatSpec with Matchers {
       }
     }
 
-    val sensor: Sensor = new Sensor(MockRogue)
+    val sensor: Sensor = new Sensor(MockRogue, InventoryParser)
     sensor.addGameOverObserver(MockObserver)
     MockRogue.sendKeypress(' ')
     MockObserver should be(Symbol("seenGameOverScreen"))
@@ -250,7 +250,7 @@ class SensorTest extends AnyFlatSpec with Matchers {
       }
     }
     
-    val sensor: Sensor = new Sensor(MockRogue)
+    val sensor: Sensor = new Sensor(MockRogue, InventoryParser)
     sensor.addInventoryObserver(MockInventoryObserver)
     MockRogue.startGame()
     MockInventoryObserver should be(Symbol("seenInventory"))

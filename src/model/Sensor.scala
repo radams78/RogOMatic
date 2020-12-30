@@ -6,7 +6,7 @@ import model.rogue.{IRogue, IScreenObserver, Screen}
 import scala.util.matching.Regex
 
 /** Parse the information from the screen of Rogue and notify the relevant observers */
-class Sensor(rogue: IRogue) extends IScreenObserver {
+class Sensor(rogue: IRogue, inventoryParser : IInventoryParser) extends IScreenObserver {
   rogue.addScreenObserver(this)
 
   private var inventoryObservers: Set[IInventoryObserver] = Set()
@@ -85,9 +85,13 @@ class Sensor(rogue: IRogue) extends IScreenObserver {
 
     override def sendKeypressesToRogue(): Unit = rogue.sendKeypress('i')
     
-    private def parseInventoryScreen(screen: Screen): Unit =
+    private def parseInventoryScreen(screen: Screen): Unit = { 
+      val inventory : Inventory = inventoryParser.parseInventoryScreen(screen)
       for (observer <- inventoryObservers)
-        observer.notify(gamedata.Inventory(
+        observer.notify(inventory)
+    }
+
+/*        observer.notify(gamedata.Inventory(
           Map(
             Slot.A -> Food,
             Slot.B -> RingMail(+1),
@@ -97,7 +101,7 @@ class Sensor(rogue: IRogue) extends IScreenObserver {
           ),
           wearing = Slot.B,
           wielding = Slot.C
-        ))
+        )) */
   }
 
   object BeforeCommand extends State {
