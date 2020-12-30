@@ -11,6 +11,7 @@ class Sensor(rogue: IRogue, inventoryParser : IInventoryParser) extends IScreenO
 
   private var state: State = Ready
 
+  /** Add an observer that listens for the current inventory */
   def addInventoryObserver(observer: IInventoryObserver): Unit = Inventory.addObserver(observer)
     
   /** Add an observer that listens for the message that the game is over */
