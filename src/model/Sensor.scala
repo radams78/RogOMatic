@@ -27,13 +27,13 @@ class Sensor(rogue: IRogue, inventoryParser : IInventoryParser) extends IScreenO
 
   private def changeState(newState : State): Unit = {
     state = newState
-    state.sendKeypressesToRogue()
+    state.init()
   }
 
   trait State {
     def nextState(screen: Screen): State
 
-    def sendKeypressesToRogue(): Unit = ()
+    def init(): Unit = ()
 
     def parseScreen(screen: Screen): Unit
 
@@ -71,7 +71,7 @@ class Sensor(rogue: IRogue, inventoryParser : IInventoryParser) extends IScreenO
 
     def addObserver(observer: IGameOverObserver): Unit = gameOverObservers = gameOverObservers + observer
 
-    override def sendKeypressesToRogue(): Unit = notifyGameOver()
+    override def init(): Unit = notifyGameOver()
 
     override def parseScreen(screen: Screen): Unit = ()
 
@@ -90,7 +90,7 @@ class Sensor(rogue: IRogue, inventoryParser : IInventoryParser) extends IScreenO
 
     override def parseScreen(screen: Screen): Unit = parseInventoryScreen(screen)
 
-    override def sendKeypressesToRogue(): Unit = rogue.sendKeypress('i')
+    override def init(): Unit = rogue.sendKeypress('i')
     
     private def parseInventoryScreen(screen: Screen): Unit = { 
       val inventory : Inventory = inventoryParser.parseInventoryScreen(screen)
@@ -105,7 +105,7 @@ class Sensor(rogue: IRogue, inventoryParser : IInventoryParser) extends IScreenO
     
     override def parseScreen(screen: Screen): Unit = ()
 
-    override def sendKeypressesToRogue(): Unit = rogue.sendKeypress(' ')
+    override def init(): Unit = rogue.sendKeypress(' ')
 
     override def nextState(screen: Screen): State = Ready
   }
