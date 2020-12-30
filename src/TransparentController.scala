@@ -1,5 +1,5 @@
 import model.gamedata.Command
-import rogue.IRogue
+import model.rogue.IRogue
 
 class TransparentController(rogue: IRogue) extends Runnable {
   override def run(): Unit = while (true) {

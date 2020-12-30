@@ -1,4 +1,4 @@
-package rogue
+package model.rogue
 
 /** Interface for the Rogue process.
  *

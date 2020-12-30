@@ -1,6 +1,6 @@
 package model.gamedata
 
-import rogue.IRogue
+import model.rogue.IRogue
 
 /** A command in the game of Rogue */
 trait Command {

@@ -1,5 +1,5 @@
 import model.{IGameOverObserver, IScoreObserver, Sensor}
-import rogue.IScreenObserver
+import model.rogue.IScreenObserver
 
 object Main {
   def main(args : Array[String]): Unit = {

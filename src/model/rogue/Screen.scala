@@ -1,4 +1,4 @@
-package rogue
+package model.rogue
 
 /** A screen displyed by the Rogue process
  *

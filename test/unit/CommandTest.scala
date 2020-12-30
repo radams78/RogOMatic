@@ -3,7 +3,7 @@ package unit
 import model.gamedata.Command
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers._
-import rogue.{IRogue, IScreenObserver}
+import model.rogue.{IRogue, IScreenObserver}
 
 class CommandTest extends AnyFlatSpec {
   "A command" should "send its keypresses to Rogue" in {

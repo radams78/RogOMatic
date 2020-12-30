@@ -1,7 +1,7 @@
 package model
 
 import model.gamedata._
-import rogue.{IRogue, IScreenObserver, Screen}
+import model.rogue.{IRogue, IScreenObserver, Screen}
 
 import scala.util.matching.Regex
 

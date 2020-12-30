@@ -4,7 +4,7 @@ import model.gamedata.{Arrows, Food, Inventory, Mace, RingMail, ShortBow, Slot}
 import model.{IGameOverObserver, IInventoryObserver, IScoreObserver, Sensor}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import rogue.{IRogue, IScreenObserver, Screen}
+import model.rogue.{IRogue, IScreenObserver, Screen}
 
 class SensorTest extends AnyFlatSpec with Matchers {
   "A sensor" should "report the final score" in {

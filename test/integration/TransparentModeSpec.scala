@@ -5,7 +5,7 @@ import model.{IGameOverObserver, IInventoryObserver, IScoreObserver, Sensor}
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
-import rogue.{IRogue, IScreenObserver, Screen}
+import model.rogue.{IRogue, IScreenObserver, Screen}
 
 class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matchers {
   Feature("Transparent Mode") {
