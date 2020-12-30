@@ -15,6 +15,8 @@ class Sensor(rogue: IRogue) extends IScreenObserver {
   private var inventoryObservers: Seq[IInventoryObserver] = Seq()
   private var scoreObservers: Seq[IScoreObserver] = Seq()
 
+  private var state : State = AfterCommand
+  
   /** Add an observer that listens for the message that the game is over */
   def addGameOverObserver(observer: IGameOverObserver): Unit = gameOverObservers :+= observer
 
@@ -66,6 +68,10 @@ class Sensor(rogue: IRogue) extends IScreenObserver {
     for (observer <- scoreObservers)
       observer.notifyScore(score)
   }
+
+  trait State
+
+  object AfterCommand extends State
 
 }
 
