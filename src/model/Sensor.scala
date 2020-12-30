@@ -27,13 +27,7 @@ class Sensor(rogue: IRogue) extends IScreenObserver {
     state = state.parseScreen(screen)
     state.sendKeypressesToRogue()
   }
-
-  private def parseNormalScreen(screen: Screen): Unit = {
-    for (score <- Sensor.scoreLine.findFirstMatchIn(screen.firstLine)) {
-      notifyScore(score.group("score").toInt)
-    }
-  }
-
+  
   private def notifyScore(score: Int): Unit = {
     for (observer <- scoreObservers)
       observer.notifyScore(score)
@@ -71,6 +65,12 @@ class Sensor(rogue: IRogue) extends IScreenObserver {
     private def isGameOverScreen(screen: Screen): Boolean = {
       screen.lastLine.forall(_ == ' ')
     }
+
+    private def parseNormalScreen(screen: Screen): Unit = {
+      for (score <- Sensor.scoreLine.findFirstMatchIn(screen.firstLine)) {
+        notifyScore(score.group("score").toInt)
+      }
+    }
   }
 
   object GameOver extends State {
@@ -102,6 +102,9 @@ class Sensor(rogue: IRogue) extends IScreenObserver {
   }
 
   object BeforeCommand extends State {
+
+    def parseNormalScreen(screen: Screen): Unit = ()
+
     override def parseScreen(screen: Screen): State = {
       parseNormalScreen(screen)
       AfterCommand
