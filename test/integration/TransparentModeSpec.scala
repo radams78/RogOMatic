@@ -1,7 +1,7 @@
 package integration
 
-import model.gamedata.{Arrows, Command, Food, Inventory, Mace, RingMail, ShortBow, Slot}
-import model.{IGameOverObserver, IInventoryObserver, IScoreObserver, Sensor}
+import model.gamedata.{Arrows, Food, Inventory, Mace, RingMail, ShortBow, Slot}
+import model.{Command, IGameOverObserver, IInventoryObserver, IScoreObserver, Sensor}
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers

@@ -1,6 +1,6 @@
 package unit
 
-import model.gamedata.Command
+import model.Command
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers._
 import model.rogue.{IRogue, IScreenObserver}

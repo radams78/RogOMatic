@@ -1,4 +1,4 @@
-package model.gamedata
+package model
 
 import model.rogue.IRogue
 
