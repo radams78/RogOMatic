@@ -28,10 +28,6 @@ class Sensor(rogue: IRogue) extends IScreenObserver {
     state.sendKeypressesToRogue()
   }
 
-  private def isGameOverScreen(screen: Screen): Boolean = {
-    screen.lastLine.forall(_ == ' ')
-  }
-
   private def parseNormalScreen(screen: Screen): Unit = {
     for (score <- Sensor.scoreLine.findFirstMatchIn(screen.firstLine)) {
       notifyScore(score.group("score").toInt)
@@ -70,6 +66,10 @@ class Sensor(rogue: IRogue) extends IScreenObserver {
         Inventory
       }
 
+    }
+
+    private def isGameOverScreen(screen: Screen): Boolean = {
+      screen.lastLine.forall(_ == ' ')
     }
   }
 
