@@ -1,4 +1,4 @@
-package gamedata
+package model.gamedata
 
 case class Inventory(items : Map[Slot, Item], wearing: Slot, wielding: Slot) {
 

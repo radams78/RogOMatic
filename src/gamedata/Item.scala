@@ -1,5 +1,0 @@
-package gamedata
-
-trait Item {
-
-}

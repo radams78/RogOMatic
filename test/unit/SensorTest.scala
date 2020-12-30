@@ -1,6 +1,6 @@
 package unit
 
-import gamedata.{Arrows, Food, Inventory, Mace, RingMail, ShortBow, Slot}
+import model.gamedata.{Arrows, Food, Inventory, Mace, RingMail, ShortBow, Slot}
 import model.{IGameOverObserver, IInventoryObserver, IScoreObserver, Sensor}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
@@ -184,7 +184,7 @@ class SensorTest extends AnyFlatSpec with Matchers {
 
     val screen2: Screen = Screen.makeScreen(screen2contents)
 
-    val inventory1 : Inventory = gamedata.Inventory(
+    val inventory1 : Inventory = Inventory(
       Map(
         Slot.A -> Food,
         Slot.B -> RingMail(+1),

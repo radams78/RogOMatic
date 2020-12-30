@@ -1,6 +1,6 @@
 package integration
 
-import gamedata.{Arrows, Command, Food, Inventory, Mace, RingMail, ShortBow, Slot}
+import model.gamedata.{Arrows, Command, Food, Inventory, Mace, RingMail, ShortBow, Slot}
 import model.{IGameOverObserver, IInventoryObserver, IScoreObserver, Sensor}
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
@@ -68,7 +68,7 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
 
       val screen2: Screen = Screen.makeScreen(screen2contents)
 
-      val inventory1 : Inventory = gamedata.Inventory(
+      val inventory1 : Inventory = Inventory(
         Map(
           Slot.A -> Food,
           Slot.B -> RingMail(+1),

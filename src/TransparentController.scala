@@ -1,4 +1,4 @@
-import gamedata.Command
+import model.gamedata.Command
 import rogue.IRogue
 
 class TransparentController(rogue: IRogue) extends Runnable {
