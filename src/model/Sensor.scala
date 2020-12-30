@@ -1,6 +1,6 @@
 package model
 
-import model.items._
+import model.items.{IInventoryParser, Inventory}
 import model.rogue.{IRogue, IScreenObserver, Screen}
 
 import scala.util.matching.Regex
@@ -11,7 +11,7 @@ class Sensor(rogue: IRogue, inventoryParser : IInventoryParser) extends IScreenO
 
   private var inventoryObservers: Set[IInventoryObserver] = Set()
   private var scoreObservers: Set[IScoreObserver] = Set()
-  private var state: State = AfterCommand
+  private var state: State = Ready
 
   def addInventoryObserver(observer: IInventoryObserver): Unit = inventoryObservers = inventoryObservers + observer
 
@@ -38,7 +38,7 @@ class Sensor(rogue: IRogue, inventoryParser : IInventoryParser) extends IScreenO
 
   }
 
-  object AfterCommand extends State {
+  object Ready extends State {
     override def parseScreen(screen: Screen): State = {
 
       if (isGameOverScreen(screen)) {
@@ -80,7 +80,7 @@ class Sensor(rogue: IRogue, inventoryParser : IInventoryParser) extends IScreenO
 
     override def parseScreen(screen: Screen): State = {
       parseInventoryScreen(screen)
-      BeforeCommand
+      CancelInventory
     }
 
     override def sendKeypressesToRogue(): Unit = rogue.sendKeypress('i')
@@ -92,14 +92,9 @@ class Sensor(rogue: IRogue, inventoryParser : IInventoryParser) extends IScreenO
     }
   }
 
-  object BeforeCommand extends State {
-
-    def parseNormalScreen(screen: Screen): Unit = ()
-
-    override def parseScreen(screen: Screen): State = {
-      parseNormalScreen(screen)
-      AfterCommand
-    }
+  object CancelInventory extends State {
+    
+    override def parseScreen(screen: Screen): State = Ready
 
     override def sendKeypressesToRogue(): Unit = rogue.sendKeypress(' ')
   }
