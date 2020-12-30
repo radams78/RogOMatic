@@ -15,7 +15,7 @@ class Sensor(rogue: IRogue, inventoryParser : IInventoryParser) extends IScreenO
   def addInventoryObserver(observer: IInventoryObserver): Unit = Inventory.addObserver(observer)
     
   /** Add an observer that listens for the message that the game is over */
-  def addGameOverObserver(observer: IGameOverObserver): Unit = GameOver.addGameOverObserver(observer)
+  def addGameOverObserver(observer: IGameOverObserver): Unit = GameOver.addObserver(observer)
   
   /** Add an observer that listens for the message about the final score */
   def addScoreObserver(observer: IScoreObserver): Unit = Ready.addObserver(observer)
@@ -67,7 +67,7 @@ class Sensor(rogue: IRogue, inventoryParser : IInventoryParser) extends IScreenO
   object GameOver extends State {
     private var gameOverObservers: Set[IGameOverObserver] = Set()
 
-    def addGameOverObserver(observer: IGameOverObserver): Unit = gameOverObservers = gameOverObservers + observer
+    def addObserver(observer: IGameOverObserver): Unit = gameOverObservers = gameOverObservers + observer
 
     override def sendKeypressesToRogue(): Unit = notifyGameOver()
 
