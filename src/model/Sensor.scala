@@ -9,7 +9,6 @@ import scala.util.matching.Regex
 class Sensor(rogue: IRogue) extends IScreenObserver {
   rogue.addScreenObserver(this)
 
-  // TODO Make sets
   private var inventoryObservers: Set[IInventoryObserver] = Set()
   private var scoreObservers: Set[IScoreObserver] = Set()
   private var state: State = AfterCommand
