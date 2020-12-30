@@ -1,12 +1,12 @@
-package unit
+package integration
 
-import model.gamedata.{Arrows, Food, Inventory, InventoryParser, Mace, RingMail, ShortBow, Slot}
+import model.gamedata._
+import model.rogue.{IRogue, IScreenObserver, Screen}
 import model.{IGameOverObserver, IInventoryObserver, IScoreObserver, Sensor}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import model.rogue.{IRogue, IScreenObserver, Screen}
 
-class SensorTest extends AnyFlatSpec with Matchers {
+class SensorSpec extends AnyFlatSpec with Matchers {
   "A sensor" should "report the final score" in {
     val screenContents: String =
       """quit with 20 gold-more-
