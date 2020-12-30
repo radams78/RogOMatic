@@ -9,7 +9,6 @@ import scala.util.matching.Regex
 class Sensor(rogue: IRogue, inventoryParser : IInventoryParser) extends IScreenObserver {
   rogue.addScreenObserver(this)
 
-  private var scoreObservers: Set[IScoreObserver] = Set()
   private var state: State = Ready
 
   def addInventoryObserver(observer: IInventoryObserver): Unit = Inventory.addObserver(observer)
@@ -18,18 +17,13 @@ class Sensor(rogue: IRogue, inventoryParser : IInventoryParser) extends IScreenO
   def addGameOverObserver(observer: IGameOverObserver): Unit = GameOver.addGameOverObserver(observer)
   
   /** Add an observer that listens for the message about the final score */
-  def addScoreObserver(observer: IScoreObserver): Unit = scoreObservers  = scoreObservers + observer
+  def addScoreObserver(observer: IScoreObserver): Unit = Ready.addObserver(observer)
 
   override def notify(screen: Screen): Unit = {
     state = state.parseScreen(screen)
     state.sendKeypressesToRogue()
   }
   
-  private def notifyScore(score: Int): Unit = {
-    for (observer <- scoreObservers)
-      observer.notifyScore(score)
-  }
-
   trait State {
     def sendKeypressesToRogue(): Unit = ()
 
@@ -38,6 +32,10 @@ class Sensor(rogue: IRogue, inventoryParser : IInventoryParser) extends IScreenO
   }
 
   object Ready extends State {
+    def addObserver(observer: IScoreObserver): Unit = scoreObservers = scoreObservers + observer
+
+    private var scoreObservers: Set[IScoreObserver] = Set()
+
     override def parseScreen(screen: Screen): State = {
 
       if (isGameOverScreen(screen)) {
@@ -57,6 +55,11 @@ class Sensor(rogue: IRogue, inventoryParser : IInventoryParser) extends IScreenO
       for (score <- Sensor.scoreLine.findFirstMatchIn(screen.firstLine)) {
         notifyScore(score.group("score").toInt)
       }
+    }
+
+    private def notifyScore(score: Int): Unit = {
+      for (observer <- scoreObservers)
+        observer.notifyScore(score)
     }
   }
 
