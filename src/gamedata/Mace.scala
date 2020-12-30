@@ -1,6 +1,4 @@
-package integration
-
-import gamedata.Item
+package gamedata
 
 case class Mace(toHit: Int, toDamage: Int) extends Item {
 

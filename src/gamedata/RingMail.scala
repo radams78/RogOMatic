@@ -1,6 +1,4 @@
-package integration
-
-import gamedata.Item
+package gamedata
 
 case class RingMail(bonus: Int) extends Item {
 }

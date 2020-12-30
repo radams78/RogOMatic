@@ -1,6 +1,6 @@
 package integration
 
-import gamedata.{Command, Inventory, Slot}
+import gamedata.{Arrows, Command, Food, Inventory, Mace, RingMail, ShortBow, Slot}
 import model.{IGameOverObserver, IInventoryObserver, IScoreObserver, Sensor}
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
@@ -265,7 +265,7 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
       }
       
       Given("a new game of Rogue")
-      val sensor: Sensor = new Sensor
+      val sensor: Sensor = new Sensor(MockRogue)
       MockRogue.addScreenObserver(sensor)
       MockRogue.addScreenObserver(MockScreenView)
       sensor.addInventoryObserver(MockInventoryView)

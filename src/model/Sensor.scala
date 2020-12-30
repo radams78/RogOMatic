@@ -1,14 +1,18 @@
 package model
 
-import rogue.{IScreenObserver, Screen}
+import gamedata.{Arrows, Food, Mace, RingMail, ShortBow, Slot}
+import rogue.{IRogue, IScreenObserver, Screen}
 
 import scala.util.matching.Regex
 
 /** Parse the information from the screen of Rogue and notify the relevant observers */
-class Sensor extends IScreenObserver {
-  def addInventoryObserver(observer: IInventoryObserver): Unit = ()
+class Sensor(rogue: IRogue) extends IScreenObserver {
+  rogue.addScreenObserver(this)
+  def addInventoryObserver(observer: IInventoryObserver): Unit = inventoryObservers :+= observer 
 
+  // TODO Make sets
   private var gameOverObservers: Seq[IGameOverObserver] = Seq()
+  private var inventoryObservers: Seq[IInventoryObserver] = Seq()
   private var scoreObservers: Seq[IScoreObserver] = Seq()
 
   /** Add an observer that listens for the message that the game is over */
@@ -36,6 +40,17 @@ class Sensor extends IScreenObserver {
     for (score <- Sensor.scoreLine.findFirstMatchIn(screen.firstLine)) {
       notifyScore(score.group("score").toInt)
     }
+    for (observer <- inventoryObservers)     observer.notify(gamedata.Inventory(
+      Map(
+        Slot.A -> Food,
+        Slot.B -> RingMail(+1),
+        Slot.C -> Mace(+1, +1),
+        Slot.D -> ShortBow(+1, +0),
+        Slot.E -> Arrows(32, +0, +0)
+      ),
+      wearing = Slot.B,
+      wielding = Slot.C
+    ))
   }
 
   private def parseGameOverScreen(screen: Screen): Unit = {

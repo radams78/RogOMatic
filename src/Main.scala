@@ -3,8 +3,8 @@ import rogue.IScreenObserver
 
 object Main {
   def main(args : Array[String]): Unit = {
-    val sensor : Sensor = new Sensor
     val rogue : Rogue = new Rogue
+    val sensor : Sensor = new Sensor(rogue)
     val screenView : IScreenObserver = new ScreenView
     val gameOverView : IGameOverObserver = new GameOverView
     val scoreView : IScoreObserver = new ScoreView

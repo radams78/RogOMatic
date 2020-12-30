@@ -1,6 +1,4 @@
-package integration
-
-import gamedata.Item
+package gamedata
 
 case class Arrows(quantity: Int, toHit: Int, toDamage: Int) extends Item {
 
