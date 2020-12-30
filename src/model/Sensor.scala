@@ -22,10 +22,14 @@ class Sensor(rogue: IRogue, inventoryParser : IInventoryParser) extends IScreenO
 
   override def notify(screen: Screen): Unit = {
     state.parseScreen(screen)
-    state = state.nextState(screen)
+    changeState(state.nextState(screen))
+  }
+
+  private def changeState(newState : State): Unit = {
+    state = newState
     state.sendKeypressesToRogue()
   }
-  
+
   trait State {
     def nextState(screen: Screen): State
 
