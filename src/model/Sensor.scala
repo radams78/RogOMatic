@@ -25,14 +25,14 @@ class Sensor(rogue: IRogue) extends IScreenObserver {
 
   private def parseScreen(screen: Screen): Unit = {
 
-    if (isGameOverSreen(screen))
+    if (isGameOverScreen(screen))
       parseGameOverScreen(screen)
     else
       parseNormalScreen(screen)
 
   }
 
-  private def isGameOverSreen(screen: Screen): Boolean = {
+  private def isGameOverScreen(screen: Screen): Boolean = {
     screen.lastLine.forall(_ == ' ')
   }
 
