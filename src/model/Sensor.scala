@@ -10,7 +10,6 @@ class Sensor(rogue: IRogue) extends IScreenObserver {
   rogue.addScreenObserver(this)
 
   // TODO Make sets
-  private var gameOverObservers: Set[IGameOverObserver] = Set()
   private var inventoryObservers: Set[IInventoryObserver] = Set()
   private var scoreObservers: Set[IScoreObserver] = Set()
   private var state: State = AfterCommand
@@ -18,8 +17,8 @@ class Sensor(rogue: IRogue) extends IScreenObserver {
   def addInventoryObserver(observer: IInventoryObserver): Unit = inventoryObservers = inventoryObservers + observer
 
   /** Add an observer that listens for the message that the game is over */
-  def addGameOverObserver(observer: IGameOverObserver): Unit = gameOverObservers = gameOverObservers + observer
-
+  def addGameOverObserver(observer: IGameOverObserver): Unit = GameOver.addGameOverObserver(observer)
+  
   /** Add an observer that listens for the message about the final score */
   def addScoreObserver(observer: IScoreObserver): Unit = scoreObservers  = scoreObservers + observer
 
@@ -33,15 +32,6 @@ class Sensor(rogue: IRogue) extends IScreenObserver {
       observer.notifyScore(score)
   }
 
-  private def parseGameOverScreen(screen: Screen): Unit = {
-    notifyGameOver()
-  }
-
-  private def notifyGameOver(): Unit = {
-    for (observer <- gameOverObservers)
-      observer.notifyGameOver()
-  }
-
   trait State {
     def sendKeypressesToRogue(): Unit = ()
 
@@ -53,7 +43,6 @@ class Sensor(rogue: IRogue) extends IScreenObserver {
     override def parseScreen(screen: Screen): State = {
 
       if (isGameOverScreen(screen)) {
-        parseGameOverScreen(screen)
         GameOver
       } else {
         parseNormalScreen(screen)
@@ -74,7 +63,18 @@ class Sensor(rogue: IRogue) extends IScreenObserver {
   }
 
   object GameOver extends State {
+    private var gameOverObservers: Set[IGameOverObserver] = Set()
+
+    def addGameOverObserver(observer: IGameOverObserver): Unit = gameOverObservers = gameOverObservers + observer
+
+    override def sendKeypressesToRogue(): Unit = notifyGameOver()
+
     override def parseScreen(screen: Screen): State = this
+
+    private def notifyGameOver(): Unit = {
+      for (observer <- gameOverObservers)
+        observer.notifyGameOver()
+    }
   }
 
   object Inventory extends State {
