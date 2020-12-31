@@ -1,3 +1,5 @@
+package view
+
 import model.IScoreObserver
 
 class ScoreView extends IScoreObserver {

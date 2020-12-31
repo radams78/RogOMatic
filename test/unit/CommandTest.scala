@@ -1,12 +1,15 @@
 package unit
 
 import model.Command
+import model.rogue.{IRogue, Screen}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers._
-import model.rogue.{IRogue, IScreenObserver}
 
 class CommandTest extends AnyFlatSpec {
-  "A command" should "send its keypresses to Rogue" in {
+  "A command" should "send its keypresses to model.rogue.Rogue" in {
+    /**
+     *
+     */
     object MockRogue extends IRogue {
       private var _receivedKeypress: Boolean = false
 
@@ -17,9 +20,9 @@ class CommandTest extends AnyFlatSpec {
         _receivedKeypress = true
       }
 
-      override def addScreenObserver(observer: IScreenObserver): Unit = ()
-
       override def startGame(): Unit = ()
+
+      override def getScreen: Option[Screen] = None
     }
 
     Command.LEFT.perform(MockRogue)

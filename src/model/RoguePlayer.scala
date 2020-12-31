@@ -1,6 +1,6 @@
-package model.rogue
+package model
 
-import model.{Command, IGameOverObserver, IInventoryObserver, IScoreObserver}
+import model.rogue.IRogue
 
 class RoguePlayer(rogue : IRogue) {
   def performCommand(command: Command): Unit = ()

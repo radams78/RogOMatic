@@ -1,7 +1,5 @@
-import model.rogue.{IRogue, IScreenObserver, Screen}
+package model.rogue
 
-import java.awt.Dimension
-import java.nio.charset.Charset
 import com.jediterm.pty.PtyProcessTtyConnector
 import com.jediterm.terminal._
 import com.jediterm.terminal.emulator.mouse.MouseMode
@@ -11,15 +9,15 @@ import com.pty4j.PtyProcess
 import org.apache.log4j.BasicConfigurator
 import org.apache.log4j.varia.NullAppender
 
+import java.awt.Dimension
+import java.nio.charset.Charset
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 /** Class for low-dungeonLevel communication with the RG process. A humble object. */
 class Rogue extends Runnable with IRogue {
-  private var observers : Set[IScreenObserver] = Set()
+  private var screen : Option[Screen] = None
   
-  override def addScreenObserver(observer: IScreenObserver): Unit = observers = observers + observer
-
     private val command: Array[String] = Rogue.DEFAULT_COMMAND
     private val env: java.util.Map[String, String] = Rogue.DEFAULT_ENVIRONMENT
     private val charset: Charset = Rogue.DEFAULT_CHARSET
@@ -43,12 +41,8 @@ class Rogue extends Runnable with IRogue {
       // Wait for RG to clear the message "just a moment while I dig the dungeon"
       // TODO More elegant way to do this?
       Thread.sleep(1000)
-      for (observer <- observers) observer.notify(Screen.makeScreen(buffer.getScreenLines))
+      screen = Some(Screen.makeScreen(buffer.getScreenLines))
     }
-
-    /** Returns the current contents of the screen, as a single string with newlines (\n) between lines.
-     * Every line is padded with spaces; thus, for example, a blank line will be represented as 80 space characters. */
-    private def getScreen: Seq[String] = buffer.getScreenLines.split("\n").toSeq
 
     /** Send the given character to RG as input from the actuator, orElse pause until screen stops updating. */
     override def sendKeypress(keyPress: Char): Unit = {
@@ -58,7 +52,7 @@ class Rogue extends Runnable with IRogue {
         Thread.sleep(10)
         buffer.getScreenLines
       }).sliding(2).find((p: Seq[String]) => p(0) == p(1))
-      for (observer <- observers) observer.notify(Screen.makeScreen(buffer.getScreenLines))
+      screen = Some(Screen.makeScreen(buffer.getScreenLines))
     }
 
     /** Terminate the RG process and perform all necessary cleanup.  This method must be called before the end
@@ -66,6 +60,8 @@ class Rogue extends Runnable with IRogue {
     def close(): Unit = connector.close()
 
   override def run(): Unit = startGame()
+
+  override def getScreen: Option[Screen] = screen
 }
 
   object Rogue {

@@ -1,8 +1,8 @@
 package integration
 
 import model.items._
-import model.rogue.{IRogue, IScreenObserver, RoguePlayer, Screen}
-import model.{Command, IGameOverObserver, IInventoryObserver, IScoreObserver}
+import model.rogue.{IRogue, Screen}
+import model.{Command, IGameOverObserver, IInventoryObserver, IScoreObserver, IScreenObserver, RoguePlayer}
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
@@ -238,6 +238,8 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
         override def startGame(): Unit = for (observer <- screenObservers)
           for (screen <- state.readScreen)
             observer.notify(screen)
+
+        override def getScreen: Option[Screen] = state.readScreen
       }
 
       object MockScreenView extends IScreenObserver {
@@ -264,7 +266,7 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
         override def notifyGameOver(): Unit = _seenGameOverScreen = true
       }
       
-      Given("a new game of Rogue")
+      Given("a new game of model.rogue.Rogue")
       val player: RoguePlayer = new RoguePlayer(MockRogue)
       player.addScreenObserver(MockScreenView)
       player.addInventoryObserver(MockInventoryView)
@@ -281,7 +283,7 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
       When("the user enters the command to quit")
       player.performCommand(Command.QUIT)
 
-      Then("Rogue should receive the command to quit")
+      Then("model.rogue.Rogue should receive the command to quit")
       MockRogue should be(Symbol("receivedQuitCommand"))
 
       And("the user should see the final score")

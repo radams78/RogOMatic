@@ -1,6 +1,6 @@
 package model.rogue
 
-/** A screen displyed by the Rogue process
+/** A screen displyed by the model.rogue.Rogue process
  *
  * A screen must consist of 24 lines of length 80. If [[lines]] does not fit this, the constructor throws an
  * [[AssertionError]].

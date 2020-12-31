@@ -2,11 +2,11 @@ package model
 
 import model.rogue.IRogue
 
-/** A command in the game of Rogue */
+/** A command in the game of model.rogue.Rogue */
 trait Command {
-  /** Send the command to the given Rogue process
+  /** Send the command to the given model.rogue.Rogue process
    *
-   * @param rogue The Rogue process to send the command to */
+   * @param rogue The model.rogue.Rogue process to send the command to */
   def perform(rogue: IRogue): Unit
 }
 

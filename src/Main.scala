@@ -1,5 +1,7 @@
-import model.rogue.{IScreenObserver, RoguePlayer}
-import model.{IGameOverObserver, IScoreObserver}
+import controller.TransparentController
+import model.rogue.Rogue
+import model.{IGameOverObserver, IScoreObserver, IScreenObserver, RoguePlayer}
+import view.{GameOverView, ScoreView, ScreenView}
 
 object Main {
   def main(args : Array[String]): Unit = {

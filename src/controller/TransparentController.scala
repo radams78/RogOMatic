@@ -1,5 +1,6 @@
-import model.Command
-import model.rogue.{IRogue, RoguePlayer}
+package controller
+
+import model.{Command, RoguePlayer}
 
 class TransparentController(player: RoguePlayer) extends Runnable {
   override def run(): Unit = while (true) {
