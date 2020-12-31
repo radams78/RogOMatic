@@ -5,7 +5,7 @@ import model.rogue.IRogue
 class RoguePlayer(rogue : IRogue) {
   def performCommand(command: Command): Unit = ()
 
-  def startGame(): Unit = ()
+  def startGame(): Unit = rogue.startGame()
 
   def addScoreObserver(observer: IScoreObserver): Unit = ()
 
