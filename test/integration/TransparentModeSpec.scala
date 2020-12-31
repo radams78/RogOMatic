@@ -1,11 +1,11 @@
 package integration
 
-import model.items.{Arrows, Food, Inventory, InventoryParser, Mace, RingMail, ShortBow, Slot}
-import model.{Command, IGameOverObserver, IInventoryObserver, IScoreObserver, Sensor}
+import model.items._
+import model.rogue.{IRogue, IScreenObserver, RoguePlayer, Screen}
+import model.{Command, IGameOverObserver, IInventoryObserver, IScoreObserver}
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
-import model.rogue.{IRogue, IScreenObserver, Screen}
 
 class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matchers {
   Feature("Transparent Mode") {
