@@ -19,6 +19,10 @@ class RoguePlayer(rogue : IRogue) {
   def startGame(): Unit = {
     rogue.startGame()
     val screen : Screen = rogue.getScreen.getOrElse(throw new EmptyScreenException)
+    notifyScreen(screen)
+  }
+
+  private def notifyScreen(screen: Screen): Unit = {
     for (observer <- screenObservers) observer.notify(screen)
   }
 
