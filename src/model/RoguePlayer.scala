@@ -44,6 +44,7 @@ class RoguePlayer(rogue : IRogue) {
   }
 }
 
+/** Exception thrown if the Rogue process has ended unexpectedly. */
 class GameNotInProgressException extends Exception
 
 class GameStartedException extends Exception
