@@ -21,9 +21,13 @@ class RoguePlayer(rogue : IRogue) {
    * retrieved from Rogue, throws an [[EmptyScreenException]]. */
   def startGame(): Unit = {
     rogue.startGame()
+    readAllFromRogue()
+  }
+
+  private def readAllFromRogue(): Unit = {
     readScreen()
     displayInventoryScreen()
-    val inventoryScreen : Screen = readScreen()
+    val inventoryScreen: Screen = readScreen()
     rogue.sendKeypress(' ')
     for (observer <- inventoryObservers) observer.notify(Inventory())
   }
