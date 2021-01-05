@@ -1,10 +1,12 @@
 package model
 
+import model.items.{Arrows, Food, Inventory, Mace, RingMail, ShortBow, Slot}
 import model.rogue.{IRogue, Screen}
 
 /** Communicate with the game of Rogue */
 class RoguePlayer(rogue : IRogue) {
   private var screenObservers : Set[IScreenObserver] = Set()
+  private var inventoryObservers : Set[IInventoryObserver] = Set()
   
   /** Send the given command to Rogue.
    * 
@@ -18,8 +20,21 @@ class RoguePlayer(rogue : IRogue) {
    * If the game of Rogue has already started, throws a [[GameStartedException]]. If the first screen cannot be
    * retrieved from Rogue, throws an [[EmptyScreenException]]. */
   def startGame(): Unit = {
+    val inventory1 : Inventory = Inventory(
+      Map(
+        Slot.A -> Food,
+        Slot.B -> RingMail(+1),
+        Slot.C -> Mace(+1, +1),
+        Slot.D -> ShortBow(+1, +0),
+        Slot.E -> Arrows(32, +0, +0)
+      ),
+      wearing = Slot.B,
+      wielding = Slot.C
+    )
+
     rogue.startGame()
     readScreen()
+    for (observer <- inventoryObservers) observer.notify(inventory1)
   }
 
   /** Add an observer that listens for the final score */
@@ -29,7 +44,7 @@ class RoguePlayer(rogue : IRogue) {
   def addGameOverObserver(observer: IGameOverObserver): Unit = ()
 
   /** Add an observer that listens for the current inventory */
-  def addInventoryObserver(observer: IInventoryObserver): Unit = ()
+  def addInventoryObserver(observer: IInventoryObserver): Unit = inventoryObservers = inventoryObservers + observer
 
   /** Add an observer that listens for the screen retrieved from Rogue */
   def addScreenObserver(observer: IScreenObserver): Unit = screenObservers = screenObservers + observer

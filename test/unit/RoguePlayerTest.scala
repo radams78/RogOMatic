@@ -1,6 +1,7 @@
 package unit
 
-import model.{IScreenObserver, RoguePlayer}
+import model.items.{Arrows, Food, Inventory, Mace, RingMail, ShortBow, Slot}
+import model.{IInventoryObserver, IScreenObserver, RoguePlayer}
 import model.rogue.{IRogue, Screen}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
@@ -89,5 +90,255 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
     player.addScreenObserver(MockObserver)
     player.startGame()
     MockObserver should be(Symbol("seenScreen"))
+  }
+  
+  "A Rogue player" should "broadcast the inventory from Rogue" in {
+    val screen1contents: String =
+      """
+        |
+        |
+        |
+        |
+        |
+        |
+        |
+        |                               ----------+---------
+        |                               |.........@....%...|
+        |                               +........?.........|
+        |                               |...............*..|
+        |                               |..!...............|
+        |                               |..................+
+        |                               -------+------------
+        |
+        |
+        |
+        |
+        |
+        |
+        |
+        |
+        |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
+        |""".stripMargin
+
+    val screen1: Screen = Screen.makeScreen(screen1contents)
+
+    val screen2contents: String =
+      """                                                a) some food
+        |                                                b) +1 ring mail [4] being worn
+        |                                                c) a +1,+1 mace in hand
+        |                                                d) a +1,+0 short bow
+        |                                                e) 32 +0,+0 arrows
+        |                                                --press space to continue--
+        |
+        |
+        |                               ----------+---------
+        |                               |.........@....%...|
+        |                               +........?.........|
+        |                               |...............*..|
+        |                               |..!...............|
+        |                               |..................+
+        |                               -------+------------
+        |
+        |
+        |
+        |
+        |
+        |
+        |
+        |
+        |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
+        |""".stripMargin
+
+    val screen2: Screen = Screen.makeScreen(screen2contents)
+
+    val inventory1 : Inventory = Inventory(
+      Map(
+        Slot.A -> Food,
+        Slot.B -> RingMail(+1),
+        Slot.C -> Mace(+1, +1),
+        Slot.D -> ShortBow(+1, +0),
+        Slot.E -> Arrows(32, +0, +0)
+      ),
+      wearing = Slot.B,
+      wielding = Slot.C
+    )
+
+    val screen3contents: String =
+      """really quit?
+        |
+        |
+        |
+        |
+        |
+        |
+        |
+        |                               ----------+---------
+        |                               |.........@....%...|
+        |                               +........?.........|
+        |                               |...............*..|
+        |                               |..!...............|
+        |                               |..................+
+        |                               -------+------------
+        |
+        |
+        |
+        |
+        |
+        |
+        |
+        |
+        |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
+        |""".stripMargin
+
+    val screen3: Screen = Screen.makeScreen(screen3contents)
+
+    val screen4contents: String =
+      """quit with 0 gold-more-
+        |
+        |
+        |
+        |
+        |
+        |
+        |
+        |                               ----------+---------
+        |                               |.........@....%...|
+        |                               +........?.........|
+        |                               |...............*..|
+        |                               |..!...............|
+        |                               |..................+
+        |                               -------+------------
+        |
+        |
+        |
+        |
+        |
+        |
+        |
+        |
+        |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
+        |""".stripMargin
+
+    val screen4: Screen = Screen.makeScreen(screen4contents)
+
+    val screen5contents: String =
+      """-more-
+        |
+        |
+        |                              Top  Ten  Rogueists
+        |
+        |
+        |
+        |
+        |Rank   Score   Name
+        |
+        | 1      1224   robin: died of starvation on level 11
+        |
+        |
+        |
+        |
+        |
+        |
+        |
+        |
+        |
+        |
+        |
+        |
+        |
+        |""".stripMargin
+
+    val screen5: Screen = Screen.makeScreen(screen5contents)
+
+    object MockRogue extends IRogue {
+      def addScreenObserver(observer: IScreenObserver): Unit = screenObservers = screenObservers + observer
+
+      private trait MockRogueState {
+        def readScreen: Option[Screen]
+
+        def transitions: Map[Char, MockRogueState]
+
+        def receivedQuitCommand: Boolean = false
+
+        final def sendKeypress(keypress: Char): MockRogueState =
+          transitions.getOrElse(keypress,
+            fail("Unexpected keypress '" + keypress + "'")
+          )
+      }
+
+      private object StateOne extends MockRogueState {
+        override def readScreen: Option[Screen] = Some(screen1)
+
+        override def transitions: Map[Char, MockRogueState] = Map('i' -> StateTwo, 'Q' -> StateThree)
+      }
+
+      private object StateTwo extends MockRogueState {
+        override def readScreen: Option[Screen] = Some(screen2)
+
+        override def transitions: Map[Char, MockRogueState] = Map(' ' -> StateOne)
+      }
+
+      private object StateThree extends MockRogueState {
+        override def readScreen: Option[Screen] = Some(screen3)
+
+        override def transitions: Map[Char, MockRogueState] = Map('y' -> StateFour)
+      }
+
+      private object StateFour extends MockRogueState {
+        override def readScreen: Option[Screen] = Some(screen4)
+
+        override def transitions: Map[Char, MockRogueState] = Map(' ' -> StateFive)
+      }
+
+      private object StateFive extends MockRogueState {
+        override def readScreen: Option[Screen] = Some(screen5)
+
+        override def transitions: Map[Char, MockRogueState] = Map(' ' -> StateSix)
+      }
+
+      private object StateSix extends MockRogueState {
+        override def readScreen: Option[Screen] = None
+
+        override def transitions: Map[Char, MockRogueState] = Map()
+
+        override def receivedQuitCommand: Boolean = true
+      }
+
+      private var state: MockRogueState = StateOne
+
+      def receivedQuitCommand: Boolean = state.receivedQuitCommand
+
+      override def sendKeypress(keypress: Char): Unit = {
+        state = state.sendKeypress(keypress)
+        for (observer <- screenObservers) {
+          for (screen <- state.readScreen)
+            observer.notify(screen)
+        }
+      }
+
+      var screenObservers: Set[IScreenObserver] = Set()
+
+      override def startGame(): Unit = for (observer <- screenObservers)
+        for (screen <- state.readScreen)
+          observer.notify(screen)
+
+      override def getScreen: Option[Screen] = state.readScreen
+    }
+
+    object MockObserver extends IInventoryObserver {
+      private var _seenInventory: Boolean = false
+      
+      def seenInventory: Boolean = _seenInventory
+      
+      override def notify(inventory: Inventory): Unit = {
+        inventory should be(inventory1)
+        _seenInventory = true
+      }
+    }
+    
+    val player: RoguePlayer = new RoguePlayer(MockRogue)
+    player.addInventoryObserver(MockObserver)
+    player.startGame()
+    MockObserver should be(Symbol("seenInventory"))
   }
 }
