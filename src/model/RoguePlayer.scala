@@ -1,6 +1,6 @@
 package model
 
-import model.items.{Arrows, Food, Inventory, Mace, RingMail, ShortBow, Slot}
+import model.items.Inventory
 import model.rogue.{IRogue, Screen}
 
 /** Communicate with the game of Rogue */
@@ -20,21 +20,16 @@ class RoguePlayer(rogue : IRogue) {
    * If the game of Rogue has already started, throws a [[GameStartedException]]. If the first screen cannot be
    * retrieved from Rogue, throws an [[EmptyScreenException]]. */
   def startGame(): Unit = {
-    val inventory1 : Inventory = Inventory(
-      Map(
-        Slot.A -> Food,
-        Slot.B -> RingMail(+1),
-        Slot.C -> Mace(+1, +1),
-        Slot.D -> ShortBow(+1, +0),
-        Slot.E -> Arrows(32, +0, +0)
-      ),
-      wearing = Slot.B,
-      wielding = Slot.C
-    )
-
     rogue.startGame()
     readScreen()
-    for (observer <- inventoryObservers) observer.notify(inventory1)
+    displayInventoryScreen()
+    val inventoryScreen : Screen = rogue.getScreen.getOrElse(throw new EmptyScreenException)
+    rogue.sendKeypress(' ')
+    for (observer <- inventoryObservers) observer.notify(Inventory())
+  }
+
+  private def displayInventoryScreen(): Unit = {
+    rogue.sendKeypress('i')
   }
 
   /** Add an observer that listens for the final score */

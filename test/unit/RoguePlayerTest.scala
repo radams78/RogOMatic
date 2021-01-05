@@ -123,12 +123,7 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
     val screen1: Screen = Screen.makeScreen(screen1contents)
 
     val screen2contents: String =
-      """                                                a) some food
-        |                                                b) +1 ring mail [4] being worn
-        |                                                c) a +1,+1 mace in hand
-        |                                                d) a +1,+0 short bow
-        |                                                e) 32 +0,+0 arrows
-        |                                                --press space to continue--
+      """                                                --press space to continue--
         |
         |
         |                               ----------+---------
@@ -146,22 +141,15 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
         |
         |
         |
+        |
+        |
+        |
+        |
+        |
         |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
         |""".stripMargin
 
     val screen2: Screen = Screen.makeScreen(screen2contents)
-
-    val inventory1 : Inventory = Inventory(
-      Map(
-        Slot.A -> Food,
-        Slot.B -> RingMail(+1),
-        Slot.C -> Mace(+1, +1),
-        Slot.D -> ShortBow(+1, +0),
-        Slot.E -> Arrows(32, +0, +0)
-      ),
-      wearing = Slot.B,
-      wielding = Slot.C
-    )
 
     val screen3contents: String =
       """really quit?
@@ -331,7 +319,7 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
       def seenInventory: Boolean = _seenInventory
       
       override def notify(inventory: Inventory): Unit = {
-        inventory should be(inventory1)
+        inventory should be(Inventory())
         _seenInventory = true
       }
     }
