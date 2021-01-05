@@ -22,15 +22,6 @@ class RoguePlayer(rogue : IRogue) {
     readScreen()
   }
 
-  private def readScreen(): Unit = {
-    val screen: Screen = rogue.getScreen.getOrElse(throw new EmptyScreenException)
-    notifyScreen(screen)
-  }
-
-  private def notifyScreen(screen: Screen): Unit = {
-    for (observer <- screenObservers) observer.notify(screen)
-  }
-
   /** Add an observer that listens for the final score */
   def addScoreObserver(observer: IScoreObserver): Unit = ()
 
@@ -43,6 +34,14 @@ class RoguePlayer(rogue : IRogue) {
   /** Add an observer that listens for the screen retrieved from Rogue */
   def addScreenObserver(observer: IScreenObserver): Unit = screenObservers = screenObservers + observer
 
+  private def readScreen(): Unit = {
+    val screen: Screen = rogue.getScreen.getOrElse(throw new EmptyScreenException)
+    notifyScreen(screen)
+  }
+
+  private def notifyScreen(screen: Screen): Unit = {
+    for (observer <- screenObservers) observer.notify(screen)
+  }
 }
 
 class GameNotInProgressException extends Exception
