@@ -23,7 +23,7 @@ class RoguePlayer(rogue : IRogue) {
     rogue.startGame()
     readScreen()
     displayInventoryScreen()
-    val inventoryScreen : Screen = rogue.getScreen.getOrElse(throw new EmptyScreenException)
+    val inventoryScreen : Screen = readScreen()
     rogue.sendKeypress(' ')
     for (observer <- inventoryObservers) observer.notify(Inventory())
   }
@@ -44,9 +44,10 @@ class RoguePlayer(rogue : IRogue) {
   /** Add an observer that listens for the screen retrieved from Rogue */
   def addScreenObserver(observer: IScreenObserver): Unit = screenObservers = screenObservers + observer
 
-  private def readScreen(): Unit = {
+  private def readScreen(): Screen = {
     val screen: Screen = rogue.getScreen.getOrElse(throw new EmptyScreenException)
     notifyScreen(screen)
+    screen
   }
 
   private def notifyScreen(screen: Screen): Unit = {
