@@ -8,6 +8,8 @@ import org.scalatest.matchers.should.Matchers
 class RoguePlayerTest extends AnyFlatSpec with Matchers {
   def fixture: Object {
     val screen: Screen
+
+    val rogue: IRogue
   } = new {
     val screen: Screen = Screen.makeScreen(
       """
@@ -36,47 +38,42 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
         |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
         |""".stripMargin
     )
+
+    val rogue : IRogue = MockRogue
+    
+    object MockRogue extends IRogue {
+      private var _started: Boolean = false
+
+      def started: Boolean = _started
+
+      override def sendKeypress(keypress: Char): Unit = ()
+
+      override def startGame(): Unit = _started = true
+
+      override def getScreen: Option[Screen] = if (_started) Some(screen) else None
+    }
   }
 
   "A Rogue player" should "start the game of Rogue" in {
     val f: Object {
       val screen: Screen
+
+      val rogue: IRogue
     } = fixture
     
-    object MockRogue extends IRogue {
-      private var _started: Boolean = false
-      
-      def started: Boolean = _started
-      
-      override def sendKeypress(keypress: Char): Unit = ()
-
-      override def startGame(): Unit = _started = true
-
-      override def getScreen: Option[Screen] = if (_started) Some(f.screen) else None
-    }
     
-    val player : RoguePlayer = new RoguePlayer(MockRogue)
+    val player : RoguePlayer = new RoguePlayer(f.rogue)
     player.startGame()
-    MockRogue should be(Symbol("started"))
+    f.rogue should be(Symbol("started"))
   }
   
   "A Rogue player" should "broadcast the screen from Rogue" in {
     val f: Object {
       val screen: Screen
+
+      val rogue: IRogue
     } = fixture
     
-    object MockRogue extends IRogue {
-      private var _started: Boolean = false
-
-      def started: Boolean = _started
-
-      override def sendKeypress(keypress: Char): Unit = ()
-
-      override def startGame(): Unit = _started = true
-
-      override def getScreen: Option[Screen] = if (_started) Some(f.screen) else None
-    }
-
     object MockObserver extends IScreenObserver {
       private var _seenScreen: Boolean = false
       
@@ -88,7 +85,7 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
       }
     }
     
-    val player : RoguePlayer = new RoguePlayer(MockRogue)
+    val player : RoguePlayer = new RoguePlayer(f.rogue)
     player.addScreenObserver(MockObserver)
     player.startGame()
     MockObserver should be(Symbol("seenScreen"))
