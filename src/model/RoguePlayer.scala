@@ -47,6 +47,8 @@ class RoguePlayer(rogue : IRogue) {
 /** Exception thrown if the Rogue process has ended unexpectedly. */
 class GameNotInProgressException extends Exception
 
+/** Exception thrown if the Rogue process has started unexpectedly. */
 class GameStartedException extends Exception
 
+/** Exception thrown if screen cannot be retrieved from Rogue. */
 class EmptyScreenException extends Exception
