@@ -18,7 +18,11 @@ class RoguePlayer(rogue : IRogue) {
    * If the game of Rogue has already started, throws an [[GameStartedException]]*/
   def startGame(): Unit = {
     rogue.startGame()
-    val screen : Screen = rogue.getScreen.getOrElse(throw new EmptyScreenException)
+    readScreen()
+  }
+
+  private def readScreen(): Unit = {
+    val screen: Screen = rogue.getScreen.getOrElse(throw new EmptyScreenException)
     notifyScreen(screen)
   }
 
