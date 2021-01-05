@@ -15,7 +15,8 @@ class RoguePlayer(rogue : IRogue) {
 
   /** Start the game of Rogue 
    * 
-   * If the game of Rogue has already started, throws an [[GameStartedException]]*/
+   * If the game of Rogue has already started, throws a [[GameStartedException]]. If the first screen cannot be
+   * retrieved from Rogue, throws an [[EmptyScreenException]]. */
   def startGame(): Unit = {
     rogue.startGame()
     readScreen()
