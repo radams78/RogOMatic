@@ -8,7 +8,7 @@ class RoguePlayer(rogue : IRogue) {
   
   /** Send the given command to Rogue.
    * 
-   * The game of Rogue must be in progress, otherwise throws an [[GameNotInProgressException]]
+   * The game of Rogue must be in progress, otherwise throws a [[GameNotInProgressException]]
    * 
    * @param command Command to be performed */
   def performCommand(command: Command): Unit = ()
