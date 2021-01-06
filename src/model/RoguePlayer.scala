@@ -28,8 +28,8 @@ class RoguePlayer(rogue : IRogue) {
     readScreen()
     displayInventoryScreen()
     val inventoryScreen: Screen = readScreen()
-    rogue.sendKeypress(' ')
     for (observer <- inventoryObservers) observer.notify(Inventory())
+    rogue.sendKeypress(' ')
   }
 
   private def displayInventoryScreen(): Unit = {
