@@ -79,3 +79,4 @@ class GameStartedException extends Exception
 
 /** Exception thrown if screen cannot be retrieved from Rogue. */
 class EmptyScreenException extends Exception
+
