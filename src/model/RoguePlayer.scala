@@ -26,6 +26,10 @@ class RoguePlayer(rogue : IRogue) {
 
   private def readAllFromRogue(): Unit = {
     readScreen()
+    readInventoryScreen()
+  }
+
+  private def readInventoryScreen(): Unit = {
     displayInventoryScreen()
     val inventoryScreen: Screen = readScreen()
     parseInventoryScreen(inventoryScreen)
