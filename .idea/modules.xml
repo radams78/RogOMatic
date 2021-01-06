@@ -4,6 +4,8 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Main.iml" filepath="$PROJECT_DIR$/.idea/modules/Main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Main-build.iml" filepath="$PROJECT_DIR$/.idea/modules/Main-build.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/RogOMatic.Main.iml" filepath="$PROJECT_DIR$/.idea/modules/RogOMatic.Main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/project.Main-build.iml" filepath="$PROJECT_DIR$/.idea/modules/project.Main-build.iml" />
     </modules>
   </component>
 </project>
