@@ -25,8 +25,12 @@ class RoguePlayer(rogue : IRogue) {
   }
 
   private def readAllFromRogue(): Unit = {
-    readScreen()
+    readNormalScreen
     readInventoryScreen()
+  }
+
+  private def readNormalScreen: Screen = {
+    readScreen()
   }
 
   private def readInventoryScreen(): Unit = {
