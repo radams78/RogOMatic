@@ -2,7 +2,7 @@ package integration
 
 import model.items._
 import model.rogue.{IRogue, Screen}
-import model.{Command, IGameOverObserver, IInventoryObserver, IScoreObserver, IScreenObserver, RoguePlayer}
+import model.{Command, IGameOverObserver, IInventoryObserver, IScoreObserver, IScreenObserver, RoguePlayer, ScreenReader}
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
@@ -167,9 +167,9 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
 
       val screen5: Screen = Screen.makeScreen(screen5contents)
 
-      object MockRogue extends IRogue {
-        def addScreenObserver(observer: IScreenObserver): Unit = screenObservers = screenObservers + observer
+      val screenReader : ScreenReader = new ScreenReader
 
+      object MockRogue extends IRogue {
         private trait MockRogueState {
           def readScreen: Option[Screen]
 
@@ -227,19 +227,12 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
 
         override def sendKeypress(keypress: Char): Unit = {
           state = state.sendKeypress(keypress)
-          for (observer <- screenObservers) {
             for (screen <- state.readScreen)
-              observer.notify(screen)
-          }
+              screenReader.notify(screen)
         }
 
-        var screenObservers: Set[IScreenObserver] = Set()
-
-        override def startGame(): Unit = for (observer <- screenObservers)
-          for (screen <- state.readScreen)
-            observer.notify(screen)
-
-        override def getScreen: Option[Screen] = state.readScreen
+        override def startGame(): Unit = 
+          for (screen <- state.readScreen) screenReader.notify(screen)
       }
 
       object MockScreenView extends IScreenObserver {
@@ -267,8 +260,8 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
       }
       
       Given("a new game of model.rogue.Rogue")
-      val player: RoguePlayer = new RoguePlayer(MockRogue)
-      player.addScreenObserver(MockScreenView)
+      val player: RoguePlayer = new RoguePlayer(MockRogue, screenReader)
+      screenReader.addScreenObserver(MockScreenView)
       player.addInventoryObserver(MockInventoryView)
       player.addGameOverObserver(MockGameOverView)
       player.addScoreObserver(MockScoreView)

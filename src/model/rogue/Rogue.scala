@@ -1,11 +1,12 @@
 package model.rogue
 
 import com.jediterm.pty.PtyProcessTtyConnector
-import com.jediterm.terminal._
+import com.jediterm.terminal.{CursorShape, RequestOrigin, TerminalDisplay, TerminalStarter, TtyBasedArrayDataStream}
 import com.jediterm.terminal.emulator.mouse.MouseMode
 import com.jediterm.terminal.model.JediTerminal.ResizeHandler
 import com.jediterm.terminal.model.{JediTerminal, StyleState, TerminalSelection, TerminalTextBuffer}
 import com.pty4j.PtyProcess
+import model.ScreenReader
 import org.apache.log4j.BasicConfigurator
 import org.apache.log4j.varia.NullAppender
 
@@ -15,9 +16,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 /** Class for low-dungeonLevel communication with the RG process. A humble object. */
-class Rogue extends Runnable with IRogue {
-  private var screen : Option[Screen] = None
-  
+class Rogue(screenReader : ScreenReader) extends Runnable with IRogue {
     private val command: Array[String] = Rogue.DEFAULT_COMMAND
     private val env: java.util.Map[String, String] = Rogue.DEFAULT_ENVIRONMENT
     private val charset: Charset = Rogue.DEFAULT_CHARSET
@@ -41,7 +40,7 @@ class Rogue extends Runnable with IRogue {
       // Wait for RG to clear the message "just a moment while I dig the dungeon"
       // TODO More elegant way to do this?
       Thread.sleep(1000)
-      screen = Some(Screen.makeScreen(buffer.getScreenLines))
+      screenReader.notify(Screen.makeScreen(buffer.getScreenLines))
     }
 
     /** Send the given character to RG as input from the actuator, orElse pause until screen stops updating. */
@@ -52,7 +51,7 @@ class Rogue extends Runnable with IRogue {
         Thread.sleep(10)
         buffer.getScreenLines
       }).sliding(2).find((p: Seq[String]) => p(0) == p(1))
-      screen = Some(Screen.makeScreen(buffer.getScreenLines))
+      screenReader.notify(Screen.makeScreen(buffer.getScreenLines)) // TODO Duplication
     }
 
     /** Terminate the RG process and perform all necessary cleanup.  This method must be called before the end
@@ -60,8 +59,6 @@ class Rogue extends Runnable with IRogue {
     def close(): Unit = connector.close()
 
   override def run(): Unit = startGame()
-
-  override def getScreen: Option[Screen] = screen
 }
 
   object Rogue {

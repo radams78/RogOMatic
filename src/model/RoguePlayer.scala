@@ -4,8 +4,7 @@ import model.items.Inventory
 import model.rogue.{IRogue, Screen}
 
 /** Communicate with the game of Rogue */
-class RoguePlayer(rogue : IRogue) {
-  private var screenObservers : Set[IScreenObserver] = Set()
+class RoguePlayer(rogue : IRogue, reader : ScreenReader) {
   private var inventoryObservers : Set[IInventoryObserver] = Set()
   
   /** Send the given command to Rogue.
@@ -30,12 +29,12 @@ class RoguePlayer(rogue : IRogue) {
   }
 
   private def readNormalScreen(): Unit = {
-    readScreen()
+    reader.readScreen()
   }
 
   private def readInventoryScreen(): Unit = {
     displayInventoryScreen()
-    val inventoryScreen: Screen = readScreen()
+    val inventoryScreen: Screen = reader.readScreen().getOrElse(throw new EmptyScreenException)
     parseInventoryScreen(inventoryScreen)
     rogue.sendKeypress(' ')
   }
@@ -56,19 +55,6 @@ class RoguePlayer(rogue : IRogue) {
 
   /** Add an observer that listens for the current inventory */
   def addInventoryObserver(observer: IInventoryObserver): Unit = inventoryObservers = inventoryObservers + observer
-
-  /** Add an observer that listens for the screen retrieved from Rogue */
-  def addScreenObserver(observer: IScreenObserver): Unit = screenObservers = screenObservers + observer
-
-  private def readScreen(): Screen = {
-    val screen: Screen = rogue.getScreen.getOrElse(throw new EmptyScreenException)
-    notifyScreen(screen)
-    screen
-  }
-
-  private def notifyScreen(screen: Screen): Unit = {
-    for (observer <- screenObservers) observer.notify(screen)
-  }
 }
 
 /** Exception thrown if the Rogue process has ended unexpectedly. */

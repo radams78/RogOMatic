@@ -1,8 +1,8 @@
 package unit
 
-import model.items.{Arrows, Food, Inventory, Mace, RingMail, ShortBow, Slot}
-import model.{IInventoryObserver, IScreenObserver, RoguePlayer}
+import model.items.Inventory
 import model.rogue.{IRogue, Screen}
+import model.{IInventoryObserver, IScreenObserver, RoguePlayer, ScreenReader}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
@@ -11,6 +11,8 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
     val screen: Screen
 
     val rogue: IRogue
+
+    val screenReader: ScreenReader
   } = new {
     val screen: Screen = Screen.makeScreen(
       """
@@ -41,6 +43,8 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
     )
 
     val rogue : IRogue = MockRogue
+
+    val screenReader: ScreenReader = new ScreenReader
     
     object MockRogue extends IRogue {
       private var _started: Boolean = false
@@ -49,9 +53,10 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
 
       override def sendKeypress(keypress: Char): Unit = ()
 
-      override def startGame(): Unit = _started = true
-
-      override def getScreen: Option[Screen] = if (_started) Some(screen) else None
+      override def startGame(): Unit = {
+        _started = true
+        screenReader.notify(screen)
+      }
     }
   }
 
@@ -60,10 +65,11 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
       val screen: Screen
 
       val rogue: IRogue
+
+      val screenReader: ScreenReader
     } = fixture
     
-    
-    val player : RoguePlayer = new RoguePlayer(f.rogue)
+    val player : RoguePlayer = new RoguePlayer(f.rogue, f.screenReader)
     player.startGame()
     f.rogue should be(Symbol("started"))
   }
@@ -73,6 +79,8 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
       val screen: Screen
 
       val rogue: IRogue
+
+      val screenReader: ScreenReader
     } = fixture
     
     object MockObserver extends IScreenObserver {
@@ -86,8 +94,8 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
       }
     }
     
-    val player : RoguePlayer = new RoguePlayer(f.rogue)
-    player.addScreenObserver(MockObserver)
+    val player : RoguePlayer = new RoguePlayer(f.rogue, f.screenReader)
+    f.screenReader.addScreenObserver(MockObserver)
     player.startGame()
     MockObserver should be(Symbol("seenScreen"))
   }
@@ -237,7 +245,8 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
         |""".stripMargin
 
     val screen5: Screen = Screen.makeScreen(screen5contents)
-
+    
+    val screenReader : ScreenReader = new ScreenReader
     object MockRogue extends IRogue {
       def addScreenObserver(observer: IScreenObserver): Unit = screenObservers = screenObservers + observer
 
@@ -306,11 +315,9 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
 
       var screenObservers: Set[IScreenObserver] = Set()
 
-      override def startGame(): Unit = for (observer <- screenObservers)
+      override def startGame(): Unit = 
         for (screen <- state.readScreen)
-          observer.notify(screen)
-
-      override def getScreen: Option[Screen] = state.readScreen
+          screenReader.notify(screen)
     }
 
     object MockObserver extends IInventoryObserver {
@@ -324,7 +331,7 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
       }
     }
     
-    val player: RoguePlayer = new RoguePlayer(MockRogue)
+    val player: RoguePlayer = new RoguePlayer(MockRogue, screenReader)
     player.addInventoryObserver(MockObserver)
     player.startGame()
     MockObserver should be(Symbol("seenInventory"))

@@ -17,8 +17,6 @@ trait IRogue {
    *
    * Should be called before any keypress is sent to model.rogue.Rogue. Throws a [[GameAlreadyStartedException]] if startGame is called twice. */
   def startGame() : Unit
-
-  def getScreen: Option[Screen]
 }
 
 /** Exception thrown if we try to send a keypress to model.rogue.Rogue before the game is started */
