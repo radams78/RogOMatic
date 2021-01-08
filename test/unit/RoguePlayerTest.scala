@@ -162,7 +162,7 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
     val screenReader : ScreenReader = ScreenReader()
     object MockRogue extends IRogue {
       private trait MockRogueState {
-        def readScreen: Option[Screen]
+        def readScreen: Screen
 
         def transitions: Map[Char, MockRogueState]
 
@@ -175,13 +175,13 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
       }
 
       private object StateOne extends MockRogueState {
-        override def readScreen: Option[Screen] = Some(screen1)
+        override def readScreen: Screen = screen1
 
         override def transitions: Map[Char, MockRogueState] = Map('i' -> StateTwo)
       }
 
       private object StateTwo extends MockRogueState {
-        override def readScreen: Option[Screen] = Some(screen2)
+        override def readScreen: Screen = screen2
 
         override def transitions: Map[Char, MockRogueState] = Map(' ' -> StateOne)
       }
@@ -190,14 +190,10 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
 
       override def sendKeypress(keypress: Char): Unit = {
         state = state.sendKeypress(keypress)
-        for (screen <- state.readScreen) screenReader.notify(screen)
+        screenReader.notify(state.readScreen)
       }
 
-      var screenObservers: Set[IScreenObserver] = Set()
-
-      override def startGame(): Unit = 
-        for (screen <- state.readScreen)
-          screenReader.notify(screen)
+      override def startGame(): Unit = screenReader.notify(state.readScreen)
     }
 
     object MockObserver extends IInventoryObserver {
