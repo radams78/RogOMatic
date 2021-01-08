@@ -159,97 +159,8 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
 
     val screen2: Screen = Screen.makeScreen(screen2contents)
 
-    val screen3contents: String =
-      """really quit?
-        |
-        |
-        |
-        |
-        |
-        |
-        |
-        |                               ----------+---------
-        |                               |.........@....%...|
-        |                               +........?.........|
-        |                               |...............*..|
-        |                               |..!...............|
-        |                               |..................+
-        |                               -------+------------
-        |
-        |
-        |
-        |
-        |
-        |
-        |
-        |
-        |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
-        |""".stripMargin
-
-    val screen3: Screen = Screen.makeScreen(screen3contents)
-
-    val screen4contents: String =
-      """quit with 0 gold-more-
-        |
-        |
-        |
-        |
-        |
-        |
-        |
-        |                               ----------+---------
-        |                               |.........@....%...|
-        |                               +........?.........|
-        |                               |...............*..|
-        |                               |..!...............|
-        |                               |..................+
-        |                               -------+------------
-        |
-        |
-        |
-        |
-        |
-        |
-        |
-        |
-        |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
-        |""".stripMargin
-
-    val screen4: Screen = Screen.makeScreen(screen4contents)
-
-    val screen5contents: String =
-      """-more-
-        |
-        |
-        |                              Top  Ten  Rogueists
-        |
-        |
-        |
-        |
-        |Rank   Score   Name
-        |
-        | 1      1224   robin: died of starvation on level 11
-        |
-        |
-        |
-        |
-        |
-        |
-        |
-        |
-        |
-        |
-        |
-        |
-        |
-        |""".stripMargin
-
-    val screen5: Screen = Screen.makeScreen(screen5contents)
-    
     val screenReader : ScreenReader = ScreenReader()
     object MockRogue extends IRogue {
-      def addScreenObserver(observer: IScreenObserver): Unit = screenObservers = screenObservers + observer
-
       private trait MockRogueState {
         def readScreen: Option[Screen]
 
@@ -266,7 +177,7 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
       private object StateOne extends MockRogueState {
         override def readScreen: Option[Screen] = Some(screen1)
 
-        override def transitions: Map[Char, MockRogueState] = Map('i' -> StateTwo, 'Q' -> StateThree)
+        override def transitions: Map[Char, MockRogueState] = Map('i' -> StateTwo)
       }
 
       private object StateTwo extends MockRogueState {
@@ -275,42 +186,11 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
         override def transitions: Map[Char, MockRogueState] = Map(' ' -> StateOne)
       }
 
-      private object StateThree extends MockRogueState {
-        override def readScreen: Option[Screen] = Some(screen3)
-
-        override def transitions: Map[Char, MockRogueState] = Map('y' -> StateFour)
-      }
-
-      private object StateFour extends MockRogueState {
-        override def readScreen: Option[Screen] = Some(screen4)
-
-        override def transitions: Map[Char, MockRogueState] = Map(' ' -> StateFive)
-      }
-
-      private object StateFive extends MockRogueState {
-        override def readScreen: Option[Screen] = Some(screen5)
-
-        override def transitions: Map[Char, MockRogueState] = Map(' ' -> StateSix)
-      }
-
-      private object StateSix extends MockRogueState {
-        override def readScreen: Option[Screen] = None
-
-        override def transitions: Map[Char, MockRogueState] = Map()
-
-        override def receivedQuitCommand: Boolean = true
-      }
-
       private var state: MockRogueState = StateOne
-
-      def receivedQuitCommand: Boolean = state.receivedQuitCommand
 
       override def sendKeypress(keypress: Char): Unit = {
         state = state.sendKeypress(keypress)
-        for (observer <- screenObservers) {
-          for (screen <- state.readScreen)
-            observer.notify(screen)
-        }
+        for (screen <- state.readScreen) screenReader.notify(screen)
       }
 
       var screenObservers: Set[IScreenObserver] = Set()
