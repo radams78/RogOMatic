@@ -1,8 +1,10 @@
 package model.rogue
 
-import model.{Command, IGameOverObserver, IScoreObserver, IScreenObserver}
+import model.{Command, IGameOverObserver, IInventoryObserver, IScoreObserver, IScreenObserver}
 
 class RogueGame private (rogue : IRogue, player: RoguePlayer, screenReader: ScreenReader) {
+  def addInventoryObserver(observer: IInventoryObserver): Unit = player.addInventoryObserver(observer)
+
   def performCommand(command: Command): Unit = player.performCommand(command)
 
   def addGameOverObserver(observer : IGameOverObserver) : Unit = player.addGameOverObserver(observer)
@@ -18,6 +20,14 @@ object RogueGame {
     val rogue : IRogue = Rogue(screenReader)
     val player : RoguePlayer = RoguePlayer(rogue, screenReader)
 
+    new RogueGame(rogue, player, screenReader)
+  }
+  
+  def apply(rogueBuilder : ScreenReader => IRogue) : RogueGame = {
+    val screenReader : ScreenReader = ScreenReader()
+    val rogue : IRogue = rogueBuilder(screenReader)
+    val player : RoguePlayer = RoguePlayer(rogue, screenReader)
+    
     new RogueGame(rogue, player, screenReader)
   }
 }

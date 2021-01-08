@@ -1,7 +1,7 @@
 package integration
 
 import model.items._
-import model.rogue.{IRogue, RoguePlayer, Screen, ScreenReader}
+import model.rogue.{IRogue, RogueGame, RoguePlayer, Screen, ScreenReader}
 import model.{Command, IGameOverObserver, IInventoryObserver, IScoreObserver, IScreenObserver}
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
@@ -167,9 +167,7 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
 
       val screen5: Screen = Screen.makeScreen(screen5contents)
 
-      val screenReader : ScreenReader = ScreenReader()
-
-      object MockRogue extends IRogue {
+      class MockRogue(screenReader: ScreenReader) extends IRogue {
         private trait MockRogueState {
           def readScreen: Option[Screen]
 
@@ -235,6 +233,10 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
           for (screen <- state.readScreen) screenReader.notify(screen)
       }
 
+      object MockRogue {
+        def apply(screenReader: ScreenReader): MockRogue = new MockRogue(screenReader)
+      }
+      
       object MockScreenView extends IScreenObserver {
         private var _seenFirstScreen : Boolean = false
         def seenFirstScreen: Boolean = _seenFirstScreen
@@ -259,13 +261,13 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
         override def notifyGameOver(): Unit = _seenGameOverScreen = true
       }
       
-      Given("a new game of model.rogue.Rogue")
-      val player: RoguePlayer = RoguePlayer(MockRogue, screenReader)
-      screenReader.addScreenObserver(MockScreenView)
-      player.addInventoryObserver(MockInventoryView)
-      player.addGameOverObserver(MockGameOverView)
-      player.addScoreObserver(MockScoreView)
-      player.startGame()
+      Given("a new game of Rogue")
+      val rogueGame : RogueGame = RogueGame(MockRogue(_))
+      rogueGame.addScreenObserver(MockScreenView)
+      rogueGame.addInventoryObserver(MockInventoryView)
+      rogueGame.addGameOverObserver(MockGameOverView)
+      rogueGame.addScoreObserver(MockScoreView)
+      rogueGame.startGame()
 
       Then("the user should see the first screen")
       MockScreenView should be(Symbol("seenFirstScreen"))
@@ -274,7 +276,7 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
       MockInventoryView should be(Symbol("seenFirstInventory"))
       
       When("the user enters the command to quit")
-      player.performCommand(Command.QUIT)
+      rogueGame.performCommand(Command.QUIT)
 
       Then("model.rogue.Rogue should receive the command to quit")
       MockRogue should be(Symbol("receivedQuitCommand"))
