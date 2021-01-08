@@ -1,6 +1,7 @@
 package controller
 
-import model.{Command, RoguePlayer}
+import model.Command
+import model.rogue.{RogueGame, RoguePlayer}
 
 /** A controller that allows the user to play the game of Rogue in transparent mode.
  * 
@@ -10,11 +11,11 @@ import model.{Command, RoguePlayer}
  * This class is a humble object. */
 
 // TODO End thread when game is over
-class TransparentController(player: RoguePlayer) extends Runnable {
+class TransparentController(rogueGame: RogueGame) extends Runnable {
   override def run(): Unit = while (true) {
     val input: Char = scala.io.StdIn.readChar()
     input match {
-      case 'Q' => player.performCommand(Command.QUIT)
+      case 'Q' => rogueGame.performCommand(Command.QUIT)
       case _ => System.out.println("Unrecognized command")
     }
   }

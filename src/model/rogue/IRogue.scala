@@ -5,7 +5,7 @@ package model.rogue
  * The model.rogue.Rogue process is an observable that broadcasts the screen every time it updates. Subscribe all the observers
  * that you want to observe the process, then call startGame(). The observers will then all be notified of the first
  * screen, and notified of the screen after every keypress*/
-trait IRogue {
+trait IRogue extends Runnable {
   /** Send a keypress to model.rogue.Rogue as if the player had pressed it.
    *
    * Throws a [[GameNotStartedException]] if startGame has not yet been called.
@@ -17,6 +17,8 @@ trait IRogue {
    *
    * Should be called before any keypress is sent to model.rogue.Rogue. Throws a [[GameAlreadyStartedException]] if startGame is called twice. */
   def startGame() : Unit
+  
+  final override def run(): Unit = startGame()
 }
 
 /** Exception thrown if we try to send a keypress to model.rogue.Rogue before the game is started */

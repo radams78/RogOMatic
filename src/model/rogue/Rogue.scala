@@ -6,7 +6,6 @@ import com.jediterm.terminal.emulator.mouse.MouseMode
 import com.jediterm.terminal.model.JediTerminal.ResizeHandler
 import com.jediterm.terminal.model.{JediTerminal, StyleState, TerminalSelection, TerminalTextBuffer}
 import com.pty4j.PtyProcess
-import model.ScreenReader
 import org.apache.log4j.BasicConfigurator
 import org.apache.log4j.varia.NullAppender
 
@@ -16,7 +15,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 /** Class for low-dungeonLevel communication with the RG process. A humble object. */
-class Rogue(screenReader : ScreenReader) extends Runnable with IRogue {
+class Rogue private (screenReader : ScreenReader) extends IRogue {
     private val command: Array[String] = Rogue.DEFAULT_COMMAND
     private val env: java.util.Map[String, String] = Rogue.DEFAULT_ENVIRONMENT
     private val charset: Charset = Rogue.DEFAULT_CHARSET
@@ -57,8 +56,6 @@ class Rogue(screenReader : ScreenReader) extends Runnable with IRogue {
     /** Terminate the RG process and perform all necessary cleanup.  This method must be called before the end
      * of the application, or there may be a zombie RG process created. */
     def close(): Unit = connector.close()
-
-  override def run(): Unit = startGame()
 }
 
   object Rogue {
@@ -66,6 +63,8 @@ class Rogue(screenReader : ScreenReader) extends Runnable with IRogue {
     private val DEFAULT_ENVIRONMENT: java.util.Map[String, String] = new java.util.HashMap[String, String]
     DEFAULT_ENVIRONMENT.put("TERM", "xterm")
     private val DEFAULT_CHARSET: Charset = Charset.forName("UTF-8")
+    
+    def apply(screenReader: ScreenReader): IRogue = new Rogue(screenReader)
   }
 
   // A minimal implementation of TerminalDisplay

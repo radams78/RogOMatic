@@ -1,10 +1,10 @@
-package model
+package model.rogue
 
 import model.items.Inventory
-import model.rogue.{IRogue, Screen}
+import model.{Command, IGameOverObserver, IInventoryObserver, IScoreObserver}
 
 /** Communicate with the game of Rogue */
-class RoguePlayer(rogue : IRogue, reader : ScreenReader) {
+class RoguePlayer private (rogue : IRogue, reader : ScreenReader) {
   private var inventoryObservers : Set[IInventoryObserver] = Set()
   
   /** Send the given command to Rogue.
@@ -55,6 +55,10 @@ class RoguePlayer(rogue : IRogue, reader : ScreenReader) {
 
   /** Add an observer that listens for the current inventory */
   def addInventoryObserver(observer: IInventoryObserver): Unit = inventoryObservers = inventoryObservers + observer
+}
+
+object RoguePlayer {
+  def apply(rogue : IRogue, screenReader: ScreenReader) : RoguePlayer = new RoguePlayer(rogue, screenReader)
 }
 
 /** Exception thrown if the Rogue process has ended unexpectedly. */

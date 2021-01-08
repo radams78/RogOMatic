@@ -1,8 +1,8 @@
 package unit
 
 import model.items.Inventory
-import model.rogue.{IRogue, Screen}
-import model.{IInventoryObserver, IScreenObserver, RoguePlayer, ScreenReader}
+import model.rogue.{IRogue, RoguePlayer, Screen, ScreenReader}
+import model.{IInventoryObserver, IScreenObserver}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
@@ -44,7 +44,7 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
 
     val rogue : IRogue = MockRogue
 
-    val screenReader: ScreenReader = new ScreenReader
+    val screenReader: ScreenReader = ScreenReader()
     
     object MockRogue extends IRogue {
       private var _started: Boolean = false
@@ -69,7 +69,7 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
       val screenReader: ScreenReader
     } = fixture
     
-    val player : RoguePlayer = new RoguePlayer(f.rogue, f.screenReader)
+    val player : RoguePlayer = RoguePlayer(f.rogue, f.screenReader)
     player.startGame()
     f.rogue should be(Symbol("started"))
   }
@@ -94,7 +94,7 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
       }
     }
     
-    val player : RoguePlayer = new RoguePlayer(f.rogue, f.screenReader)
+    val player : RoguePlayer = RoguePlayer(f.rogue, f.screenReader)
     f.screenReader.addScreenObserver(MockObserver)
     player.startGame()
     MockObserver should be(Symbol("seenScreen"))
@@ -246,7 +246,7 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
 
     val screen5: Screen = Screen.makeScreen(screen5contents)
     
-    val screenReader : ScreenReader = new ScreenReader
+    val screenReader : ScreenReader = ScreenReader()
     object MockRogue extends IRogue {
       def addScreenObserver(observer: IScreenObserver): Unit = screenObservers = screenObservers + observer
 
@@ -331,7 +331,7 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
       }
     }
     
-    val player: RoguePlayer = new RoguePlayer(MockRogue, screenReader)
+    val player: RoguePlayer = RoguePlayer(MockRogue, screenReader)
     player.addInventoryObserver(MockObserver)
     player.startGame()
     MockObserver should be(Symbol("seenInventory"))

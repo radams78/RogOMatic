@@ -1,8 +1,8 @@
 package integration
 
 import model.items._
-import model.rogue.{IRogue, Screen}
-import model.{Command, IGameOverObserver, IInventoryObserver, IScoreObserver, IScreenObserver, RoguePlayer, ScreenReader}
+import model.rogue.{IRogue, RoguePlayer, Screen, ScreenReader}
+import model.{Command, IGameOverObserver, IInventoryObserver, IScoreObserver, IScreenObserver}
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
@@ -167,7 +167,7 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
 
       val screen5: Screen = Screen.makeScreen(screen5contents)
 
-      val screenReader : ScreenReader = new ScreenReader
+      val screenReader : ScreenReader = ScreenReader()
 
       object MockRogue extends IRogue {
         private trait MockRogueState {
@@ -260,7 +260,7 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
       }
       
       Given("a new game of model.rogue.Rogue")
-      val player: RoguePlayer = new RoguePlayer(MockRogue, screenReader)
+      val player: RoguePlayer = RoguePlayer(MockRogue, screenReader)
       screenReader.addScreenObserver(MockScreenView)
       player.addInventoryObserver(MockInventoryView)
       player.addGameOverObserver(MockGameOverView)
