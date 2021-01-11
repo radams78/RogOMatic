@@ -1,4 +1,4 @@
-package unit
+package unit.rogue
 
 import model.items.Inventory
 import model.rogue._
