@@ -1,8 +1,7 @@
 package integration
 
 import model.items._
-import model.rogue.{IRogue, RogueGame, RoguePlayer, Screen, ScreenReader}
-import model.{Command, IGameOverObserver, IInventoryObserver, IScoreObserver, IScreenObserver}
+import model.rogue._
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers

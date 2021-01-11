@@ -1,7 +1,6 @@
 package model.rogue
 
-import model.{Command, IGameOverObserver, IInventoryObserver, IScoreObserver, IScreenObserver}
-
+/** A game of Rogue */
 class RogueGame private (rogue : IRogue, player: RoguePlayer, screenReader: ScreenReader) {
   def addInventoryObserver(observer: IInventoryObserver): Unit = player.addInventoryObserver(observer)
 

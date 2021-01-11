@@ -1,6 +1,4 @@
-package model
-
-import model.rogue.IRogue
+package model.rogue
 
 /** A command in the game of model.rogue.Rogue */
 trait Command {

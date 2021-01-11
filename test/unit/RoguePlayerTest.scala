@@ -1,8 +1,7 @@
 package unit
 
 import model.items.Inventory
-import model.rogue.{IRogue, RoguePlayer, Screen, ScreenReader}
-import model.{IInventoryObserver, IScreenObserver}
+import model.rogue._
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 

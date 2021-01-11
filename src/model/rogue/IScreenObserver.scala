@@ -1,6 +1,4 @@
-package model
-
-import model.rogue.{IRogue, Screen}
+package model.rogue
 
 /** An object that can observe an [[IRogue]] */
 trait IScreenObserver {

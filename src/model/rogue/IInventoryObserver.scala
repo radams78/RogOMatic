@@ -1,4 +1,4 @@
-package model
+package model.rogue
 
 import model.items.Inventory
 

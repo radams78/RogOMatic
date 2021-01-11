@@ -1,7 +1,6 @@
 package controller
 
-import model.Command
-import model.rogue.{RogueGame, RoguePlayer}
+import model.rogue.{Command, RogueGame, RoguePlayer}
 
 /** A controller that allows the user to play the game of Rogue in transparent mode.
  * 

@@ -1,7 +1,6 @@
 package view
 
-import model.IScreenObserver
-import model.rogue.Screen
+import model.rogue.{IScreenObserver, Screen}
 
 class ScreenView extends IScreenObserver {
   override def notify(screen: Screen): Unit = println(screen)

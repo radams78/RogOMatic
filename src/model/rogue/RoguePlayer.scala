@@ -1,7 +1,6 @@
 package model.rogue
 
 import model.items.Inventory
-import model.{Command, IGameOverObserver, IInventoryObserver, IScoreObserver}
 
 /** Communicate with the game of Rogue */
 class RoguePlayer private (rogue : IRogue, reader : ScreenReader) {

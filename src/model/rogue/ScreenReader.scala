@@ -1,7 +1,5 @@
 package model.rogue
 
-import model.IScreenObserver
-
 /** Take the screen displayed by Rogue and make it available via a getter and the observer pattern.
  * 
  * An object of this class is injected when an [[IRogue]] object is created. After the game of Rogue starts,
