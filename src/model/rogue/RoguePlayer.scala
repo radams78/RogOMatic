@@ -3,7 +3,7 @@ package model.rogue
 import model.items.Inventory
 
 /** Communicate with the game of Rogue */
-class RoguePlayer private (rogue : IRogue, reader : ScreenReader) {
+class RoguePlayer private (actuator: IActuator, reader : ScreenReader) {
   private var inventoryObservers : Set[IInventoryObserver] = Set()
   
   /** Send the given command to Rogue.
@@ -18,7 +18,7 @@ class RoguePlayer private (rogue : IRogue, reader : ScreenReader) {
    * If the game of Rogue has already started, throws a [[GameStartedException]]. If the first screen cannot be
    * retrieved from Rogue, throws an [[EmptyScreenException]]. */
   def startGame(): Unit = {
-    rogue.startGame()
+    actuator.startGame()
     readAllFromRogue()
   }
 
@@ -35,7 +35,7 @@ class RoguePlayer private (rogue : IRogue, reader : ScreenReader) {
     displayInventoryScreen()
     val inventoryScreen: Screen = reader.readScreen().getOrElse(throw new EmptyScreenException)
     parseInventoryScreen(inventoryScreen)
-    rogue.sendKeypress(' ')
+    actuator.clearInventoryScreen()
   }
 
   private def parseInventoryScreen(inventoryScreen : Screen): Unit = {
@@ -43,7 +43,7 @@ class RoguePlayer private (rogue : IRogue, reader : ScreenReader) {
   }
 
   private def displayInventoryScreen(): Unit = {
-    rogue.sendKeypress('i')
+    actuator.displayInventoryScreen()
   }
 
   /** Add an observer that listens for the final score */
@@ -57,7 +57,7 @@ class RoguePlayer private (rogue : IRogue, reader : ScreenReader) {
 }
 
 object RoguePlayer {
-  def apply(rogue : IRogue, screenReader: ScreenReader) : RoguePlayer = new RoguePlayer(rogue, screenReader)
+  def apply(actuator: IActuator, screenReader: ScreenReader): RoguePlayer = new RoguePlayer(actuator, screenReader)
 }
 
 /** Exception thrown if the Rogue process has ended unexpectedly. */

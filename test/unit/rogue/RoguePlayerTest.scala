@@ -68,7 +68,15 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
       val screenReader: ScreenReader
     } = fixture
     
-    val player : RoguePlayer = RoguePlayer(f.rogue, f.screenReader)
+    object MockActuator extends IActuator {
+      override def displayInventoryScreen(): Unit = f.rogue.sendKeypress('i')
+
+      override def clearInventoryScreen(): Unit = f.rogue.sendKeypress(' ')
+
+      override def startGame(): Unit = f.rogue.startGame()
+    }
+    
+    val player : RoguePlayer = RoguePlayer(MockActuator, f.screenReader)
     player.startGame()
     f.rogue should be(Symbol("started"))
   }
@@ -93,7 +101,15 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
       }
     }
     
-    val player : RoguePlayer = RoguePlayer(f.rogue, f.screenReader)
+    object MockActuator extends IActuator {
+      override def displayInventoryScreen(): Unit = f.rogue.sendKeypress('i')
+
+      override def clearInventoryScreen(): Unit = f.rogue.sendKeypress(' ')
+
+      override def startGame(): Unit = f.rogue.startGame()
+    }
+    
+    val player : RoguePlayer = RoguePlayer(MockActuator, f.screenReader)
     f.screenReader.addScreenObserver(MockObserver)
     player.startGame()
     MockObserver should be(Symbol("seenScreen"))
@@ -206,7 +222,15 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
       }
     }
     
-    val player: RoguePlayer = RoguePlayer(MockRogue, screenReader)
+    object MockActuator extends IActuator {
+      override def displayInventoryScreen(): Unit = MockRogue.sendKeypress('i')
+
+      override def clearInventoryScreen(): Unit = MockRogue.sendKeypress(' ')
+
+      override def startGame(): Unit = MockRogue.startGame()
+    }
+    
+    val player: RoguePlayer = RoguePlayer(MockActuator, screenReader)
     player.addInventoryObserver(MockObserver)
     player.startGame()
     MockObserver should be(Symbol("seenInventory"))

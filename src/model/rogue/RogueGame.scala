@@ -17,7 +17,8 @@ object RogueGame {
   def apply() : RogueGame = {
     var screenReader : ScreenReader = ScreenReader()
     val rogue : IRogue = Rogue(screenReader)
-    val player : RoguePlayer = RoguePlayer(rogue, screenReader)
+    val actuator : IActuator = Actuator(rogue)
+    val player : RoguePlayer = RoguePlayer(actuator, screenReader)
 
     new RogueGame(rogue, player, screenReader)
   }
@@ -25,7 +26,8 @@ object RogueGame {
   def apply(rogueBuilder : ScreenReader => IRogue) : RogueGame = {
     val screenReader : ScreenReader = ScreenReader()
     val rogue : IRogue = rogueBuilder(screenReader)
-    val player : RoguePlayer = RoguePlayer(rogue, screenReader)
+    val actuator : IActuator = Actuator(rogue)
+    val player : RoguePlayer = RoguePlayer(actuator, screenReader)
     
     new RogueGame(rogue, player, screenReader)
   }
