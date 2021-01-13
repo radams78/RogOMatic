@@ -48,8 +48,9 @@ class ScreenReaderTest extends AnyFlatSpec with Matchers {
       val screenReader: ScreenReader
     } = fixture
     
-    f.screenReader.readScreen() should be(None)
+    f.screenReader.readScreen() shouldBe empty 
   }
+  
   "A Rogue player" should "broadcast the screen from Rogue" in {
     val f: Object {
       val screen: Screen
@@ -71,6 +72,17 @@ class ScreenReaderTest extends AnyFlatSpec with Matchers {
     f.screenReader.addScreenObserver(MockObserver)
     f.screenReader.notify(f.screen)
     MockObserver should be(Symbol("seenScreen"))
+  }
+  
+  "A Rogue player" should "return the screen from Rogue" in {
+    val f: Object {
+      val screen: Screen
+
+      val screenReader: ScreenReader
+    } = fixture
+
+    f.screenReader.notify(f.screen)
+    f.screenReader.readScreen() should contain(f.screen)
   }
 
 }
