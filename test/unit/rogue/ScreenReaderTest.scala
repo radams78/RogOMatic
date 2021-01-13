@@ -1,14 +1,12 @@
 package unit.rogue
 
-import model.rogue.{IActuator, IRogue, IScreenObserver, RoguePlayer, Screen, ScreenReader}
+import model.rogue.{IScreenObserver, Screen, ScreenReader}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
 class ScreenReaderTest extends AnyFlatSpec with Matchers {
   def fixture: Object {
     val screen: Screen
-
-    val rogue: IRogue
 
     val screenReader: ScreenReader
   } = new {
@@ -40,29 +38,12 @@ class ScreenReaderTest extends AnyFlatSpec with Matchers {
         |""".stripMargin
     )
 
-    val rogue : IRogue = MockRogue
-
     val screenReader: ScreenReader = ScreenReader()
-
-    object MockRogue extends IRogue {
-      private var _started: Boolean = false
-
-      def started: Boolean = _started
-
-      override def sendKeypress(keypress: Char): Unit = ()
-
-      override def startGame(): Unit = {
-        _started = true
-        screenReader.notify(screen)
-      }
-    }
   }
 
   "A Rogue player" should "broadcast the screen from Rogue" in {
     val f: Object {
       val screen: Screen
-
-      val rogue: IRogue
 
       val screenReader: ScreenReader
     } = fixture
@@ -76,14 +57,6 @@ class ScreenReaderTest extends AnyFlatSpec with Matchers {
         _screen should be(f.screen)
         _seenScreen = true
       }
-    }
-
-    object MockActuator extends IActuator {
-      override def displayInventoryScreen(): Unit = f.rogue.sendKeypress('i')
-
-      override def clearInventoryScreen(): Unit = f.rogue.sendKeypress(' ')
-
-      override def startGame(): Unit = f.rogue.startGame()
     }
 
     f.screenReader.addScreenObserver(MockObserver)
