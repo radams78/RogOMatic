@@ -3,7 +3,7 @@ package model.rogue
 import model.items.Inventory
 
 /** Communicate with the game of Rogue */
-class RoguePlayer private (actuator: IActuator, reader : ScreenReader) {
+class RoguePlayer private (actuator: IActuator, reader : IScreenReader) {
   private var inventoryObservers : Set[IInventoryObserver] = Set()
   
   /** Send the given command to Rogue.
@@ -57,7 +57,7 @@ class RoguePlayer private (actuator: IActuator, reader : ScreenReader) {
 }
 
 object RoguePlayer {
-  def apply(actuator: IActuator, screenReader: ScreenReader): RoguePlayer = new RoguePlayer(actuator, screenReader)
+  def apply(actuator: IActuator, screenReader: IScreenReader): RoguePlayer = new RoguePlayer(actuator, screenReader)
 }
 
 /** Exception thrown if the Rogue process has ended unexpectedly. */

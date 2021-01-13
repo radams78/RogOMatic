@@ -69,16 +69,24 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
     } = fixture
     
     object MockActuator extends IActuator {
-      override def displayInventoryScreen(): Unit = f.rogue.sendKeypress('i')
+      private var _startedGame: Boolean = false
+      
+      def startedGame : Boolean = _startedGame
+      
+      override def displayInventoryScreen(): Unit = ()
 
-      override def clearInventoryScreen(): Unit = f.rogue.sendKeypress(' ')
+      override def clearInventoryScreen(): Unit = ()
 
-      override def startGame(): Unit = f.rogue.startGame()
+      override def startGame(): Unit = _startedGame = true 
     }
     
-    val player : RoguePlayer = RoguePlayer(MockActuator, f.screenReader)
+    object MockScreenReader extends IScreenReader {
+      override def readScreen(): Option[Screen] = Some(f.screen)
+    }
+    
+    val player : RoguePlayer = RoguePlayer(MockActuator, MockScreenReader)
     player.startGame()
-    f.rogue should be(Symbol("started"))
+    MockActuator should be(Symbol("startedGame"))
   }
   
   "A Rogue player" should "broadcast the screen from Rogue" in {

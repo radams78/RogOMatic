@@ -6,7 +6,7 @@ package model.rogue
  * readScreen() returns the current screen displayed by the Rogue process, and all observers are notified whenever
  * the screen changes. Before the game starts or after the game ends, readScreen will return None. */
 // TODO Return None after game ends
-class ScreenReader private () {
+class ScreenReader private () extends IScreenReader {
   private[this] var _screen : Option[Screen] = None
   
   /** Returns the current screen displayed by Rogue. Returns None if the Rogue process has not yet started or has ended. */
