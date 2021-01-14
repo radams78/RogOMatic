@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="org.jetbrains.jediterm:jediterm-pty:2.33" type="repository">
+    <properties maven-id="org.jetbrains.jediterm:jediterm-pty:2.33" />
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/jetbrains/jediterm/jediterm-pty/2.33/jediterm-pty-2.33.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
