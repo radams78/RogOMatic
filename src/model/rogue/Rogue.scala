@@ -15,7 +15,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 /** Class for low-dungeonLevel communication with the RG process. A humble object. */
-class Rogue private (screenReader : ScreenReader) extends IRogue {
+class Rogue private (screenReader : ScreenReader, rogueProcess : RogueProcess) extends IRogue {
     private val command: Array[String] = Rogue.DEFAULT_COMMAND
     private val env: java.util.Map[String, String] = Rogue.DEFAULT_ENVIRONMENT
     private val charset: Charset = Rogue.DEFAULT_CHARSET
@@ -64,7 +64,7 @@ class Rogue private (screenReader : ScreenReader) extends IRogue {
     DEFAULT_ENVIRONMENT.put("TERM", "xterm")
     private val DEFAULT_CHARSET: Charset = Charset.forName("UTF-8")
     
-    def apply(screenReader: ScreenReader): IRogue = new Rogue(screenReader)
+    def apply(screenReader: ScreenReader): IRogue = new Rogue(screenReader, new RogueProcess)
   }
 
   // A minimal implementation of TerminalDisplay
