@@ -61,8 +61,7 @@ class Rogue private (screenReader : ScreenReader, rogueProcess : RogueProcess) e
     private val DEFAULT_COMMAND: Array[String] = Array("/usr/games/rogue")
     private val DEFAULT_ENVIRONMENT: java.util.Map[String, String] = new java.util.HashMap[String, String]
     DEFAULT_ENVIRONMENT.put("TERM", "xterm")
-    private val DEFAULT_CHARSET: Charset = Charset.forName("UTF-8")
-    
+
     def apply(screenReader: ScreenReader): IRogue = new Rogue(screenReader, new RogueProcess)
   }
 
