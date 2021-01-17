@@ -6,9 +6,6 @@ import org.apache.log4j.varia.NullAppender
 
 /** Class for low-dungeonLevel communication with the RG process. A humble object. */
 class Rogue private (rogueProcess : RogueProcess) extends IRogue {
-    // Set up log4j
-    BasicConfigurator.configure(new NullAppender)
-
     override def startGame(): Unit = rogueProcess.startGame()
 
     /** Send the given character to RG as input from the actuator, orElse pause until screen stops updating. */
@@ -16,7 +13,7 @@ class Rogue private (rogueProcess : RogueProcess) extends IRogue {
 
     /** Terminate the RG process and perform all necessary cleanup.  This method must be called before the end
      * of the application, or there may be a zombie RG process created. */
-    def close(): Unit = rogueProcess.connector.close()
+    def close(): Unit = rogueProcess.close()
 }
 
   object Rogue {

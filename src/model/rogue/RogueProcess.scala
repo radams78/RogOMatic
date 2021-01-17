@@ -6,12 +6,17 @@ import com.jediterm.terminal.emulator.mouse.MouseMode
 import com.jediterm.terminal.model.JediTerminal.ResizeHandler
 import com.jediterm.terminal.model.{JediTerminal, StyleState, TerminalSelection, TerminalTextBuffer}
 import com.pty4j.PtyProcess
+import org.apache.log4j.BasicConfigurator
+import org.apache.log4j.varia.NullAppender
 
 import java.awt.Dimension
 import java.nio.charset.Charset
 import scala.concurrent.Future
 
 class RogueProcess(screenReader: ScreenReader, pty: PtyProcess) {
+  // Set up log4j
+  BasicConfigurator.configure(new NullAppender)
+  
   val charset: Charset = RogueProcess.DEFAULT_CHARSET
   val state: StyleState = new StyleState
   val buffer: TerminalTextBuffer = new TerminalTextBuffer(80, 24, state)
