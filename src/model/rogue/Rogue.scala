@@ -1,6 +1,5 @@
 package model.rogue
 
-import com.jediterm.pty.PtyProcessTtyConnector
 import com.jediterm.terminal._
 import com.pty4j.PtyProcess
 import org.apache.log4j.BasicConfigurator
