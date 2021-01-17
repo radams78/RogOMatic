@@ -13,6 +13,8 @@ object Rogue {
   private val DEFAULT_ENVIRONMENT: java.util.Map[String, String] = new java.util.HashMap[String, String]
   DEFAULT_ENVIRONMENT.put("TERM", "xterm")
 
+  /** Start a Rogue process running and wrap it in a [[RogueProcess]] object that notifies the given screenReader
+   * every time the screen updates. */
   def apply(screenReader: ScreenReader): IRogue = {
     val pty: PtyProcess = PtyProcess.exec(DEFAULT_COMMAND, DEFAULT_ENVIRONMENT)
     new RogueProcess(screenReader, pty)
