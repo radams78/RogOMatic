@@ -28,7 +28,7 @@ class Rogue private (screenReader : ScreenReader, rogueProcess : RogueProcess) e
     private val terminal: JediTerminal = new JediTerminal(display, buffer, state)
 
     private val pty: PtyProcess = PtyProcess.exec(command, env)
-    private val connector: PtyProcessTtyConnector = new PtyProcessTtyConnector(pty, charset)
+    private val connector: PtyProcessTtyConnector = new PtyProcessTtyConnector(pty, rogueProcess.charset)
     private val starter: TerminalStarter =
       new TerminalStarter(terminal, connector, new TtyBasedArrayDataStream(connector))
 
