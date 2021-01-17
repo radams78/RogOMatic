@@ -20,9 +20,8 @@ class Rogue private (rogueProcess : RogueProcess) extends IRogue {
     DEFAULT_ENVIRONMENT.put("TERM", "xterm")
 
     def apply(screenReader: ScreenReader): IRogue = {
-      val command: Array[String] = Rogue.DEFAULT_COMMAND
       val env: java.util.Map[String, String] = Rogue.DEFAULT_ENVIRONMENT
-      val pty: PtyProcess = PtyProcess.exec(command, env)
+      val pty: PtyProcess = PtyProcess.exec(DEFAULT_COMMAND, env)
       new Rogue(new RogueProcess(screenReader, pty))
     }
   }
