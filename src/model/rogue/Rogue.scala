@@ -1,16 +1,15 @@
 package model.rogue
 
 import com.jediterm.pty.PtyProcessTtyConnector
-import com.jediterm.terminal.{CursorShape, RequestOrigin, TerminalDisplay, TerminalStarter, TtyBasedArrayDataStream}
 import com.jediterm.terminal.emulator.mouse.MouseMode
 import com.jediterm.terminal.model.JediTerminal.ResizeHandler
 import com.jediterm.terminal.model.{JediTerminal, StyleState, TerminalSelection, TerminalTextBuffer}
+import com.jediterm.terminal._
 import com.pty4j.PtyProcess
 import org.apache.log4j.BasicConfigurator
 import org.apache.log4j.varia.NullAppender
 
 import java.awt.Dimension
-import java.nio.charset.Charset
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -67,7 +66,7 @@ class Rogue private (screenReader : ScreenReader, rogueProcess : RogueProcess) e
 
   // A minimal implementation of TerminalDisplay
   private class MinimalTerminalDisplay(buffer: TerminalTextBuffer) extends TerminalDisplay {
-    private var selection: TerminalSelection = _
+    private val selection: TerminalSelection = null
 
     override def beep(): Unit = ()
 
