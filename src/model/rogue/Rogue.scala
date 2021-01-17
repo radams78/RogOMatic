@@ -1,8 +1,6 @@
 package model.rogue
 
 import com.pty4j.PtyProcess
-import org.apache.log4j.BasicConfigurator
-import org.apache.log4j.varia.NullAppender
 
 /** Class for low-dungeonLevel communication with the RG process. A humble object. */
 class Rogue private (rogueProcess : RogueProcess) extends IRogue {
