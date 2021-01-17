@@ -1,10 +1,10 @@
 package model.rogue
 
 import com.jediterm.pty.PtyProcessTtyConnector
+import com.jediterm.terminal._
 import com.jediterm.terminal.emulator.mouse.MouseMode
 import com.jediterm.terminal.model.JediTerminal.ResizeHandler
-import com.jediterm.terminal.model.{JediTerminal, StyleState, TerminalSelection, TerminalTextBuffer}
-import com.jediterm.terminal._
+import com.jediterm.terminal.model.{JediTerminal, TerminalSelection, TerminalTextBuffer}
 import com.pty4j.PtyProcess
 import org.apache.log4j.BasicConfigurator
 import org.apache.log4j.varia.NullAppender
@@ -20,9 +20,8 @@ class Rogue private (screenReader : ScreenReader, rogueProcess : RogueProcess) e
     // Set up log4j
     BasicConfigurator.configure(new NullAppender)
 
-    private val buffer: TerminalTextBuffer = new TerminalTextBuffer(80, 24, rogueProcess.state)
     private val display: MinimalTerminalDisplay = new MinimalTerminalDisplay(rogueProcess.buffer)
-    private val terminal: JediTerminal = new JediTerminal(display, buffer, rogueProcess.state)
+    private val terminal: JediTerminal = new JediTerminal(display, rogueProcess.buffer, rogueProcess.state)
 
     private val pty: PtyProcess = PtyProcess.exec(command, env)
     private val connector: PtyProcessTtyConnector = new PtyProcessTtyConnector(pty, rogueProcess.charset)
@@ -36,7 +35,7 @@ class Rogue private (screenReader : ScreenReader, rogueProcess : RogueProcess) e
       // Wait for RG to clear the message "just a moment while I dig the dungeon"
       // TODO More elegant way to do this?
       Thread.sleep(1000)
-      screenReader.notify(Screen.makeScreen(buffer.getScreenLines))
+      screenReader.notify(Screen.makeScreen(rogueProcess.buffer.getScreenLines))
     }
 
     /** Send the given character to RG as input from the actuator, orElse pause until screen stops updating. */
@@ -45,9 +44,9 @@ class Rogue private (screenReader : ScreenReader, rogueProcess : RogueProcess) e
       //noinspection ZeroIndexToHead
       Iterator.continually({
         Thread.sleep(10)
-        buffer.getScreenLines
+        rogueProcess.buffer.getScreenLines
       }).sliding(2).find((p: Seq[String]) => p(0) == p(1))
-      screenReader.notify(Screen.makeScreen(buffer.getScreenLines)) // TODO Duplication
+      screenReader.notify(Screen.makeScreen(rogueProcess.buffer.getScreenLines)) // TODO Duplication
     }
 
     /** Terminate the RG process and perform all necessary cleanup.  This method must be called before the end
