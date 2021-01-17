@@ -18,7 +18,6 @@ import scala.concurrent.Future
 class Rogue private (screenReader : ScreenReader, rogueProcess : RogueProcess) extends IRogue {
     private val command: Array[String] = Rogue.DEFAULT_COMMAND
     private val env: java.util.Map[String, String] = Rogue.DEFAULT_ENVIRONMENT
-    private val charset: Charset = Rogue.DEFAULT_CHARSET
     // Set up log4j
     BasicConfigurator.configure(new NullAppender)
 
