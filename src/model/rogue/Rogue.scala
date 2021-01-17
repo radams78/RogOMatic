@@ -1,6 +1,5 @@
 package model.rogue
 
-import com.jediterm.terminal._
 import com.pty4j.PtyProcess
 import org.apache.log4j.BasicConfigurator
 import org.apache.log4j.varia.NullAppender
