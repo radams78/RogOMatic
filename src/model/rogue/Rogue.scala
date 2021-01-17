@@ -13,12 +13,9 @@ class Rogue private (screenReader : ScreenReader, rogueProcess : RogueProcess) e
     // Set up log4j
     BasicConfigurator.configure(new NullAppender)
 
-    private val starter: TerminalStarter =
-      new TerminalStarter(rogueProcess.terminal, rogueProcess.connector, new TtyBasedArrayDataStream(rogueProcess.connector))
-
     override def startGame(): Unit = {
       Future {
-        starter.start()
+        rogueProcess.starter.start()
       }
       // Wait for RG to clear the message "just a moment while I dig the dungeon"
       // TODO More elegant way to do this?
@@ -28,7 +25,7 @@ class Rogue private (screenReader : ScreenReader, rogueProcess : RogueProcess) e
 
     /** Send the given character to RG as input from the actuator, orElse pause until screen stops updating. */
     override def sendKeypress(keyPress: Char): Unit = {
-      starter.sendBytes(Array(keyPress.toByte))
+      rogueProcess.starter.sendBytes(Array(keyPress.toByte))
       //noinspection ZeroIndexToHead
       Iterator.continually({
         Thread.sleep(10)
