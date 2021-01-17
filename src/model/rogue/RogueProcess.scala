@@ -40,6 +40,8 @@ class RogueProcess(screenReader: ScreenReader, pty: PtyProcess) {
     }).sliding(2).find((p: Seq[String]) => p(0) == p(1))
     screenReader.notify(Screen.makeScreen(buffer.getScreenLines)) // TODO Duplication
   }
+
+  def close(): Unit = connector.close()
 }
 
 object RogueProcess {
