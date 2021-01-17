@@ -59,7 +59,7 @@ class Rogue private (screenReader : ScreenReader) extends IRogue {
 }
 
   object Rogue {
-    private val DEFAULT_COMMAND: Array[String] = Array("/usr/games/model.rogue")
+    private val DEFAULT_COMMAND: Array[String] = Array("/usr/games/rogue")
     private val DEFAULT_ENVIRONMENT: java.util.Map[String, String] = new java.util.HashMap[String, String]
     DEFAULT_ENVIRONMENT.put("TERM", "xterm")
     private val DEFAULT_CHARSET: Charset = Charset.forName("UTF-8")
