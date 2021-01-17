@@ -3,7 +3,7 @@ package model.rogue
 import com.jediterm.terminal.{CursorShape, RequestOrigin, TerminalDisplay}
 import com.jediterm.terminal.emulator.mouse.MouseMode
 import com.jediterm.terminal.model.JediTerminal.ResizeHandler
-import com.jediterm.terminal.model.{StyleState, TerminalSelection, TerminalTextBuffer}
+import com.jediterm.terminal.model.{JediTerminal, StyleState, TerminalSelection, TerminalTextBuffer}
 
 import java.awt.Dimension
 import java.nio.charset.Charset
@@ -13,6 +13,7 @@ class RogueProcess {
   val state : StyleState = new StyleState
   val buffer: TerminalTextBuffer = new TerminalTextBuffer(80, 24, state)
   val display: MinimalTerminalDisplay = new MinimalTerminalDisplay(buffer)
+  val terminal: JediTerminal = new JediTerminal(display, buffer, state)
 }
 
 object RogueProcess {

@@ -22,7 +22,7 @@ class Rogue private (screenReader : ScreenReader, rogueProcess : RogueProcess) e
     private val pty: PtyProcess = PtyProcess.exec(command, env)
     private val connector: PtyProcessTtyConnector = new PtyProcessTtyConnector(pty, rogueProcess.charset)
     private val starter: TerminalStarter =
-      new TerminalStarter(terminal, connector, new TtyBasedArrayDataStream(connector))
+      new TerminalStarter(rogueProcess.terminal, connector, new TtyBasedArrayDataStream(connector))
 
     override def startGame(): Unit = {
       Future {
