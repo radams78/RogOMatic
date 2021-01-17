@@ -4,9 +4,6 @@ import com.pty4j.PtyProcess
 import org.apache.log4j.BasicConfigurator
 import org.apache.log4j.varia.NullAppender
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
-
 /** Class for low-dungeonLevel communication with the RG process. A humble object. */
 class Rogue private (screenReader : ScreenReader, rogueProcess : RogueProcess) extends IRogue {
     // Set up log4j
