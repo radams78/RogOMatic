@@ -21,7 +21,7 @@ class Rogue private (screenReader : ScreenReader, rogueProcess : RogueProcess) e
     BasicConfigurator.configure(new NullAppender)
 
     private val buffer: TerminalTextBuffer = new TerminalTextBuffer(80, 24, rogueProcess.state)
-    private val display: MinimalTerminalDisplay = new MinimalTerminalDisplay(buffer)
+    private val display: MinimalTerminalDisplay = new MinimalTerminalDisplay(rogueProcess.buffer)
     private val terminal: JediTerminal = new JediTerminal(display, buffer, rogueProcess.state)
 
     private val pty: PtyProcess = PtyProcess.exec(command, env)
