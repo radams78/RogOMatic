@@ -1,7 +1,7 @@
 package model.rogue
 
 import com.jediterm.pty.PtyProcessTtyConnector
-import com.jediterm.terminal.{CursorShape, RequestOrigin, TerminalDisplay}
+import com.jediterm.terminal.{CursorShape, RequestOrigin, TerminalDisplay, TerminalStarter, TtyBasedArrayDataStream}
 import com.jediterm.terminal.emulator.mouse.MouseMode
 import com.jediterm.terminal.model.JediTerminal.ResizeHandler
 import com.jediterm.terminal.model.{JediTerminal, StyleState, TerminalSelection, TerminalTextBuffer}
@@ -17,6 +17,7 @@ class RogueProcess(pty: PtyProcess) {
   val display: MinimalTerminalDisplay = new MinimalTerminalDisplay(buffer)
   val terminal: JediTerminal = new JediTerminal(display, buffer, state)
   val connector: PtyProcessTtyConnector = new PtyProcessTtyConnector(pty, charset)
+  val starter: TerminalStarter = new TerminalStarter(terminal, connector, new TtyBasedArrayDataStream(connector))
 }
 
 object RogueProcess {
