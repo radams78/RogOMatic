@@ -5,7 +5,7 @@ import org.apache.log4j.BasicConfigurator
 import org.apache.log4j.varia.NullAppender
 
 /** Class for low-dungeonLevel communication with the RG process. A humble object. */
-class Rogue private (screenReader : ScreenReader, rogueProcess : RogueProcess) extends IRogue {
+class Rogue private (rogueProcess : RogueProcess) extends IRogue {
     // Set up log4j
     BasicConfigurator.configure(new NullAppender)
 
@@ -28,6 +28,6 @@ class Rogue private (screenReader : ScreenReader, rogueProcess : RogueProcess) e
       val command: Array[String] = Rogue.DEFAULT_COMMAND
       val env: java.util.Map[String, String] = Rogue.DEFAULT_ENVIRONMENT
       val pty: PtyProcess = PtyProcess.exec(command, env)
-      new Rogue(screenReader, new RogueProcess(screenReader, pty))
+      new Rogue(new RogueProcess(screenReader, pty))
     }
   }
