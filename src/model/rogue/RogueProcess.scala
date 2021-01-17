@@ -13,7 +13,7 @@ import java.awt.Dimension
 import java.nio.charset.Charset
 import scala.concurrent.Future
 
-class RogueProcess(screenReader: ScreenReader, pty: PtyProcess) {
+class RogueProcess(screenReader: ScreenReader, pty: PtyProcess) extends IRogue {
   // Set up log4j
   BasicConfigurator.configure(new NullAppender)
   
