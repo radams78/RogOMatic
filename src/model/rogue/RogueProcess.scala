@@ -1,12 +1,13 @@
 package model.rogue
 
-import com.jediterm.terminal.model.StyleState
+import com.jediterm.terminal.model.{StyleState, TerminalTextBuffer}
 
 import java.nio.charset.Charset
 
 class RogueProcess {
   val charset: Charset = RogueProcess.DEFAULT_CHARSET
   val state : StyleState = new StyleState
+  val buffer: TerminalTextBuffer = new TerminalTextBuffer(80, 24, state)
 }
 
 object RogueProcess {
