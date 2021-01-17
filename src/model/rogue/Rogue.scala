@@ -2,14 +2,11 @@ package model.rogue
 
 import com.jediterm.pty.PtyProcessTtyConnector
 import com.jediterm.terminal._
-import com.jediterm.terminal.emulator.mouse.MouseMode
-import com.jediterm.terminal.model.JediTerminal.ResizeHandler
-import com.jediterm.terminal.model.{JediTerminal, TerminalSelection, TerminalTextBuffer}
+import com.jediterm.terminal.model.JediTerminal
 import com.pty4j.PtyProcess
 import org.apache.log4j.BasicConfigurator
 import org.apache.log4j.varia.NullAppender
 
-import java.awt.Dimension
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -20,8 +17,7 @@ class Rogue private (screenReader : ScreenReader, rogueProcess : RogueProcess) e
     // Set up log4j
     BasicConfigurator.configure(new NullAppender)
 
-    private val display: MinimalTerminalDisplay = new MinimalTerminalDisplay(rogueProcess.buffer)
-    private val terminal: JediTerminal = new JediTerminal(display, rogueProcess.buffer, rogueProcess.state)
+  private val terminal: JediTerminal = new JediTerminal(rogueProcess.display, rogueProcess.buffer, rogueProcess.state)
 
     private val pty: PtyProcess = PtyProcess.exec(command, env)
     private val connector: PtyProcessTtyConnector = new PtyProcessTtyConnector(pty, rogueProcess.charset)
@@ -60,41 +56,4 @@ class Rogue private (screenReader : ScreenReader, rogueProcess : RogueProcess) e
     DEFAULT_ENVIRONMENT.put("TERM", "xterm")
 
     def apply(screenReader: ScreenReader): IRogue = new Rogue(screenReader, new RogueProcess)
-  }
-
-  // A minimal implementation of TerminalDisplay
-  private class MinimalTerminalDisplay(buffer: TerminalTextBuffer) extends TerminalDisplay {
-    private val selection: TerminalSelection = null
-
-    override def beep(): Unit = ()
-
-    override def setBlinkingCursor(b: Boolean): Unit = ()
-
-    override def scrollArea(i: Int, i1: Int, i2: Int): Unit = ()
-
-    override def setScrollingEnabled(b: Boolean): Unit = ()
-
-    override def setCursorVisible(b: Boolean): Unit = ()
-
-    override def getRowCount: Int = buffer.getHeight
-
-    override def getColumnCount: Int = buffer.getWidth
-
-    override def terminalMouseModeSet(mouseMode: MouseMode): Unit = ()
-
-    override def ambiguousCharsAreDoubleWidth(): Boolean = false
-
-    override def getSelection: TerminalSelection = selection
-
-    override def setCurrentPath(s: String): Unit = ()
-
-    override def setCursor(i: Int, i1: Int): Unit = ()
-
-    override def setWindowTitle(s: String): Unit = ()
-
-    //noinspection ScalaDeprecation
-    override def requestResize(pendingResize: Dimension, origin: RequestOrigin, cursorY: Int, resizeHandler: ResizeHandler): Dimension =
-      throw new Error("Called requestResize on fixed size terminal display")
-
-    override def setCursorShape(cursorShape: CursorShape): Unit = ()
   }
