@@ -13,14 +13,14 @@ import scala.concurrent.Future
 
 class RogueProcess(screenReader: ScreenReader, pty: PtyProcess) {
   val charset: Charset = RogueProcess.DEFAULT_CHARSET
-  val state : StyleState = new StyleState
+  val state: StyleState = new StyleState
   val buffer: TerminalTextBuffer = new TerminalTextBuffer(80, 24, state)
   val display: MinimalTerminalDisplay = new MinimalTerminalDisplay(buffer)
   val terminal: JediTerminal = new JediTerminal(display, buffer, state)
   val connector: PtyProcessTtyConnector = new PtyProcessTtyConnector(pty, charset)
   val starter: TerminalStarter = new TerminalStarter(terminal, connector, new TtyBasedArrayDataStream(connector))
-  
-  def startGame() : Unit = {
+
+  def startGame(): Unit = {
     implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
     Future {
       starter.start()
@@ -29,6 +29,16 @@ class RogueProcess(screenReader: ScreenReader, pty: PtyProcess) {
     // TODO More elegant way to do this?
     Thread.sleep(1000)
     screenReader.notify(Screen.makeScreen(buffer.getScreenLines))
+  }
+
+  def sendKeypress(keyPress: Char): Unit = {
+    starter.sendBytes(Array(keyPress.toByte))
+    //noinspection ZeroIndexToHead
+    Iterator.continually({
+      Thread.sleep(10)
+      buffer.getScreenLines
+    }).sliding(2).find((p: Seq[String]) => p(0) == p(1))
+    screenReader.notify(Screen.makeScreen(buffer.getScreenLines)) // TODO Duplication
   }
 }
 
