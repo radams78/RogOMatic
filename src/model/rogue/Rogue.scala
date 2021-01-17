@@ -12,15 +12,7 @@ class Rogue private (screenReader : ScreenReader, rogueProcess : RogueProcess) e
     override def startGame(): Unit = rogueProcess.startGame()
 
     /** Send the given character to RG as input from the actuator, orElse pause until screen stops updating. */
-    override def sendKeypress(keyPress: Char): Unit = {
-      rogueProcess.starter.sendBytes(Array(keyPress.toByte))
-      //noinspection ZeroIndexToHead
-      Iterator.continually({
-        Thread.sleep(10)
-        rogueProcess.buffer.getScreenLines
-      }).sliding(2).find((p: Seq[String]) => p(0) == p(1))
-      screenReader.notify(Screen.makeScreen(rogueProcess.buffer.getScreenLines)) // TODO Duplication
-    }
+    override def sendKeypress(keyPress: Char): Unit = rogueProcess.sendKeypress(keyPress)
 
     /** Terminate the RG process and perform all necessary cleanup.  This method must be called before the end
      * of the application, or there may be a zombie RG process created. */
