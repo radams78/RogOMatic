@@ -20,10 +20,9 @@ class Rogue private (screenReader : ScreenReader, rogueProcess : RogueProcess) e
     // Set up log4j
     BasicConfigurator.configure(new NullAppender)
 
-    private val state: StyleState = new StyleState
-    private val buffer: TerminalTextBuffer = new TerminalTextBuffer(80, 24, state)
+    private val buffer: TerminalTextBuffer = new TerminalTextBuffer(80, 24, rogueProcess.state)
     private val display: MinimalTerminalDisplay = new MinimalTerminalDisplay(buffer)
-    private val terminal: JediTerminal = new JediTerminal(display, buffer, state)
+    private val terminal: JediTerminal = new JediTerminal(display, buffer, rogueProcess.state)
 
     private val pty: PtyProcess = PtyProcess.exec(command, env)
     private val connector: PtyProcessTtyConnector = new PtyProcessTtyConnector(pty, rogueProcess.charset)
