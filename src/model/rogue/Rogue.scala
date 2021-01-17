@@ -2,7 +2,6 @@ package model.rogue
 
 import com.jediterm.pty.PtyProcessTtyConnector
 import com.jediterm.terminal._
-import com.jediterm.terminal.model.JediTerminal
 import com.pty4j.PtyProcess
 import org.apache.log4j.BasicConfigurator
 import org.apache.log4j.varia.NullAppender
@@ -17,9 +16,7 @@ class Rogue private (screenReader : ScreenReader, rogueProcess : RogueProcess) e
     // Set up log4j
     BasicConfigurator.configure(new NullAppender)
 
-  private val terminal: JediTerminal = new JediTerminal(rogueProcess.display, rogueProcess.buffer, rogueProcess.state)
-
-    private val pty: PtyProcess = PtyProcess.exec(command, env)
+  private val pty: PtyProcess = PtyProcess.exec(command, env)
     private val connector: PtyProcessTtyConnector = new PtyProcessTtyConnector(pty, rogueProcess.charset)
     private val starter: TerminalStarter =
       new TerminalStarter(rogueProcess.terminal, connector, new TtyBasedArrayDataStream(connector))
