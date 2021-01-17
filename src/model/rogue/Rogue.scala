@@ -47,6 +47,6 @@ class Rogue private (screenReader : ScreenReader, rogueProcess : RogueProcess) e
       val command: Array[String] = Rogue.DEFAULT_COMMAND
       val env: java.util.Map[String, String] = Rogue.DEFAULT_ENVIRONMENT
       val pty: PtyProcess = PtyProcess.exec(command, env)
-      new Rogue(screenReader, new RogueProcess(pty))
+      new Rogue(screenReader, new RogueProcess(screenReader, pty))
     }
   }
