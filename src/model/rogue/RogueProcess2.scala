@@ -16,4 +16,14 @@ class RogueProcess2(screenReader: ScreenReader, starter : TerminalStarter, buffe
     Thread.sleep(1000)
     screenReader.notify(Screen.makeScreen(buffer.getScreenLines))
   }
+  
+  def sendKeypress(keyPress: Char): Unit = {
+    starter.sendBytes(Array(keyPress.toByte))
+    //noinspection ZeroIndexToHead
+    Iterator.continually({
+      Thread.sleep(10)
+      buffer.getScreenLines
+    }).sliding(2).find((p: Seq[String]) => p(0) == p(1))
+    screenReader.notify(Screen.makeScreen(buffer.getScreenLines)) // TODO Duplication
+  }
 }

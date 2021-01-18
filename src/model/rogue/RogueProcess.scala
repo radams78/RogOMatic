@@ -1,17 +1,16 @@
 package model.rogue
 
 import com.jediterm.pty.PtyProcessTtyConnector
-import com.jediterm.terminal.{CursorShape, RequestOrigin, TerminalDisplay, TerminalStarter, TtyBasedArrayDataStream}
 import com.jediterm.terminal.emulator.mouse.MouseMode
 import com.jediterm.terminal.model.JediTerminal.ResizeHandler
 import com.jediterm.terminal.model.{JediTerminal, StyleState, TerminalSelection, TerminalTextBuffer}
+import com.jediterm.terminal._
 import com.pty4j.PtyProcess
 import org.apache.log4j.BasicConfigurator
 import org.apache.log4j.varia.NullAppender
 
 import java.awt.Dimension
 import java.nio.charset.Charset
-import scala.concurrent.Future
 
 class RogueProcess(screenReader: ScreenReader, pty: PtyProcess) extends IRogue {
   // Set up log4j
@@ -25,26 +24,11 @@ class RogueProcess(screenReader: ScreenReader, pty: PtyProcess) extends IRogue {
   val connector: PtyProcessTtyConnector = new PtyProcessTtyConnector(pty, charset)
   val starter: TerminalStarter = new TerminalStarter(terminal, connector, new TtyBasedArrayDataStream(connector))
 
-  def startGame(): Unit = {
-    implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
-    Future {
-      starter.start()
-    }
-    // Wait for RG to clear the message "just a moment while I dig the dungeon"
-    // TODO More elegant way to do this?
-    Thread.sleep(1000)
-    screenReader.notify(Screen.makeScreen(buffer.getScreenLines))
-  }
+  val process: RogueProcess2 = new RogueProcess2(screenReader, starter, buffer)
+  
+  def startGame(): Unit = process.startGame()
 
-  def sendKeypress(keyPress: Char): Unit = {
-    starter.sendBytes(Array(keyPress.toByte))
-    //noinspection ZeroIndexToHead
-    Iterator.continually({
-      Thread.sleep(10)
-      buffer.getScreenLines
-    }).sliding(2).find((p: Seq[String]) => p(0) == p(1))
-    screenReader.notify(Screen.makeScreen(buffer.getScreenLines)) // TODO Duplication
-  }
+  def sendKeypress(keyPress: Char): Unit = process.sendKeypress(keyPress)
 
   def close(): Unit = connector.close()
 }
