@@ -1,7 +1,7 @@
 package model.rogue
 
+import com.jediterm.terminal.TerminalStarter
 import com.jediterm.terminal.model.TerminalTextBuffer
-import com.jediterm.terminal.{TerminalOutputStream, TerminalStarter}
 
 import scala.concurrent.Future
 
