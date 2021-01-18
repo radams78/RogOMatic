@@ -21,7 +21,7 @@ class Rogue(screenReader: ScreenReader) extends IRogue {
   // Set up log4j
   BasicConfigurator.configure(new NullAppender)
 
-  val state: StyleState = new StyleState
+  private val state: StyleState = new StyleState
   val buffer: TerminalTextBuffer = new TerminalTextBuffer(80, 24, state)
   val terminal: JediTerminal = new JediTerminal(new MinimalTerminalDisplay(buffer), buffer, state)
   val pty: PtyProcess = PtyProcess.exec(Rogue.DEFAULT_COMMAND, Rogue.DEFAULT_ENVIRONMENT)
