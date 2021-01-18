@@ -1,6 +1,34 @@
 package model.rogue
 
+import com.jediterm.pty.PtyProcessTtyConnector
+import com.jediterm.terminal.{TerminalStarter, TtyBasedArrayDataStream}
+import com.jediterm.terminal.model.{JediTerminal, StyleState, TerminalTextBuffer}
 import com.pty4j.PtyProcess
+import org.apache.log4j.BasicConfigurator
+import org.apache.log4j.varia.NullAppender
+
+import java.nio.charset.Charset
+
+// TODO Close?
+class Rogue(screenReader: ScreenReader) extends IRogue {
+  // Set up log4j
+  BasicConfigurator.configure(new NullAppender)
+
+  val charset: Charset = Rogue.DEFAULT_CHARSET
+  val state: StyleState = new StyleState
+  val buffer: TerminalTextBuffer = new TerminalTextBuffer(80, 24, state)
+  val display: MinimalTerminalDisplay = new MinimalTerminalDisplay(buffer)
+  val terminal: JediTerminal = new JediTerminal(display, buffer, state)
+  val pty: PtyProcess = PtyProcess.exec(Rogue.DEFAULT_COMMAND, Rogue.DEFAULT_ENVIRONMENT)
+  val connector: PtyProcessTtyConnector = new PtyProcessTtyConnector(pty, charset)
+  val starter: TerminalStarter = new TerminalStarter(terminal, connector, new TtyBasedArrayDataStream(connector))
+
+  val process: RogueProcess2 = new RogueProcess2(screenReader, starter, buffer)
+  
+  override def startGame(): Unit = process.startGame()
+
+  override def sendKeypress(keyPress: Char): Unit = process.sendKeypress(keyPress)
+}
 
 /** Start an instance of Rogue running.
  * 
@@ -13,10 +41,5 @@ object Rogue {
   private val DEFAULT_ENVIRONMENT: java.util.Map[String, String] = new java.util.HashMap[String, String]
   DEFAULT_ENVIRONMENT.put("TERM", "xterm")
 
-  /** Start a Rogue process running and wrap it in a [[RogueProcess]] object that notifies the given screenReader
-   * every time the screen updates. */
-  def apply(screenReader: ScreenReader): IRogue = {
-    val pty: PtyProcess = PtyProcess.exec(DEFAULT_COMMAND, DEFAULT_ENVIRONMENT)
-    new RogueProcess(screenReader, pty)
-  }
+  private val DEFAULT_CHARSET: Charset = Charset.forName("UTF-8")
 }

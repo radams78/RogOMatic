@@ -15,8 +15,8 @@ class RogueGame private (rogue : IRogue, player: RoguePlayer, screenReader: Scre
 
 object RogueGame {
   def apply() : RogueGame = {
-    var screenReader : ScreenReader = ScreenReader()
-    val rogue : IRogue = Rogue(screenReader)
+    val screenReader: ScreenReader = ScreenReader()
+    val rogue : IRogue = new Rogue(screenReader)
     val actuator : IActuator = Actuator(rogue)
     val player : RoguePlayer = RoguePlayer(actuator, screenReader)
 
