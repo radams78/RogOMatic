@@ -22,7 +22,7 @@ class Rogue(screenReader: ScreenReader) extends IRogue {
   BasicConfigurator.configure(new NullAppender)
 
   private val state: StyleState = new StyleState
-  val buffer: TerminalTextBuffer = new TerminalTextBuffer(80, 24, state)
+  private val buffer: TerminalTextBuffer = new TerminalTextBuffer(80, 24, state)
   val terminal: JediTerminal = new JediTerminal(new MinimalTerminalDisplay(buffer), buffer, state)
   val pty: PtyProcess = PtyProcess.exec(Rogue.DEFAULT_COMMAND, Rogue.DEFAULT_ENVIRONMENT)
   val connector: PtyProcessTtyConnector = new PtyProcessTtyConnector(pty, Rogue.DEFAULT_CHARSET)
