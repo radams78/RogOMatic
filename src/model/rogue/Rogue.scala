@@ -1,15 +1,21 @@
 package model.rogue
 
 import com.jediterm.pty.PtyProcessTtyConnector
-import com.jediterm.terminal.{TerminalStarter, TtyBasedArrayDataStream}
-import com.jediterm.terminal.model.{JediTerminal, StyleState, TerminalTextBuffer}
+import com.jediterm.terminal.emulator.mouse.MouseMode
+import com.jediterm.terminal.model.JediTerminal.ResizeHandler
+import com.jediterm.terminal.{CursorShape, RequestOrigin, TerminalDisplay, TerminalStarter, TtyBasedArrayDataStream}
+import com.jediterm.terminal.model.{JediTerminal, StyleState, TerminalSelection, TerminalTextBuffer}
 import com.pty4j.PtyProcess
 import org.apache.log4j.BasicConfigurator
 import org.apache.log4j.varia.NullAppender
 
+import java.awt.Dimension
 import java.nio.charset.Charset
 
 // TODO Close?
+/** Start an instance of Rogue running.
+ *
+ * This starts Rogue running in a separate process and wraps it in a [[RogueProcess2]] object. This is a humble object. */
 class Rogue(screenReader: ScreenReader) extends IRogue {
   // Set up log4j
   BasicConfigurator.configure(new NullAppender)
@@ -17,7 +23,7 @@ class Rogue(screenReader: ScreenReader) extends IRogue {
   val charset: Charset = Rogue.DEFAULT_CHARSET
   val state: StyleState = new StyleState
   val buffer: TerminalTextBuffer = new TerminalTextBuffer(80, 24, state)
-  val display: MinimalTerminalDisplay = new MinimalTerminalDisplay(buffer)
+  val display: TerminalDisplay = new Rogue.MinimalTerminalDisplay(buffer)
   val terminal: JediTerminal = new JediTerminal(display, buffer, state)
   val pty: PtyProcess = PtyProcess.exec(Rogue.DEFAULT_COMMAND, Rogue.DEFAULT_ENVIRONMENT)
   val connector: PtyProcessTtyConnector = new PtyProcessTtyConnector(pty, charset)
@@ -30,9 +36,6 @@ class Rogue(screenReader: ScreenReader) extends IRogue {
   override def sendKeypress(keyPress: Char): Unit = process.sendKeypress(keyPress)
 }
 
-/** Start an instance of Rogue running.
- * 
- * This starts Rogue running in a separate process and wraps it in a [[RogueProcess]] object. This is a humble object. */
 object Rogue {
   // Command to launch the Rogue process
   private val DEFAULT_COMMAND: Array[String] = Array("/usr/games/rogue")
@@ -42,4 +45,41 @@ object Rogue {
   DEFAULT_ENVIRONMENT.put("TERM", "xterm")
 
   private val DEFAULT_CHARSET: Charset = Charset.forName("UTF-8")
+
+  // A minimal implementation of TerminalDisplay
+  private class MinimalTerminalDisplay(buffer: TerminalTextBuffer) extends TerminalDisplay {
+    private var selection: TerminalSelection = _
+
+    override def beep(): Unit = ()
+
+    override def setBlinkingCursor(b: Boolean): Unit = ()
+
+    override def scrollArea(i: Int, i1: Int, i2: Int): Unit = ()
+
+    override def setScrollingEnabled(b: Boolean): Unit = ()
+
+    override def setCursorVisible(b: Boolean): Unit = ()
+
+    override def getRowCount: Int = buffer.getHeight
+
+    override def getColumnCount: Int = buffer.getWidth
+
+    override def terminalMouseModeSet(mouseMode: MouseMode): Unit = ()
+
+    override def ambiguousCharsAreDoubleWidth(): Boolean = false
+
+    override def getSelection: TerminalSelection = selection
+
+    override def setCurrentPath(s: String): Unit = ()
+
+    override def setCursor(i: Int, i1: Int): Unit = ()
+
+    override def setWindowTitle(s: String): Unit = ()
+
+    //noinspection ScalaDeprecation
+    override def requestResize(pendingResize: Dimension, origin: RequestOrigin, cursorY: Int, resizeHandler: ResizeHandler): Dimension =
+      throw new Error("Called requestResize on fixed size terminal display")
+
+    override def setCursorShape(cursorShape: CursorShape): Unit = ()
+  }
 }
