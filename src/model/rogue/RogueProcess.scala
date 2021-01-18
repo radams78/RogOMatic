@@ -5,7 +5,7 @@ import com.jediterm.terminal.model.TerminalTextBuffer
 
 import scala.concurrent.Future
 
-class RogueProcess2(screenReader: ScreenReader, starter : TerminalStarter, buffer: TerminalTextBuffer) {
+class RogueProcess(screenReader: ScreenReader, starter : TerminalStarter, buffer: TerminalTextBuffer) {
   def startGame(): Unit = {
     implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
     Future {
