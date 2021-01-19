@@ -28,7 +28,7 @@ class Rogue(screenReader: ScreenReader) extends IRogue {
   private val connector: PtyProcessTtyConnector = new PtyProcessTtyConnector(pty, Rogue.DEFAULT_CHARSET)
   private val starter: TerminalStarter = new TerminalStarter(terminal, connector, new TtyBasedArrayDataStream(connector))
 
-  val process: RogueProcess = new RogueProcess(screenReader, starter, buffer)
+  private val process: RogueProcess = new RogueProcess(screenReader, starter, buffer)
   
   override def startGame(): Unit = process.startGame()
 
