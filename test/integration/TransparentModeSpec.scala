@@ -170,7 +170,7 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
         }
 
         private trait MockRogueState {
-          def sendBytes(bytes: Array[Byte]): MockRogueState  = {
+          final def sendBytes(bytes: Array[Byte]): MockRogueState  = {
             if (bytes.length != 1) fail("sendBytes() called with " + bytes.mkString(""))
             val keypress: Char = bytes.head.toChar
             transitions.getOrElse(keypress,fail("Unexpected keypress '" + keypress + "'"))
