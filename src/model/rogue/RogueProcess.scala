@@ -5,7 +5,16 @@ import com.jediterm.terminal.model.TerminalTextBuffer
 
 import scala.concurrent.Future
 
-class RogueProcess(screenReader: ScreenReader, starter : TerminalStarter, buffer: TerminalTextBuffer) {
+trait Starter {
+  def start(): Unit
+  def sendBytes(bytes: Array[Byte]): Unit
+}
+
+trait Buffer {
+  def getScreenLines : String
+}
+
+class RogueProcess(screenReader: ScreenReader, starter : Starter, buffer: Buffer) {
   def startGame(): Unit = {
     implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
     Future {

@@ -65,8 +65,6 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
           |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
           |""".stripMargin
 
-      val screen2: Screen = Screen.makeScreen(screen2contents)
-
       val inventory1 : Inventory = Inventory(
         Map(
           Slot.A -> Food,
@@ -106,8 +104,6 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
           |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
           |""".stripMargin
 
-      val screen3: Screen = Screen.makeScreen(screen3contents)
-
       val screen4contents: String =
         """quit with 0 gold-more-
           |
@@ -134,8 +130,6 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
           |
           |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
           |""".stripMargin
-
-      val screen4: Screen = Screen.makeScreen(screen4contents)
 
       val screen5contents: String =
         """-more-
@@ -164,78 +158,84 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
           |
           |""".stripMargin
 
-      val screen5: Screen = Screen.makeScreen(screen5contents)
+      object MockRogue {
+        object MockStarter extends Starter {
+          override def start(): Unit = state = state.start()
 
-      class MockRogue(screenReader: ScreenReader) extends IRogue {
+          override def sendBytes(bytes: Array[Byte]): Unit = state = state.sendBytes(bytes)
+        }
+        
+        object MockBuffer extends Buffer {
+          override def getScreenLines: String = state.getScreenLines
+        }
+
         private trait MockRogueState {
-          def readScreen: Option[Screen]
+          def sendBytes(bytes: Array[Byte]): MockRogueState  = {
+            if (bytes.length != 1) fail("sendBytes() called with " + bytes.mkString(""))
+            val keypress: Char = bytes.head.toChar
+            transitions.getOrElse(keypress,fail("Unexpected keypress '" + keypress + "'"))
+          }
 
+          def start(): MockRogueState = fail("start() called twice")
+
+          def getScreenLines: String
+          
           def transitions: Map[Char, MockRogueState]
 
           def receivedQuitCommand: Boolean = false
-
-          final def sendKeypress(keypress: Char): MockRogueState =
-            transitions.getOrElse(keypress,
-              fail("Unexpected keypress '" + keypress + "'")
-            )
         }
 
+        private object StateZero extends MockRogueState {
+          override def start(): MockRogue.MockRogueState = StateOne
+
+          override def getScreenLines: String = ""
+
+          override def transitions: Map[Char, MockRogue.MockRogueState] = Map()
+        }
+        
         private object StateOne extends MockRogueState {
-          override def readScreen: Option[Screen] = Some(screen1)
+          override def getScreenLines: String = screen1contents
 
           override def transitions: Map[Char, MockRogueState] = Map('i' -> StateTwo, 'Q' -> StateThree)
         }
 
         private object StateTwo extends MockRogueState {
-          override def readScreen: Option[Screen] = Some(screen2)
+          override def getScreenLines: String = screen2contents
 
           override def transitions: Map[Char, MockRogueState] = Map(' ' -> StateOne)
         }
 
         private object StateThree extends MockRogueState {
-          override def readScreen: Option[Screen] = Some(screen3)
+          override def getScreenLines: String = screen3contents
 
           override def transitions: Map[Char, MockRogueState] = Map('y' -> StateFour)
         }
 
         private object StateFour extends MockRogueState {
-          override def readScreen: Option[Screen] = Some(screen4)
+          override def getScreenLines: String = screen4contents
 
           override def transitions: Map[Char, MockRogueState] = Map(' ' -> StateFive)
         }
 
         private object StateFive extends MockRogueState {
-          override def readScreen: Option[Screen] = Some(screen5)
+          override def getScreenLines: String = screen5contents
 
           override def transitions: Map[Char, MockRogueState] = Map(' ' -> StateSix)
         }
 
         private object StateSix extends MockRogueState {
-          override def readScreen: Option[Screen] = None
+          override def getScreenLines: String = ""
 
           override def transitions: Map[Char, MockRogueState] = Map()
 
           override def receivedQuitCommand: Boolean = true
         }
 
-        private var state: MockRogueState = StateOne
+        private var state: MockRogueState = StateZero
 
         def receivedQuitCommand: Boolean = state.receivedQuitCommand
-
-        override def sendKeypress(keypress: Char): Unit = {
-          state = state.sendKeypress(keypress)
-            for (screen <- state.readScreen)
-              screenReader.notify(screen)
-        }
-
-        override def startGame(): Unit = 
-          for (screen <- state.readScreen) screenReader.notify(screen)
       }
 
-      object MockRogue {
-        def apply(screenReader: ScreenReader): MockRogue = new MockRogue(screenReader)
-      }
-      
       object MockScreenView extends IScreenObserver {
         private var _seenFirstScreen : Boolean = false
         def seenFirstScreen: Boolean = _seenFirstScreen
@@ -261,12 +261,9 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
       }
       
       Given("a new game of Rogue")
-      val rogueGame : RogueGame = RogueGame(MockRogue(_))
-      rogueGame.addScreenObserver(MockScreenView)
-      rogueGame.addInventoryObserver(MockInventoryView)
-      rogueGame.addGameOverObserver(MockGameOverView)
-      rogueGame.addScoreObserver(MockScoreView)
-      rogueGame.startGame()
+      val screenReader: ScreenReader = ScreenReader()
+      val game : RogueGame = RogueGame(MockRogue.MockStarter, MockRogue.MockBuffer, screenReader)
+      game.startGame()
 
       Then("the user should see the first screen")
       MockScreenView should be(Symbol("seenFirstScreen"))
@@ -275,7 +272,7 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
       MockInventoryView should be(Symbol("seenFirstInventory"))
       
       When("the user enters the command to quit")
-      rogueGame.performCommand(Command.QUIT)
+      game.performCommand(Command.QUIT)
 
       Then("model.rogue.Rogue should receive the command to quit")
       MockRogue should be(Symbol("receivedQuitCommand"))
