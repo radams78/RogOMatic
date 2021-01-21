@@ -9,8 +9,6 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
   def fixture: Object {
     val screen: Screen
 
-    val rogue: IRogue
-
     val screenReader: ScreenReader
   } = new {
     val screen: Screen = Screen.makeScreen(
@@ -62,8 +60,6 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
   "A Rogue player" should "start the game of Rogue" in {
     val f: Object {
       val screen: Screen
-
-      val rogue: IRogue
 
       val screenReader: ScreenReader
     } = fixture

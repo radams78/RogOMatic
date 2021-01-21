@@ -1,6 +1,6 @@
 package model.rogue
 
-/** Interface for the model.rogue.Rogue process.
+/** Interface for the Rogue process.
  *
  * The model.rogue.Rogue process is an observable that broadcasts the screen every time it updates. Subscribe all the observers
  * that you want to observe the process, then call startGame(). The observers will then all be notified of the first
