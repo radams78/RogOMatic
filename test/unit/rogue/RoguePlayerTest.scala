@@ -39,8 +39,6 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
         |""".stripMargin
     )
 
-    val rogue : IRogue = MockRogue
-
     val screenReader: ScreenReader = ScreenReader()
     
     object MockRogue extends IRogue {
