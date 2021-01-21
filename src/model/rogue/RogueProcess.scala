@@ -1,8 +1,5 @@
 package model.rogue
 
-import com.jediterm.terminal.TerminalStarter
-import com.jediterm.terminal.model.TerminalTextBuffer
-
 import scala.concurrent.Future
 
 trait Starter {
