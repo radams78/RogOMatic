@@ -21,22 +21,13 @@ object RogueGame {
     val player : RoguePlayer = RoguePlayer(actuator, screenReader)
     new RogueGame(rogue,player, screenReader)
   }
-
-  def apply() : RogueGame = {
-    val screenReader: ScreenReader = ScreenReader()
-    val rogue : IRogue = new Rogue(screenReader)
-    val actuator : IActuator = Actuator(rogue)
-    val player : RoguePlayer = RoguePlayer(actuator, screenReader)
-
-    new RogueGame(rogue, player, screenReader)
-  }
   
-  def apply(rogueBuilder : ScreenReader => IRogue) : RogueGame = {
+  def apply() : RogueGame = {
     val screenReader : ScreenReader = ScreenReader()
-    val rogue : IRogue = rogueBuilder(screenReader)
-    val actuator : IActuator = Actuator(rogue)
+    val rogue : Rogue = new Rogue()
+    val rogueProcess : RogueProcess = new RogueProcess(rogue.starter, rogue.buffer)
+    val actuator : IActuator = Actuator(rogueProcess)
     val player : RoguePlayer = RoguePlayer(actuator, screenReader)
-    
-    new RogueGame(rogue, player, screenReader)
+    new RogueGame(rogueProcess, player, screenReader)
   }
 }

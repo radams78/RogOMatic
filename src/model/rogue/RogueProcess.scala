@@ -11,7 +11,9 @@ trait Buffer {
   def getScreenLines : String
 }
 
-class RogueProcess(screenReader: ScreenReader, starter : Starter, buffer: Buffer) {
+class RogueProcess(starter : Starter, buffer: Buffer) extends IRogue {
+  val screenReader : ScreenReader = null
+  
   def startGame(): Unit = {
     implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
     Future {
