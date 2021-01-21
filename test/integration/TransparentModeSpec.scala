@@ -262,8 +262,10 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
       
       Given("a new game of Rogue")
       val screenReader: ScreenReader = ScreenReader()
-      val game : RogueGame = RogueGame(MockRogue.MockStarter, MockRogue.MockBuffer, screenReader)
-      game.startGame()
+      val process : IRogue = new RogueProcess(MockRogue.MockStarter, MockRogue.MockBuffer)
+      val actuator : IActuator = new Actuator(process)
+      val player : RoguePlayer = RoguePlayer(actuator, screenReader)
+      player.startGame()
 
       Then("the user should see the first screen")
       MockScreenView should be(Symbol("seenFirstScreen"))
@@ -272,7 +274,7 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
       MockInventoryView should be(Symbol("seenFirstInventory"))
       
       When("the user enters the command to quit")
-      game.performCommand(Command.QUIT)
+      player.performCommand(Command.QUIT)
 
       Then("model.rogue.Rogue should receive the command to quit")
       MockRogue should be(Symbol("receivedQuitCommand"))

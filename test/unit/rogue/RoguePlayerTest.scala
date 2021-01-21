@@ -82,6 +82,8 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
     
     object MockScreenReader extends IScreenReader {
       override def readScreen(): Option[Screen] = Some(f.screen)
+
+      override def notify(screen: Screen): Unit = ()
     }
     
     val player : RoguePlayer = RoguePlayer(MockActuator, MockScreenReader)

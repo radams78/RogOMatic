@@ -4,6 +4,8 @@ import model.items.Inventory
 
 /** Communicate with the game of Rogue */
 class RoguePlayer private (actuator: IActuator, reader : IScreenReader) {
+  def addScreenObserver(observer: IScreenObserver): Unit = ()
+
   private var inventoryObservers : Set[IInventoryObserver] = Set()
   
   /** Send the given command to Rogue.
@@ -58,6 +60,15 @@ class RoguePlayer private (actuator: IActuator, reader : IScreenReader) {
 
 object RoguePlayer {
   def apply(actuator: IActuator, screenReader: IScreenReader): RoguePlayer = new RoguePlayer(actuator, screenReader)
+  
+  def apply(): RoguePlayer = {
+    val rogue : Rogue = new Rogue()
+    val process : IRogue = new RogueProcess(rogue.starter, rogue.buffer)
+    val actuator : IActuator = new Actuator(process)
+    val screenReader : IScreenReader = ScreenReader()
+    process.addScreenObserver(screenReader)
+    new RoguePlayer(actuator, screenReader)
+  }
 }
 
 /** Exception thrown if the Rogue process has ended unexpectedly. */

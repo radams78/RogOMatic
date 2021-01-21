@@ -1,6 +1,6 @@
 package model.rogue
 
-trait IScreenReader {
+trait IScreenReader extends IScreenObserver {
   def readScreen(): Option[Screen]
 
 }

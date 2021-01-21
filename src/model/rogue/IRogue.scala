@@ -6,6 +6,8 @@ package model.rogue
  * that you want to observe the process, then call startGame(). The observers will then all be notified of the first
  * screen, and notified of the screen after every keypress*/
 trait IRogue extends Runnable {
+  def addScreenObserver(observer: IScreenObserver): Unit = ()
+
   /** Send a keypress to model.rogue.Rogue as if the player had pressed it.
    *
    * Throws a [[GameNotStartedException]] if startGame has not yet been called.
