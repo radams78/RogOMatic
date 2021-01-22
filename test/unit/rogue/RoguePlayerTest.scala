@@ -6,11 +6,7 @@ import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
 class RoguePlayerTest extends AnyFlatSpec with Matchers {
-  def fixture: Object {
-    val screen: Screen
-
-    val screenReader: ScreenReader
-  } = new {
+  "A Rogue player" should "start the game of Rogue" in {
     val screen: Screen = Screen.makeScreen(
       """
         |
@@ -38,51 +34,26 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
         |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
         |""".stripMargin
     )
-
-    val screenReader: ScreenReader = ScreenReader()
     
-    object MockRogue extends IRogue {
-      private var _started: Boolean = false
-
-      def started: Boolean = _started
-
-      override def sendKeypress(keypress: Char): Unit = ()
-
-      override def startGame(): Unit = {
-        _started = true
-        screenReader.notify(screen)
-      }
-    }
-  }
-
-  "A Rogue player" should "start the game of Rogue" in {
-    val f: Object {
-      val screen: Screen
-
-      val screenReader: ScreenReader
-    } = fixture
+    var startedGame : Boolean = false
     
     object MockActuator extends IActuator {
-      private var _startedGame: Boolean = false
-      
-      def startedGame : Boolean = _startedGame
-      
       override def displayInventoryScreen(): Unit = ()
 
       override def clearInventoryScreen(): Unit = ()
 
-      override def startGame(): Unit = _startedGame = true 
+      override def startGame(): Unit = startedGame = true
     }
     
     object MockScreenReader extends IScreenReader {
-      override def readScreen(): Option[Screen] = Some(f.screen)
+      override def readScreen(): Option[Screen] = if (startedGame) Some(screen) else None
 
       override def notify(screen: Screen): Unit = ()
     }
     
     val player : RoguePlayer = RoguePlayer(MockActuator, MockScreenReader)
     player.startGame()
-    MockActuator should be(Symbol("startedGame"))
+    startedGame shouldBe true
   }
   
   "A Rogue player" should "broadcast the inventory from Rogue" in {
