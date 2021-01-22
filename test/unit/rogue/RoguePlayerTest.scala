@@ -118,11 +118,11 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
     val screenReader : ScreenReader = ScreenReader()
     object MockRogue extends IRogue {
       private trait MockRogueState {
+        def start : MockRogueState = fail("start called twice")
+         
         def readScreen: Screen
 
         def transitions: Map[Char, MockRogueState]
-
-        def receivedQuitCommand: Boolean = false
 
         final def sendKeypress(keypress: Char): MockRogueState =
           transitions.getOrElse(keypress,
@@ -130,6 +130,14 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
           )
       }
 
+      private object StateZero extends MockRogueState {
+        override def start: MockRogue.MockRogueState = StateOne
+        
+        override def readScreen: Screen = fail("readScreen called before game started")
+
+        override def transitions: Map[Char, MockRogue.MockRogueState] = Map()
+      }
+      
       private object StateOne extends MockRogueState {
         override def readScreen: Screen = screen1
 
@@ -142,14 +150,17 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
         override def transitions: Map[Char, MockRogueState] = Map(' ' -> StateOne)
       }
 
-      private var state: MockRogueState = StateOne
+      private var state: MockRogueState = StateZero
 
       override def sendKeypress(keypress: Char): Unit = {
         state = state.sendKeypress(keypress)
         screenReader.notify(state.readScreen)
       }
 
-      override def startGame(): Unit = screenReader.notify(state.readScreen)
+      override def startGame(): Unit = {
+        state = state.start
+        screenReader.notify(state.readScreen)
+      }
     }
 
     object MockObserver extends IInventoryObserver {
