@@ -4,7 +4,7 @@ import model.items.Inventory
 
 /** Communicate with the game of Rogue */
 class RoguePlayer private (rogue : IRogue) extends IRoguePlayer {
-  var inventoryObservers : Set[IInventoryObserver] = Set()
+  private var inventoryObservers : Set[IInventoryObserver] = Set()
 
   override def addInventoryObserver(observer: IInventoryObserver): Unit = 
     inventoryObservers = inventoryObservers + observer
