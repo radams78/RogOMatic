@@ -160,15 +160,9 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
 
       object MockRogue extends IRogue {
         
-        
-        
-
         private trait MockRogueState {
-          final def sendBytes(bytes: Array[Byte]): MockRogueState  = {
-            if (bytes.length != 1) fail("sendBytes() called with " + bytes.mkString(""))
-            val keypress: Char = bytes.head.toChar
+          final def sendKeypress(keypress: Char) : MockRogueState = 
             transitions.getOrElse(keypress,fail("Unexpected keypress '" + keypress + "'"))
-          }
 
           def start(): MockRogueState = fail("start() called twice")
 
@@ -234,7 +228,7 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
         override def addScreenObserver(observer: IScreenObserver): Unit = _screenObserver = Some(observer)
         
         override def sendKeypress(keypress: Char): Unit = {
-          state = state.sendBytes(Array(keypress.toByte))
+          state = state.sendKeypress(keypress)
           for (observer <- _screenObserver) observer.notify(Screen.makeScreen(state.getScreenLines))  
         }
 
