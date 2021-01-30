@@ -161,9 +161,7 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
       object MockRogue extends IRogue {
         
         
-        object MockBuffer extends Buffer {
-          override def getScreenLines: String = state.getScreenLines
-        }
+        
 
         private trait MockRogueState {
           final def sendBytes(bytes: Array[Byte]): MockRogueState  = {
