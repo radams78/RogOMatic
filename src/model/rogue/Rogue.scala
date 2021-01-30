@@ -16,7 +16,7 @@ import java.nio.charset.Charset
 // TODO Close?
 /** Start an instance of Rogue running.
  *
- * This starts Rogue running in a separate process and wraps it in a [[RogueProcess]] object. This is a humble object. */
+ * This starts Rogue running in a separate process. This is a humble object. */
 class Rogue private () extends IRogue {
   // Set up log4j
   BasicConfigurator.configure(new NullAppender)
@@ -28,19 +28,6 @@ class Rogue private () extends IRogue {
   private val connector: PtyProcessTtyConnector = new PtyProcessTtyConnector(pty, Rogue.DEFAULT_CHARSET)
   private val terminalStarter: TerminalStarter = new TerminalStarter(terminal, connector, new TtyBasedArrayDataStream(connector))
   
-  private val _starter : Starter = new Starter {
-    override def start(): Unit = terminalStarter.start()
-
-    override def sendBytes(bytes: Array[Byte]): Unit = terminalStarter.sendBytes(bytes)
-  }
-  
-  private val _buffer: Buffer = new Buffer {
-    override def getScreenLines: String = terminalTextBuffer.getScreenLines
-  }
-  
-  def starter : Starter = _starter
-  def buffer : Buffer = _buffer
-
   override def sendKeypress(keypress: Char): Unit = terminalStarter.sendBytes(Array(keypress.toByte))
 
   override def startGame(): Unit = terminalStarter.start()
