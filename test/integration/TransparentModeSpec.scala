@@ -159,11 +159,7 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
           |""".stripMargin
 
       object MockRogue extends IRogue {
-        object MockStarter extends Starter {
-          override def start(): Unit = state = state.start()
-
-          override def sendBytes(bytes: Array[Byte]): Unit = state = state.sendBytes(bytes)
-        }
+        
         
         object MockBuffer extends Buffer {
           override def getScreenLines: String = state.getScreenLines
