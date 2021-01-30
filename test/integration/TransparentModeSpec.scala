@@ -275,9 +275,7 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
       }
       
       Given("a new game of Rogue")
-      val screenReader: ScreenReader = ScreenReader()
       val process : IRogue = new RogueProcess(MockRogue.MockStarter, MockRogue.MockBuffer)
-      val actuator : IActuator = new Actuator(process)
       val player : IRoguePlayer = RoguePlayer(MockRogue)
       player.startGame()
 
