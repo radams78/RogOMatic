@@ -35,3 +35,7 @@ class RogueProcess(starter : Starter, buffer: Buffer) extends IRogue {
     screenReader.notify(Screen.makeScreen(buffer.getScreenLines)) // TODO Duplication
   }
 }
+
+object RogueProcess {
+  def apply(rogue : Rogue): RogueProcess = new RogueProcess(rogue.starter, rogue.buffer)
+}

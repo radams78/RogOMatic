@@ -158,7 +158,7 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
           |
           |""".stripMargin
 
-      object MockRogue {
+      object MockRogue extends IRogue {
         object MockStarter extends Starter {
           override def start(): Unit = state = state.start()
 
@@ -234,6 +234,20 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
         private var state: MockRogueState = StateZero
 
         def receivedQuitCommand: Boolean = state.receivedQuitCommand
+
+        var _screenObserver : Option[IScreenObserver] = None
+
+        override def addScreenObserver(observer: IScreenObserver): Unit = _screenObserver = Some(observer)
+        
+        override def sendKeypress(keypress: Char): Unit = {
+          state = state.sendBytes(Array(keypress.toByte))
+          for (observer <- _screenObserver) observer.notify(Screen.makeScreen(state.getScreenLines))  
+        }
+
+        override def startGame(): Unit = {
+          state = state.start()
+          for (observer <- _screenObserver) observer.notify(Screen.makeScreen(state.getScreenLines))
+        }
       }
 
       object MockScreenView extends IScreenObserver {
@@ -264,7 +278,7 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
       val screenReader: ScreenReader = ScreenReader()
       val process : IRogue = new RogueProcess(MockRogue.MockStarter, MockRogue.MockBuffer)
       val actuator : IActuator = new Actuator(process)
-      val player : RoguePlayer = RoguePlayer(actuator, screenReader)
+      val player : IRoguePlayer = RoguePlayer(MockRogue)
       player.startGame()
 
       Then("the user should see the first screen")

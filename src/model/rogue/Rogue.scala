@@ -17,7 +17,7 @@ import java.nio.charset.Charset
 /** Start an instance of Rogue running.
  *
  * This starts Rogue running in a separate process and wraps it in a [[RogueProcess]] object. This is a humble object. */
-class Rogue {
+class Rogue private () extends IRogue {
   // Set up log4j
   BasicConfigurator.configure(new NullAppender)
 
@@ -40,9 +40,15 @@ class Rogue {
   
   def starter : Starter = _starter
   def buffer : Buffer = _buffer
+
+  override def sendKeypress(keypress: Char): Unit = terminalStarter.sendBytes(Array(keypress.toByte))
+
+  override def startGame(): Unit = terminalStarter.start()
 }
 
 object Rogue {
+  def apply() : IRogue = new Rogue()
+  
   // Command to launch the Rogue process
   private val DEFAULT_COMMAND: Array[String] = Array("/usr/games/rogue")
   

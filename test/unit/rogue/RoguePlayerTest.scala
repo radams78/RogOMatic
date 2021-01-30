@@ -37,21 +37,13 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
     
     var startedGame : Boolean = false
     
-    object MockActuator extends IActuator {
-      override def displayInventoryScreen(): Unit = ()
+    object MockRogue extends IRogue {
+      override def sendKeypress(keypress: Char): Unit = ()
 
-      override def clearInventoryScreen(): Unit = ()
-
-      override def startGame(): Unit = startedGame = true
+      override def startGame(): Unit = if (startedGame) fail("startGame called twice") else startedGame = true
     }
     
-    object MockScreenReader extends IScreenReader {
-      override def readScreen(): Option[Screen] = if (startedGame) Some(screen) else None
-
-      override def notify(screen: Screen): Unit = ()
-    }
-    
-    val player : RoguePlayer = RoguePlayer(MockActuator, MockScreenReader)
+    val player : IRoguePlayer = RoguePlayer(MockRogue)
     player.startGame()
     startedGame shouldBe true
   }
@@ -182,7 +174,7 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
       override def startGame(): Unit = MockRogue.startGame()
     }
     
-    val player: RoguePlayer = RoguePlayer(MockActuator, screenReader)
+    val player: IRoguePlayer = RoguePlayer(MockRogue)
     player.addInventoryObserver(MockObserver)
     player.startGame()
     MockObserver should be(Symbol("seenInventory"))

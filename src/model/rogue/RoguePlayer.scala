@@ -3,80 +3,26 @@ package model.rogue
 import model.items.Inventory
 
 /** Communicate with the game of Rogue */
-class RoguePlayer private (actuator: IActuator, reader : IScreenReader) {
-  def addScreenObserver(observer: IScreenObserver): Unit = ()
+class RoguePlayer private (rogue : IRogue) extends IRoguePlayer {
+  var inventoryObservers : Set[IInventoryObserver] = Set()
 
-  private var inventoryObservers : Set[IInventoryObserver] = Set()
-  
-  /** Send the given command to Rogue.
-   * 
-   * The game of Rogue must be in progress, otherwise throws a [[GameNotInProgressException]]
-   * 
-   * @param command Command to be performed */
-  def performCommand(command: Command): Unit = ()
+  override def addInventoryObserver(observer: IInventoryObserver): Unit = 
+    inventoryObservers = inventoryObservers + observer
+    
+  override def performCommand(command: Command): Unit = ()
 
-  /** Start the game of Rogue 
-   * 
-   * If the game of Rogue has already started, throws a [[GameStartedException]]. If the first screen cannot be
-   * retrieved from Rogue, throws an [[EmptyScreenException]]. */
-  def startGame(): Unit = {
-    actuator.startGame()
-    readAllFromRogue()
-  }
-
-  private def readAllFromRogue(): Unit = {
-    readNormalScreen()
-    readInventoryScreen()
-  }
-
-  private def readNormalScreen(): Unit = {
-    reader.readScreen()
-  }
-
-  private def readInventoryScreen(): Unit = {
-    displayInventoryScreen()
-    val inventoryScreen: Screen = reader.readScreen().getOrElse(throw new EmptyScreenException)
-    parseInventoryScreen(inventoryScreen)
-    actuator.clearInventoryScreen()
-  }
-
-  private def parseInventoryScreen(inventoryScreen : Screen): Unit = {
+  override def startGame(): Unit = {
+    rogue.startGame()
     for (observer <- inventoryObservers) observer.notify(Inventory())
   }
 
-  private def displayInventoryScreen(): Unit = {
-    actuator.displayInventoryScreen()
-  }
+  override def addScoreObserver(observer: IScoreObserver): Unit = ()
 
-  /** Add an observer that listens for the final score */
-  def addScoreObserver(observer: IScoreObserver): Unit = ()
+  override def addGameOverObserver(observer: IGameOverObserver): Unit = ()
 
-  /** Add an observer that listens for the message that the game is over */
-  def addGameOverObserver(observer: IGameOverObserver): Unit = ()
-
-  /** Add an observer that listens for the current inventory */
-  def addInventoryObserver(observer: IInventoryObserver): Unit = inventoryObservers = inventoryObservers + observer
+  override def addScreenObserver(observer: IScreenObserver): Unit = ()
 }
 
 object RoguePlayer {
-  def apply(actuator: IActuator, screenReader: IScreenReader): RoguePlayer = new RoguePlayer(actuator, screenReader)
-  
-  def apply(): RoguePlayer = {
-    val rogue : Rogue = new Rogue()
-    val process : IRogue = new RogueProcess(rogue.starter, rogue.buffer)
-    val actuator : IActuator = new Actuator(process)
-    val screenReader : IScreenReader = ScreenReader()
-    process.addScreenObserver(screenReader)
-    new RoguePlayer(actuator, screenReader)
-  }
+  def apply(rogue : IRogue) : IRoguePlayer = new RoguePlayer(rogue)
 }
-
-/** Exception thrown if the Rogue process has ended unexpectedly. */
-class GameNotInProgressException extends Exception
-
-/** Exception thrown if the Rogue process has started unexpectedly. */
-class GameStartedException extends Exception
-
-/** Exception thrown if screen cannot be retrieved from Rogue. */
-class EmptyScreenException extends Exception
-
