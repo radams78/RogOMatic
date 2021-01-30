@@ -56,7 +56,7 @@ class Rogue private () extends IRogue {
 }
 
 object Rogue {
-  def apply(screenObserver: IScreenObserver) : IRogue = new Rogue()
+  def apply() : IRogue = new Rogue()
   
   // Command to launch the Rogue process
   private val DEFAULT_COMMAND: Array[String] = Array("/usr/games/rogue")
