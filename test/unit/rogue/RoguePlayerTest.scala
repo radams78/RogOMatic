@@ -7,34 +7,7 @@ import org.scalatest.matchers.should.Matchers
 
 class RoguePlayerTest extends AnyFlatSpec with Matchers {
   "A Rogue player" should "start the game of Rogue" in {
-    val screen: Screen = Screen.makeScreen(
-      """
-        |
-        |
-        |
-        |
-        |
-        |
-        |
-        |
-        |
-        |
-        |
-        |
-        |
-        |
-        |
-        |
-        |  -------+---
-        |  |.@.......|
-        |  |.........|
-        |  |.........|
-        |  |........*|
-        |  -----------
-        |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
-        |""".stripMargin
-    )
-    
+
     var startedGame : Boolean = false
     
     object MockRogue extends IRogue {
