@@ -79,8 +79,9 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
 
     val screen2: Screen = Screen.makeScreen(screen2contents)
 
-    val screenReader : ScreenReader = ScreenReader()
     object MockRogue extends IRogue {
+      private var _screenObserver : Option[IScreenObserver] = None // Duplicated code
+      
       private trait MockRogueState {
         def start : MockRogueState = fail("start called twice")
          
@@ -118,12 +119,12 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
 
       override def sendKeypress(keypress: Char): Unit = {
         state = state.sendKeypress(keypress)
-        screenReader.notify(state.readScreen)
+        for (observer <- _screenObserver) observer.notify(state.readScreen)
       }
 
       override def startGame(): Unit = {
         state = state.start
-        screenReader.notify(state.readScreen)
+        for (observer <- _screenObserver) observer.notify(state.readScreen)
       }
     }
 
