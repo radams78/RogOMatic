@@ -2,6 +2,7 @@ package model.rogue
 
 /** A facade for the [[model.rogue]] package */
 trait IRoguePlayer {
+  /** Start the game of Rogue */
   def startGame(): Unit
 
   def performCommand(command: Command): Unit
