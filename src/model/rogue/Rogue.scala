@@ -22,8 +22,6 @@ class Rogue private () extends IRogue {
   // Set up log4j
   BasicConfigurator.configure(new NullAppender)
 
-  private var _screenObserver : Option[IScreenObserver] = None
-  
   private val state: StyleState = new StyleState
   private val terminalTextBuffer: TerminalTextBuffer = new TerminalTextBuffer(80, 24, state)
   private val terminal: JediTerminal = new JediTerminal(new MinimalTerminalDisplay(terminalTextBuffer), terminalTextBuffer, state)
