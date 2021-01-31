@@ -10,9 +10,13 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
     var startedGame : Boolean = false
     
     object MockRogue extends IRogue {
-      override def sendKeypress(keypress: Char): Unit = ()
+      override def sendKeypress(keypress: Char): String = ""
 
-      override def startGame(): Unit = if (startedGame) fail("startGame called twice") else startedGame = true
+      override def startGame(): String = 
+        if (startedGame) fail("startGame called twice") else {
+          startedGame = true
+          ""
+        }
     }
     
     val player : IRoguePlayer = RoguePlayer(MockRogue)
@@ -85,7 +89,7 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
       private trait MockRogueState {
         def start : MockRogueState = fail("start called twice")
          
-        def readScreen: Screen
+        def readScreen: String
 
         def transitions: Map[Char, MockRogueState]
 
@@ -98,33 +102,33 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
       private object StateZero extends MockRogueState {
         override def start: MockRogue.MockRogueState = StateOne
         
-        override def readScreen: Screen = fail("readScreen called before game started")
+        override def readScreen: String = fail("readScreen called before game started")
 
         override def transitions: Map[Char, MockRogue.MockRogueState] = Map()
       }
       
       private object StateOne extends MockRogueState {
-        override def readScreen: Screen = screen1
+        override def readScreen: String = screen1contents
 
         override def transitions: Map[Char, MockRogueState] = Map('i' -> StateTwo)
       }
 
       private object StateTwo extends MockRogueState {
-        override def readScreen: Screen = screen2
+        override def readScreen: String = screen2contents
 
         override def transitions: Map[Char, MockRogueState] = Map(' ' -> StateOne)
       }
 
       private var state: MockRogueState = StateZero
 
-      override def sendKeypress(keypress: Char): Unit = {
+      override def sendKeypress(keypress: Char): String = {
         state = state.sendKeypress(keypress)
-        for (observer <- _screenObserver) observer.notify(state.readScreen)
+        state.readScreen
       }
 
-      override def startGame(): Unit = {
+      override def startGame(): String = {
         state = state.start
-        for (observer <- _screenObserver) observer.notify(state.readScreen)
+        state.readScreen
       }
     }
 
