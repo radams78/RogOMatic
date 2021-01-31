@@ -7,7 +7,6 @@ import org.scalatest.matchers.should.Matchers
 
 class RoguePlayerTest extends AnyFlatSpec with Matchers {
   "A Rogue player" should "start the game of Rogue" in {
-
     var startedGame : Boolean = false
     
     object MockRogue extends IRogue {
@@ -137,14 +136,6 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
         inventory should be(Inventory())
         _seenInventory = true
       }
-    }
-    
-    object MockActuator extends IActuator {
-      override def displayInventoryScreen(): Unit = MockRogue.sendKeypress('i')
-
-      override def clearInventoryScreen(): Unit = MockRogue.sendKeypress(' ')
-
-      override def startGame(): Unit = MockRogue.startGame()
     }
     
     val player: IRoguePlayer = RoguePlayer(MockRogue)
