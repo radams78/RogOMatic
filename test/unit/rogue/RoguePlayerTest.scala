@@ -52,8 +52,6 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
         |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
         |""".stripMargin
 
-    val screen1: Screen = Screen.makeScreen(screen1contents)
-
     val screen2contents: String =
       """                                                --press space to continue--
         |
@@ -81,11 +79,7 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
         |Level: 1  Gold: 0      Hp: 12(12)   Str: 16(16) Arm: 4  Exp: 1/0
         |""".stripMargin
 
-    val screen2: Screen = Screen.makeScreen(screen2contents)
-
     object MockRogue extends IRogue {
-      private var _screenObserver : Option[IScreenObserver] = None // Duplicated code
-      
       private trait MockRogueState {
         def start : MockRogueState = fail("start called twice")
          
