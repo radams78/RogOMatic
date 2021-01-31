@@ -5,6 +5,7 @@ trait IRoguePlayer {
   /** Start the game of Rogue */
   def startGame(): Unit
 
+  /** Send a command as input to Rogue */
   def performCommand(command: Command): Unit
 
   def addScreenObserver(observer: IScreenObserver)
