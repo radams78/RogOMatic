@@ -23,6 +23,31 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
     player.startGame()
     startedGame shouldBe true
   }
+
+  "A Rogue player" should "broadcast the first screen" in {
+    val screenContents: String = "The screen"
+    val screen: Screen = Screen.makeScreen(screenContents)
+    
+    var seenScreen : Boolean = false
+
+    object MockRogue extends IRogue {
+      override def sendKeypress(keypress: Char): String = ""
+
+      override def startGame(): String = screenContents
+    }
+
+    object MockObserver extends IScreenObserver {
+      override def notify(_screen: Screen): Unit = {
+        _screen shouldBe screen
+        seenScreen = true
+      }
+    }
+    
+    val player : IRoguePlayer = RoguePlayer(MockRogue)
+    player.addScreenObserver(MockObserver)
+    player.startGame()
+    seenScreen shouldBe true
+  }
   
   "A Rogue player" should "broadcast the inventory from Rogue" in {
     val screen1contents: String =
