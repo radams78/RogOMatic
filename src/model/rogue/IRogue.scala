@@ -1,11 +1,12 @@
 package model.rogue
 
-/** Interface for the Rogue process.
- *
- * The model.rogue.Rogue process is an observable that broadcasts the screen every time it updates. Subscribe all the observers
- * that you want to observe the process, then call startGame(). The observers will then all be notified of the first
- * screen, and notified of the screen after every keypress*/
+/** Interface for the Rogue process. */
 trait IRogue {
+  /** Retrieve the current contents of the screen.
+   * 
+   * The screen contents are returned as a string with lines separated by \n's.
+   * 
+   * @return Current contents of the screen */
   def getScreenContents: String
 
   /** Send a keypress to model.rogue.Rogue as if the player had pressed it.
