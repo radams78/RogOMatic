@@ -14,7 +14,7 @@ class RoguePlayer private (rogue : IRogue) extends IRoguePlayer {
 
   override def startGame(): Unit = {
     rogue.startGame()
-    for (observer <- screenObservers) observer.notify(Screen.makeScreen("The screen"))
+    for (observer <- screenObservers) observer.notify(Screen.makeScreen(rogue.getScreenContents))
     for (observer <- inventoryObservers) observer.notify(Inventory())
   }
 

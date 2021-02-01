@@ -29,7 +29,7 @@ class Rogue private () extends IRogue {
   private val connector: PtyProcessTtyConnector = new PtyProcessTtyConnector(pty, Rogue.DEFAULT_CHARSET)
   private val terminalStarter: TerminalStarter = new TerminalStarter(terminal, connector, new TtyBasedArrayDataStream(connector))
 
-  override def startGame() : String = {
+  override def startGame() : Unit = {
     implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
     Future {
       terminalStarter.start()
@@ -37,18 +37,18 @@ class Rogue private () extends IRogue {
     // Wait for RG to clear the message "just a moment while I dig the dungeon"
     // TODO More elegant way to do this?
     Thread.sleep(1000)
-    terminalTextBuffer.getScreenLines
   }
 
-  override def sendKeypress(keyPress: Char): String = {
+  override def sendKeypress(keyPress: Char): Unit = {
     terminalStarter.sendBytes(Array(keyPress.toByte))
     //noinspection ZeroIndexToHead
     Iterator.continually({
       Thread.sleep(10)
       terminalTextBuffer.getScreenLines
     }).sliding(2).find((p: Seq[String]) => p(0) == p(1))
-    terminalTextBuffer.getScreenLines
   }
+
+  override def getScreenContents: String = terminalTextBuffer.getScreenLines
 }
 
 object Rogue {

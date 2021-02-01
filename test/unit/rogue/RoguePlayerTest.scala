@@ -10,13 +10,13 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
     var startedGame : Boolean = false
     
     object MockRogue extends IRogue {
-      override def sendKeypress(keypress: Char): String = ""
+      override def sendKeypress(keypress: Char): Unit = ()
 
-      override def startGame(): String = 
-        if (startedGame) fail("startGame called twice") else {
+      override def startGame(): Unit = 
+        if (startedGame) fail("startGame called twice") else
           startedGame = true
-          ""
-        }
+
+      override def getScreenContents: String = ""
     }
     
     val player : IRoguePlayer = RoguePlayer(MockRogue)
@@ -31,9 +31,11 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
     var seenScreen : Boolean = false
 
     object MockRogue extends IRogue {
-      override def sendKeypress(keypress: Char): String = ""
+      override def sendKeypress(keypress: Char): Unit = ()
 
-      override def startGame(): String = screenContents
+      override def startGame(): Unit = ()
+
+      override def getScreenContents: String = screenContents
     }
 
     object MockObserver extends IScreenObserver {
@@ -140,15 +142,15 @@ class RoguePlayerTest extends AnyFlatSpec with Matchers {
 
       private var state: MockRogueState = StateZero
 
-      override def sendKeypress(keypress: Char): String = {
+      override def sendKeypress(keypress: Char): Unit = {
         state = state.sendKeypress(keypress)
-        state.readScreen
       }
 
-      override def startGame(): String = {
+      override def startGame(): Unit = {
         state = state.start
-        state.readScreen
       }
+
+      override def getScreenContents: String = state.readScreen
     }
 
     object MockObserver extends IInventoryObserver {

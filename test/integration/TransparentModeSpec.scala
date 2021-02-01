@@ -225,15 +225,15 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
 
         var _screenObserver : Option[IScreenObserver] = None
 
-        override def sendKeypress(keypress: Char): String = {
+        override def sendKeypress(keypress: Char): Unit = {
           state = state.sendKeypress(keypress)
-          state.getScreenLines  
         }
 
-        override def startGame(): String = {
+        override def startGame(): Unit = {
           state = state.start()
-          state.getScreenLines
         }
+
+        override def getScreenContents: String = state.getScreenLines
       }
 
       object MockScreenView extends IScreenObserver {
