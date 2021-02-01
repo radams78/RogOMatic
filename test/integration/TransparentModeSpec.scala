@@ -223,8 +223,6 @@ class TransparentModeSpec extends AnyFeatureSpec with GivenWhenThen with Matcher
 
         def receivedQuitCommand: Boolean = state.receivedQuitCommand
 
-        var _screenObserver : Option[IScreenObserver] = None
-
         override def sendKeypress(keypress: Char): Unit = {
           state = state.sendKeypress(keypress)
         }
